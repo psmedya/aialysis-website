@@ -2,429 +2,446 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>aiALYSIS Live</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aiALYSIS Live — AI Destekli Futbol Analiz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0E0E0E; --surface:#1A1A1A; --card:#222222; --border:#2E2E2E;
-  --blue:#1565C0; --blue-lt:#42A5F5; --green:#43A047; --orange:#FF6D00;
-  --red:#E53935; --yellow:#FDD835; --text:#EEEEEE; --muted:#888888;
-  --gold:#C8971A; --gold-lt:#F5C842; --purple:#7B1FA2;
+:root{
+  --bg:#0E0E0E;--surface:#1A1A1A;--card:#222222;--border:#2E2E2E;
+  --blue:#1565C0;--blue-lt:#42A5F5;--green:#43A047;--orange:#FF6D00;
+  --red:#E53935;--yellow:#FDD835;--text:#EEEEEE;--muted:#888888;
+  --gold:#C8971A;--gold-lt:#F5C842;
+  --sidebar:260px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 
-/* APP SHELL */
-.app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;position:relative;}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:var(--sidebar) 1fr 320px;grid-template-rows:60px 1fr;min-height:100vh;}
 
-/* APPBAR */
-.appbar{background:var(--blue);padding:12px 16px 0;flex-shrink:0;}
-.appbar-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.logo{display:flex;align-items:baseline;gap:0;flex:1;}
-.logo .ai{font-style:italic;font-size:16px;font-weight:300;color:var(--gold-lt);}
-.logo .alysis{font-size:16px;font-weight:900;color:white;letter-spacing:-1px;}
-.appbar-actions{display:flex;align-items:center;gap:4px;}
-.live-btn{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(67,160,71,.15);border:1px solid rgba(67,160,71,.5);
-  border-radius:16px;padding:4px 10px;cursor:pointer;
-  font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;
-  transition:all .2s;
+/* NAVBAR */
+.navbar{
+  grid-column:1/-1;
+  background:var(--blue);
+  display:flex;align-items:center;gap:16px;
+  padding:0 24px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  position:sticky;top:0;z-index:100;
 }
-.live-btn.active{background:var(--green);border-color:var(--green);color:white;}
-.live-btn .dot{width:6px;height:6px;background:currentColor;border-radius:50%;animation:pulse 1.5s infinite;}
-.icon-btn{background:none;border:none;color:white;cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
-.icon-btn:hover{background:rgba(255,255,255,.1);}
-.icon-btn svg{width:20px;height:20px;}
+.nav-logo{display:flex;align-items:baseline;gap:0;margin-right:8px;}
+.nav-logo .ai{font-style:italic;font-size:20px;font-weight:300;color:var(--gold-lt);}
+.nav-logo .alysis{font-size:20px;font-weight:900;color:white;letter-spacing:-1px;}
+.nav-live{display:flex;align-items:center;gap:6px;background:rgba(67,160,71,.2);border:1px solid rgba(67,160,71,.5);border-radius:16px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--green);cursor:pointer;transition:all .2s;letter-spacing:1px;}
+.nav-live.active{background:var(--green);color:white;border-color:var(--green);}
+.nav-live .dot{width:6px;height:6px;background:currentColor;border-radius:50%;animation:pulse 1.5s infinite;}
+.nav-search{flex:1;max-width:400px;position:relative;}
+.nav-search input{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 14px 7px 36px;color:white;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:all .2s;}
+.nav-search input::placeholder{color:rgba(255,255,255,.5);}
+.nav-search input:focus{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.4);}
+.nav-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:rgba(255,255,255,.5);}
+.nav-links{display:flex;gap:4px;margin-left:auto;}
+.nav-btn{background:none;border:none;color:rgba(255,255,255,.7);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,.1);color:white;}
+.nav-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;}
 
-/* TABS */
-.tabs{display:flex;border-bottom:2px solid rgba(255,255,255,.2);}
-.tab{flex:1;text-align:center;padding:10px 4px;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;}
-.tab.active{color:white;border-bottom-color:white;font-weight:700;}
-.tab .tab-icon{font-size:11px;margin-right:4px;}
+/* SIDEBAR */
+.sidebar{
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:20px 0;
+  overflow-y:auto;
+  position:sticky;top:60px;height:calc(100vh - 60px);
+}
+.sidebar-section{padding:0 16px;margin-bottom:24px;}
+.sidebar-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:2px;margin-bottom:10px;padding:0 4px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .2s;margin-bottom:2px;}
+.sidebar-item:hover{background:rgba(255,255,255,.04);color:var(--text);}
+.sidebar-item.active{background:rgba(21,101,192,.2);color:var(--blue-lt);}
+.sidebar-item svg{width:16px;height:16px;stroke:currentColor;fill:none;flex-shrink:0;}
+.date-nav{display:flex;align-items:center;gap:8px;padding:12px 16px;}
+.date-btn{background:var(--card);border:1px solid var(--border);color:var(--text);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.date-btn:hover{border-color:var(--gold-lt);}
+.date-label{flex:1;text-align:center;background:var(--blue);color:white;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;}
 
-/* CONTENT */
-.content{flex:1;overflow-y:auto;overflow-x:hidden;}
+/* MAIN */
+.main{overflow-y:auto;height:calc(100vh - 60px);}
 .page{display:none;}.page.active{display:block;}
 
-/* DATE NAV */
-.date-nav{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;}
-.date-btn{background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
-.date-label{background:var(--blue);color:white;padding:8px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;}
+/* MAÇ LİSTESİ */
+.matches-header{padding:20px 24px 12px;display:flex;align-items:center;justify-content:space-between;}
+.matches-title{font-size:18px;font-weight:700;}
+.matches-count{font-size:12px;color:var(--muted);}
 
-/* LİG GRUP */
-.lig-grup{margin:0 0 2px;}
-.lig-header{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border);cursor:pointer;}
+.lig-grup{margin-bottom:2px;}
+.lig-header{display:flex;align-items:center;gap:10px;padding:8px 24px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.lig-header:hover{background:rgba(255,255,255,.02);}
 .lig-logo{width:18px;height:18px;object-fit:contain;flex-shrink:0;}
-.lig-adi{font-size:12px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lig-adi{font-size:12px;font-weight:700;flex:1;}
 .lig-sayac{font-size:11px;color:var(--muted);}
 .lig-chevron{font-size:10px;color:var(--muted);transition:transform .2s;}
 .lig-header.kapali .lig-chevron{transform:rotate(-90deg);}
-.lig-maclar{display:block;}
 .lig-header.kapali + .lig-maclar{display:none;}
 
-/* MAÇ SATIRI */
-.mac-satir{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(46,46,46,.5);cursor:pointer;transition:background .15s;position:relative;}
+/* MAÇ SATIRI — tablo stili */
+.mac-tablo-header{display:grid;grid-template-columns:80px 1fr 80px 80px 40px;padding:6px 24px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);}
+.mac-satir{display:grid;grid-template-columns:80px 1fr 80px 80px 40px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(46,46,46,.5);cursor:pointer;transition:background .15s;}
 .mac-satir:hover{background:rgba(255,255,255,.02);}
-.mac-satir.hot{border-left:3px solid var(--orange);}
-.mac-zaman{width:52px;flex-shrink:0;text-align:center;}
+.mac-zaman{text-align:center;}
 .mac-zaman .saat{font-size:13px;font-weight:700;}
-.mac-zaman .durum{font-size:10px;}
-.dk-badge{background:rgba(67,160,71,.2);color:var(--green);border-radius:6px;padding:2px 6px;font-size:12px;font-weight:700;display:inline-block;}
-.mac-takimlar{flex:1;min-width:0;}
-.mac-takim{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
-.mac-takim:last-child{margin-bottom:0;}
-.takim-logo{width:16px;height:16px;object-fit:contain;flex-shrink:0;}
-.takim-adi{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mac-zaman .durum{font-size:10px;color:var(--muted);}
+.dk-badge{background:rgba(67,160,71,.2);color:var(--green);border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;display:inline-block;}
+.mac-takimlar{display:flex;flex-direction:column;gap:4px;}
+.mac-takim{display:flex;align-items:center;gap:8px;}
+.takim-logo{width:16px;height:16px;object-fit:contain;}
+.takim-adi{font-size:13px;}
 .takim-adi.kazanan{font-weight:700;color:white;}
-.mac-skor{text-align:center;flex-shrink:0;width:28px;}
-.skor-val{font-size:15px;font-weight:700;color:var(--green);}
+.mac-skor{text-align:center;}
+.skor-val{font-size:14px;font-weight:700;color:var(--green);}
 .skor-val.bitti{color:var(--text);}
-.mac-arrow{color:var(--muted);font-size:14px;}
+.mac-durum-col{text-align:center;font-size:11px;color:var(--muted);}
+.mac-arrow{text-align:center;color:var(--muted);}
 
-/* MAÇ DETAY MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
-.modal-overlay.hidden{display:none;}
-.modal{background:var(--bg);width:100%;max-width:480px;max-height:92vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;}
-.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
-.modal-appbar{background:var(--blue);padding:16px;text-align:center;flex-shrink:0;}
-.modal-lig{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:1px;margin-bottom:10px;}
-.modal-takimlar{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.modal-takim{flex:1;text-align:center;}
-.modal-takim img{width:40px;height:40px;object-fit:contain;}
-.modal-takim-adi{font-size:12px;font-weight:700;color:white;margin-top:6px;}
-.modal-skor-kutu{text-align:center;}
-.modal-dk-badge{background:rgba(67,160,71,.3);color:var(--green);padding:2px 10px;border-radius:8px;font-size:11px;font-weight:700;margin-bottom:6px;display:inline-block;}
-.modal-skor{font-size:48px;font-weight:900;color:var(--green);letter-spacing:6px;line-height:1;}
-.modal-iy{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;}
-.modal-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
-.modal-tab{flex-shrink:0;padding:10px 14px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;}
-.modal-tab.active{color:var(--blue-lt);border-bottom-color:var(--blue-lt);font-weight:700;}
-.modal-body{flex:1;overflow-y:auto;}
-.modal-content{display:none;padding:16px;}.modal-content.active{display:block;}
+/* SAĞ PANEL */
+.right-panel{
+  background:var(--surface);
+  border-left:1px solid var(--border);
+  overflow-y:auto;
+  height:calc(100vh - 60px);
+  position:sticky;top:60px;
+}
+.panel-section{padding:16px;border-bottom:1px solid var(--border);}
+.panel-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;margin-bottom:12px;}
 
-/* ANALİZ KARTLARI */
-.analiz-card{background:linear-gradient(135deg,#0D47A1,#1565C0);border-radius:12px;padding:16px;margin-bottom:12px;}
-.analiz-card-title{font-size:11px;color:rgba(255,255,255,.7);letter-spacing:1px;margin-bottom:12px;font-weight:600;}
-.analiz-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.analiz-stat{text-align:center;}
-.analiz-stat-val{font-size:20px;font-weight:700;}
-.analiz-stat-lbl{font-size:8px;color:rgba(255,255,255,.6);margin-top:2px;letter-spacing:.5px;}
-.olasilik-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
-.olasilik-title{font-size:11px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:10px;}
-.olasilik-vals{display:flex;justify-content:space-between;text-align:center;margin-bottom:8px;}
-.olasilik-val{font-size:18px;font-weight:700;}
-.olasilik-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
-.olasilik-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
-.tahmin-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;}
-.tahmin-header{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
-.tahmin-kat{font-size:12px;font-weight:700;}
-.tahmin-mevcut{font-size:11px;color:var(--muted);margin-left:auto;}
-.tahmin-line{display:flex;align-items:center;gap:8px;}
-.tahmin-tag{padding:4px 10px;border-radius:6px;font-size:14px;font-weight:800;flex-shrink:0;}
-.tahmin-tag.ust{background:rgba(67,160,71,.2);color:var(--green);border:1px solid rgba(67,160,71,.4);}
-.tahmin-tag.alt{background:rgba(229,57,53,.2);color:var(--red);border:1px solid rgba(229,57,53,.4);}
-.tahmin-desc{font-size:11px;color:var(--muted);line-height:1.5;flex:1;}
-.tahmin-guc{font-size:13px;font-weight:700;flex-shrink:0;}
-.genel-yorum{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:8px;}
-.genel-yorum-title{font-size:11px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px;}
-.genel-yorum-text{font-size:12px;color:var(--muted);line-height:1.7;}
-.analiz-footer{text-align:center;margin-top:12px;font-size:10px;color:var(--muted);}
-.otomatik-guncelleme{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;background:rgba(67,160,71,.1);border:1px solid rgba(67,160,71,.3);border-radius:20px;font-size:11px;color:var(--green);font-weight:600;margin-top:8px;}
-.otomatik-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite;}
+/* MAÇ DETAY SAĞ PANEL */
+.match-detail{display:none;}
+.match-detail.active{display:block;}
+.detail-header{background:linear-gradient(135deg,#0D47A1,#1565C0);padding:20px;text-align:center;}
+.detail-lig{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:1px;margin-bottom:10px;}
+.detail-takimlar{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.detail-takim{flex:1;text-align:center;}
+.detail-takim img{width:44px;height:44px;object-fit:contain;}
+.detail-takim-adi{font-size:12px;font-weight:700;color:white;margin-top:6px;}
+.detail-skor-kutu{text-align:center;}
+.detail-dk{background:rgba(67,160,71,.3);color:var(--green);padding:2px 10px;border-radius:8px;font-size:11px;font-weight:700;margin-bottom:6px;display:inline-block;}
+.detail-skor{font-size:44px;font-weight:900;color:var(--green);letter-spacing:6px;line-height:1;}
+.detail-iy{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;}
+.detail-tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto;}
+.detail-tab{flex-shrink:0;padding:10px 14px;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;}
+.detail-tab.active{color:var(--blue-lt);border-bottom-color:var(--blue-lt);font-weight:700;}
+.detail-body{padding:0;}
+.detail-content{display:none;padding:16px;}.detail-content.active{display:block;}
+
+/* ANALİZ */
+.ai-card{background:linear-gradient(135deg,#0D47A1,#0a3d8f);border-radius:10px;padding:14px;margin-bottom:10px;}
+.ai-title{font-size:10px;color:rgba(255,255,255,.7);letter-spacing:1px;margin-bottom:10px;font-weight:600;}
+.ai-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.ai-stat{text-align:center;}
+.ai-val{font-size:18px;font-weight:700;}
+.ai-lbl{font-size:8px;color:rgba(255,255,255,.6);margin-top:1px;letter-spacing:.5px;}
+.olas-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;}
+.olas-title{font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px;}
+.olas-vals{display:flex;justify-content:space-between;text-align:center;margin-bottom:6px;}
+.olas-val{font-size:16px;font-weight:700;}
+.olas-lbl{font-size:9px;color:var(--muted);margin-top:1px;}
+.olas-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.tahmin-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:6px;}
+.tahmin-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.tahmin-kat{font-size:11px;font-weight:700;}
+.tahmin-cur{font-size:10px;color:var(--muted);margin-left:auto;}
+.tahmin-line{display:flex;align-items:center;gap:6px;}
+.t-tag{padding:3px 8px;border-radius:5px;font-size:12px;font-weight:800;flex-shrink:0;}
+.t-tag.u{background:rgba(67,160,71,.2);color:var(--green);border:1px solid rgba(67,160,71,.4);}
+.t-tag.a{background:rgba(229,57,53,.2);color:var(--red);border:1px solid rgba(229,57,53,.4);}
+.tahmin-desc{font-size:10px;color:var(--muted);line-height:1.4;flex:1;}
+.tahmin-guc{font-size:12px;font-weight:700;flex-shrink:0;}
 
 /* İSTATİSTİK */
-.istat-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid rgba(46,46,46,.5);}
-.istat-header{display:flex;justify-content:space-between;padding:0 0 10px;font-size:12px;font-weight:700;}
-.istat-ev{font-size:13px;font-weight:700;color:var(--blue-lt);width:44px;text-align:right;}
-.istat-lbl{flex:1;text-align:center;font-size:11px;color:var(--muted);}
-.istat-dep{font-size:13px;font-weight:700;color:var(--red);width:44px;}
-.istat-bar-wrap{position:absolute;left:60px;right:60px;height:3px;background:var(--border);border-radius:2px;bottom:4px;}
+.istat-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(46,46,46,.5);}
+.istat-ev{font-size:12px;font-weight:700;color:var(--blue-lt);width:40px;text-align:right;}
+.istat-lbl{flex:1;text-align:center;font-size:10px;color:var(--muted);}
+.istat-dep{font-size:12px;font-weight:700;color:var(--red);width:40px;}
 
-/* LOADING/ERROR */
-.loading{text-align:center;padding:40px 16px;color:var(--muted);}
-.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--blue-lt);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;}
-.error-msg{text-align:center;padding:24px;color:var(--red);font-size:12px;}
-.empty-msg{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--muted);}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--blue-lt);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px;}
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+.error{text-align:center;padding:20px;color:var(--red);font-size:12px;}
 
-/* LANDING */
-.landing{padding:32px 20px;text-align:center;}
-.landing-logo{margin-bottom:24px;}
-.landing-logo .ai{font-style:italic;font-size:56px;font-weight:300;color:var(--gold-lt);}
-.landing-logo .alysis{font-size:56px;font-weight:900;color:white;letter-spacing:-3px;}
-.landing-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:32px;}
-.landing-btn{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1a1a2e;padding:14px 32px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
-.download-section{margin-top:40px;}
-.download-title{font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:16px;}
-.download-btn{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 20px;text-decoration:none;color:var(--text);margin-bottom:10px;transition:border-color .2s;}
-.download-btn:hover{border-color:var(--gold-lt);}
-.download-icon{font-size:28px;}
-.download-text small{font-size:10px;color:var(--muted);display:block;}
-.download-text strong{font-size:14px;}
+/* AIalysis tab */
+.aialysis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:20px 24px;}
+.aia-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;}
+.aia-card:hover{border-color:rgba(200,151,26,.4);transform:translateY(-2px);}
+.aia-lig{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.aia-lig img{width:14px;height:14px;object-fit:contain;}
+.aia-lig span{font-size:10px;color:var(--muted);}
+.aia-etiket{margin-left:auto;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,109,0,.15);color:var(--orange);border:1px solid rgba(255,109,0,.3);}
+.aia-maclar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.aia-takim{text-align:center;flex:1;}
+.aia-takim img{width:36px;height:36px;object-fit:contain;}
+.aia-takim-adi{font-size:11px;font-weight:700;margin-top:4px;}
+.aia-skor{text-align:center;padding:0 12px;}
+.aia-dk{background:rgba(67,160,71,.2);color:var(--green);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;margin-bottom:4px;display:inline-block;}
+.aia-score{font-size:26px;font-weight:900;color:var(--green);letter-spacing:4px;}
+.aia-tahminler{display:flex;gap:5px;flex-wrap:wrap;}
+.aia-t{background:rgba(67,160,71,.1);border:1px solid rgba(67,160,71,.3);border-radius:5px;padding:2px 7px;font-size:10px;color:var(--green);font-weight:700;}
 
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Scrollbar */
-::-webkit-scrollbar{width:4px;}.content::-webkit-scrollbar-track{background:transparent;}.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+/* Responsive */
+@media(max-width:1200px){.layout{grid-template-columns:var(--sidebar) 1fr;}.right-panel{display:none;}}
+@media(max-width:768px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.navbar{padding:0 16px;}}
+::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="layout">
 
-  <!-- APPBAR -->
-  <div class="appbar">
-    <div class="appbar-top">
-      <div class="logo"><span class="ai">ai</span><span class="alysis">ALYSIS</span></div>
-      <div class="appbar-actions">
-        <div class="live-btn" id="liveBtnEl" onclick="toggleCanli()">
-          <div class="dot" id="liveDotEl"></div>
-          <span id="liveBtnText">CANLI</span>
-        </div>
-        <button class="icon-btn" onclick="showPage('maclar')" title="Maçlar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </button>
-        <button class="icon-btn" onclick="showPage('landing')" title="Ana Sayfa">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-        </button>
-      </div>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo"><span class="ai">ai</span><span class="alysis">ALYSIS</span></div>
+    <div class="nav-live" id="liveBtnEl" onclick="toggleCanli()">
+      <div class="dot"></div>
+      <span>CANLI</span>
     </div>
-    <div class="tabs">
-      <div class="tab active" onclick="showMainTab('maclar')" id="tab-maclar">
-        <span class="tab-icon">⚽</span>Maçlar
-      </div>
-      <div class="tab" onclick="showMainTab('aialysis')" id="tab-aialysis">
-        <span class="tab-icon">✦</span><span style="font-style:italic;color:var(--gold-lt)">ai</span>ALYSIS
-      </div>
+    <div class="nav-search">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Takım veya lig ara..." oninput="aramaYap(this.value)">
     </div>
-  </div>
-
-  <!-- CONTENT -->
-  <div class="content">
-
-    <!-- LANDING PAGE -->
-    <div class="page" id="page-landing">
-      <div class="landing">
-        <div class="landing-logo">
-          <span class="ai">ai</span><span class="alysis">ALYSIS</span>
-        </div>
-        <p class="landing-sub">Yapay zeka ile canlı maç analizi. Bahis tahminleri, oyuncu performansları ve gerçek zamanlı istatistikler.</p>
-        <button class="landing-btn" onclick="showMainTab('maclar')">⚽ Canlı Maçları Gör</button>
-        <div class="download-section">
-          <div class="download-title">UYGULAMAYI İNDİR</div>
-          <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.0.0/app-release.apk" class="download-btn">
-            <span class="download-icon">🤖</span>
-            <div class="download-text"><small>İndir</small><strong>Android APK</strong></div>
-          </a>
-          <a href="#" class="download-btn">
-            <span class="download-icon">🍎</span>
-            <div class="download-text"><small>Yakında</small><strong>iOS App</strong></div>
-          </a>
-        </div>
-      </div>
+    <div class="nav-links">
+      <button class="nav-btn active" onclick="showMainTab('maclar')" id="nav-maclar">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Maçlar
+      </button>
+      <button class="nav-btn" onclick="showMainTab('aialysis')" id="nav-aialysis">
+        ✦ aiALYSIS
+      </button>
+      <button class="nav-btn" onclick="showMainTab('dashboard')" id="nav-dashboard">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Performans
+      </button>
     </div>
+    <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.0.0/app-release.apk" 
+       style="background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1a1a2e;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;margin-left:8px;white-space:nowrap;">
+      📱 İndir
+    </a>
+  </nav>
 
-    <!-- MAÇLAR PAGE -->
-    <div class="page active" id="page-maclar">
-      <!-- Arama kutusu -->
-      <div id="aramaKutu" style="display:none;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border)">
-        <input id="aramaInput" type="text" placeholder="Takım veya lig ara..." 
-          oninput="aramaYap(this.value)"
-          style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none"/>
-      </div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
       <div class="date-nav">
         <button class="date-btn" onclick="tarihDegistir(-1)">‹</button>
         <div class="date-label" id="dateLabelEl">...</div>
         <button class="date-btn" onclick="tarihDegistir(1)">›</button>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">HIZLI ERİŞİM</div>
+      <div class="sidebar-item active" onclick="showMainTab('maclar')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Tüm Maçlar
+      </div>
+      <div class="sidebar-item" onclick="toggleCanli()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg> Canlı Maçlar
+      </div>
+      <div class="sidebar-item" onclick="showMainTab('aialysis')">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> aiALYSIS
+      </div>
+      <div class="sidebar-item" onclick="showMainTab('dashboard')">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Performans
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">POPÜLER LİGLER</div>
+      <div class="sidebar-item" onclick="aramaYap('Turkey | Süper')">🇹🇷 Süper Lig</div>
+      <div class="sidebar-item" onclick="aramaYap('Premier League')">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</div>
+      <div class="sidebar-item" onclick="aramaYap('La Liga')">🇪🇸 La Liga</div>
+      <div class="sidebar-item" onclick="aramaYap('Bundesliga')">🇩🇪 Bundesliga</div>
+      <div class="sidebar-item" onclick="aramaYap('Serie A')">🇮🇹 Serie A</div>
+      <div class="sidebar-item" onclick="aramaYap('Ligue 1')">🇫🇷 Ligue 1</div>
+      <div class="sidebar-item" onclick="aramaYap('Champions League')">🏆 Şampiyonlar Ligi</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- MAÇLAR -->
+    <div class="page active" id="page-maclar">
+      <div class="matches-header">
+        <div>
+          <div class="matches-title" id="matchesTitle">Maçlar</div>
+          <div class="matches-count" id="matchesCount">Yükleniyor...</div>
+        </div>
       </div>
       <div id="maclarContainer">
         <div class="loading"><div class="spinner"></div>Yükleniyor...</div>
       </div>
     </div>
 
-    <!-- DASHBOARD PAGE -->
-    <div class="page" id="page-dashboard">
-      <div style="padding:16px">
-        <div style="font-size:18px;font-weight:700;margin-bottom:16px">📈 Tahmin Performansı</div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;margin-bottom:12px">
-          <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">GENEL DOĞRULUK</div>
-          <div style="font-size:48px;font-weight:900;color:var(--green)">--%</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">Henüz yeterli veri yok</div>
-        </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px">
-          <div style="font-size:12px;color:var(--muted);text-align:center;padding:20px">Tahmin geçmişi burada görünecek</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROFİL PAGE -->
-    <div class="page" id="page-profil">
-      <div style="padding:16px;text-align:center">
-        <div style="width:80px;height:80px;background:var(--card);border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;border:2px solid var(--border)">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <div style="font-size:16px;font-weight:700;margin-bottom:4px">Misafir</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:24px">Giriş yapılmadı</div>
-        <a href="#" style="display:inline-block;background:var(--blue);color:white;padding:12px 32px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700">Giriş Yap</a>
-      </div>
-    </div>
-
-    <!-- AIalysis PAGE -->
+    <!-- AIalysis -->
     <div class="page" id="page-aialysis">
-      <div style="padding:16px">
-        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">AI analiz edilmiş canlı maçlar</div>
-        <div id="aialysisContainer">
-          <div class="loading"><div class="spinner"></div>Canlı maçlar analiz ediliyor...</div>
+      <div class="matches-header">
+        <div>
+          <div class="matches-title">✦ aiALYSIS</div>
+          <div class="matches-count">AI analiz edilmiş canlı maçlar</div>
+        </div>
+      </div>
+      <div class="aialysis-grid" id="aialysisContainer">
+        <div class="loading"><div class="spinner"></div>Yükleniyor...</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page" id="page-dashboard">
+      <div class="matches-header">
+        <div class="matches-title">📈 Tahmin Performansı</div>
+      </div>
+      <div style="padding:0 24px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center">
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">GENEL DOĞRULUK</div>
+            <div style="font-size:48px;font-weight:900;color:var(--green)">--%</div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center">
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">TOPLAM TAHMİN</div>
+            <div style="font-size:48px;font-weight:900;color:var(--blue-lt)">0</div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center">
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">DOĞRU TAHMİN</div>
+            <div style="font-size:48px;font-weight:900;color:var(--gold-lt)">0</div>
+          </div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;color:var(--muted);font-size:14px">
+          Tahmin geçmişi burada görünecek
         </div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /app -->
+  </main>
 
-<!-- MAÇ DETAY MODAL -->
-<div class="modal-overlay hidden" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-appbar" id="modalAppbar"></div>
-    <div class="modal-tabs" id="modalTabsEl">
-      <div class="modal-tab active" onclick="switchModalTab('analiz')">✦ AIalysis</div>
-      <div class="modal-tab" onclick="switchModalTab('istat')">İstatistik</div>
-      <div class="modal-tab" onclick="switchModalTab('kadro')">Kadro</div>
-      <div class="modal-tab" onclick="switchModalTab('h2h')">Karşılaştırma</div>
+  <!-- SAĞ PANEL — Maç Detay -->
+  <aside class="right-panel">
+    <div id="defaultPanel" class="panel-section">
+      <div class="panel-title">MAÇ SEÇ</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6">Bir maça tıkla, AI analizi ve istatistikleri burada görün.</div>
     </div>
-    <div class="modal-body">
-      <div class="modal-content active" id="mc-analiz"></div>
-      <div class="modal-content" id="mc-istat"></div>
-      <div class="modal-content" id="mc-kadro"></div>
-      <div class="modal-content" id="mc-h2h"></div>
+    <div id="matchDetail" class="match-detail">
+      <div class="detail-header" id="detailHeader"></div>
+      <div class="detail-tabs" id="detailTabsEl">
+        <div class="detail-tab active" onclick="switchDetailTab('analiz')">✦ AIalysis</div>
+        <div class="detail-tab" onclick="switchDetailTab('istat')">İstatistik</div>
+        <div class="detail-tab" onclick="switchDetailTab('kadro')">Kadro</div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-content active" id="dc-analiz"></div>
+        <div class="detail-content" id="dc-istat"></div>
+        <div class="detail-content" id="dc-kadro"></div>
+      </div>
     </div>
-  </div>
-</div>
+  </aside>
+
+</div><!-- /layout -->
 
 <script>
-const AK = '6c9c09e4ce575757e5e725aa07c977b0';
-const AB = 'https://v3.football.api-sports.io';
-const SU = 'https://fohmlwoewjupceznwmdr.supabase.co';
-const SK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4';
+const AK='6c9c09e4ce575757e5e725aa07c977b0';
+const AB='https://v3.football.api-sports.io';
+const SU='https://fohmlwoewjupceznwmdr.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4';
 
-let tarih = new Date();
-let canliMod = false;
-let maclar = [];
-let currentMac = null;
-let analizTimer = null;
+let tarih=new Date(), canliMod=false, maclar=[], currentMac=null, detailTimer=null;
 
-// Lig öncelik
-function ligOncelik(s) {
-  s = s.toLowerCase();
-  if (s.includes('women')||s.includes('ladies')||s.includes('female')) return 500;
-  if (s.includes(' u16')||s.includes(' u17')||s.includes(' u18')||s.includes(' u19')||
-      s.includes(' u20')||s.includes(' u21')||s.includes(' u23')||
-      s.includes('u-17')||s.includes('u-18')||s.includes('u-19')||s.includes('u-21')) return 400;
-  if (s.includes('youth')) return 450;
-  if (s.includes('reserve')||s.includes('amateur')) return 300;
-  if (s.includes('turkey') && (s.includes('süper')||s.includes('super'))) return 20000;
-  if (s.includes('turkey') && s.includes('tff')) return 19800;
-  if (s.includes('turkey') && s.includes('cup')) return 19700;
-  if (s.includes('turkey') && s.includes('1. lig')) return 9300;
-  if (s.includes('turkey') && s.includes('2. lig')) return 9200;
-  if (s.includes('turkey') && s.includes('3. lig')) return 9100;
-  if (s.includes('turkey')) return 9000;
-  if (s.includes('champions league') && !s.includes('concacaf') && !s.includes('caf')) return 18000;
-  if (s.includes('europa league') && !s.includes('conference')) return 17900;
-  if (s.includes('conference league')) return 17800;
-  if (s.includes('nations league')) return 17700;
-  if (s.includes('premier league') && s.includes('england')) return 16000;
-  if (s.includes('la liga')) return 15900;
-  if (s.includes('bundesliga') && s.includes('germany')) return 15800;
-  if (s.includes('serie a') && s.includes('italy')) return 15700;
-  if (s.includes('ligue 1')) return 15600;
-  if (s.includes('eredivisie')) return 15500;
-  if (s.includes('mls')) return 14800;
-  if (s.includes('concacaf')) return 1500;
-  if (s.includes('caf')) return 1400;
-  if (s.includes('friendl')) return 600;
+function pad2(n){return String(n).padStart(2,'0');}
+function fmtApi(d){return`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;}
+function fmtTR(d){return`${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`;}
+
+function ligOncelik(s){
+  s=s.toLowerCase();
+  if(s.includes('women')||s.includes('ladies')||s.includes('female')) return 500;
+  if(s.match(/\bu(16|17|18|19|20|21|23)\b/)) return 400;
+  if(s.includes('youth')) return 450;
+  if(s.includes('reserve')||s.includes('amateur')) return 300;
+  if(s.includes('turkey')&&(s.includes('süper')||s.includes('super'))) return 20000;
+  if(s.includes('turkey')&&s.includes('tff')) return 19800;
+  if(s.includes('turkey')&&s.includes('cup')) return 19700;
+  if(s.includes('turkey')&&s.includes('1. lig')) return 9300;
+  if(s.includes('turkey')&&s.includes('2. lig')) return 9200;
+  if(s.includes('turkey')&&s.includes('3. lig')) return 9100;
+  if(s.includes('turkey')) return 9000;
+  if(s.includes('champions league')&&!s.includes('concacaf')&&!s.includes('caf')) return 18000;
+  if(s.includes('europa league')&&!s.includes('conference')) return 17900;
+  if(s.includes('conference league')) return 17800;
+  if(s.includes('premier league')&&s.includes('england')) return 16000;
+  if(s.includes('la liga')) return 15900;
+  if(s.includes('bundesliga')&&s.includes('germany')) return 15800;
+  if(s.includes('serie a')&&s.includes('italy')) return 15700;
+  if(s.includes('ligue 1')) return 15600;
+  if(s.includes('eredivisie')) return 15500;
+  if(s.includes('mls')) return 14800;
+  if(s.includes('concacaf')) return 1500;
+  if(s.includes('caf')) return 1400;
+  if(s.includes('friendl')) return 600;
   return 5000;
 }
 
-function pad2(n) { return String(n).padStart(2,'0'); }
-function fmtApi(d) { return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-function fmtTR(d) { return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`; }
-
-async function apiFetch(ep) {
-  const r = await fetch(AB+ep, {headers:{'x-rapidapi-key':AK,'x-rapidapi-host':'v3.football.api-sports.io'}});
+async function apiFetch(ep){
+  const r=await fetch(AB+ep,{headers:{'x-rapidapi-key':AK,'x-rapidapi-host':'v3.football.api-sports.io'}});
   return r.json();
 }
 
-// Tarih güncelle
-function tarihDegistir(fark) {
-  tarih = new Date(tarih.getTime() + fark * 86400000);
-  canliMod = false;
+function tarihDegistir(f){
+  tarih=new Date(tarih.getTime()+f*86400000);
+  canliMod=false;
   document.getElementById('liveBtnEl').classList.remove('active');
   loadMaclar();
 }
 
-function toggleCanli() {
-  canliMod = !canliMod;
-  const btn = document.getElementById('liveBtnEl');
-  btn.classList.toggle('active', canliMod);
+function toggleCanli(){
+  canliMod=!canliMod;
+  document.getElementById('liveBtnEl').classList.toggle('active',canliMod);
   loadMaclar();
 }
 
-function updateDateLabel() {
-  document.getElementById('dateLabelEl').textContent = fmtTR(tarih);
-}
-
-async function loadMaclar() {
-  updateDateLabel();
-  const c = document.getElementById('maclarContainer');
-  c.innerHTML = '<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';
-  try {
-    let liste = [];
-    if (canliMod) {
-      const d = await apiFetch('/fixtures?live=all');
-      liste = d.response || [];
+async function loadMaclar(){
+  document.getElementById('dateLabelEl').textContent=fmtTR(tarih);
+  const c=document.getElementById('maclarContainer');
+  c.innerHTML='<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';
+  try{
+    let liste=[];
+    if(canliMod){
+      const d=await apiFetch('/fixtures?live=all');
+      liste=d.response||[];
+      document.getElementById('matchesTitle').textContent='🔴 Canlı Maçlar';
     } else {
-      const offset = new Date().getTimezoneOffset() / -60;
-      const [bugun, dun, yarin] = await Promise.all([
+      const offset=new Date().getTimezoneOffset()/-60;
+      const [bugun,dun,yarin]=await Promise.all([
         apiFetch(`/fixtures?date=${fmtApi(tarih)}`),
         apiFetch(`/fixtures?date=${fmtApi(new Date(tarih.getTime()-86400000))}`),
         apiFetch(`/fixtures?date=${fmtApi(new Date(tarih.getTime()+86400000))}`)
       ]);
-      const dunGece = (dun.response||[]).filter(m => {
-        const utcH = new Date(m.fixture.date).getUTCHours();
-        return (utcH + offset) >= 24;
-      });
-      const yarinErken = (yarin.response||[]).filter(m => {
-        const utcH = new Date(m.fixture.date).getUTCHours();
-        const localH = utcH + offset;
-        return localH >= 0 && localH < 24 && utcH < 6;
-      });
-      liste = [...dunGece, ...(bugun.response||[]), ...yarinErken];
+      const dunGece=(dun.response||[]).filter(m=>{const h=new Date(m.fixture.date).getUTCHours();return(h+offset)>=24;});
+      const yarinErken=(yarin.response||[]).filter(m=>{const h=new Date(m.fixture.date).getUTCHours();const lh=h+offset;return lh>=0&&lh<24&&h<6;});
+      liste=[...dunGece,...(bugun.response||[]),...yarinErken];
+      document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
     }
-    maclar = liste;
+    maclar=liste;
+    document.getElementById('matchesCount').textContent=`${liste.length} maç`;
     renderMaclar(liste);
-  } catch(e) {
-    c.innerHTML = '<div class="error-msg">Bağlantı hatası. Lütfen tekrar deneyin.</div>';
+  }catch(e){
+    c.innerHTML='<div class="error">Bağlantı hatası.</div>';
   }
 }
 
-function renderMaclar(liste) {
-  const c = document.getElementById('maclarContainer');
-  if (!liste.length) { c.innerHTML = '<div class="empty-msg">Bu tarihte maç bulunamadı.</div>'; return; }
-
-  const groups = {};
-  liste.forEach(m => {
-    const k = `${m.league.country} | ${m.league.name}`;
-    if (!groups[k]) groups[k] = {l:m.league, ms:[]};
-    groups[k].ms.push(m);
+function renderMaclar(liste){
+  const c=document.getElementById('maclarContainer');
+  if(!liste.length){c.innerHTML='<div class="empty">Bu tarihte maç bulunamadı.</div>';return;}
+  const gr={};
+  liste.forEach(m=>{
+    const k=`${m.league.country} | ${m.league.name}`;
+    if(!gr[k])gr[k]={l:m.league,ms:[]};
+    gr[k].ms.push(m);
   });
-
-  const sorted = Object.entries(groups).sort((a,b) => ligOncelik(b[0])-ligOncelik(a[0]));
-
-  c.innerHTML = sorted.map(([k,{l,ms}]) => `
+  const sorted=Object.entries(gr).sort((a,b)=>ligOncelik(b[0])-ligOncelik(a[0]));
+  c.innerHTML=sorted.map(([k,{l,ms}])=>`
     <div class="lig-grup">
       <div class="lig-header" onclick="this.classList.toggle('kapali')">
         <img class="lig-logo" src="${l.logo||''}" onerror="this.style.display='none'">
@@ -432,396 +449,210 @@ function renderMaclar(liste) {
         <span class="lig-sayac">${ms.length} maç</span>
         <span class="lig-chevron">▾</span>
       </div>
-      <div class="lig-maclar">${ms.map(m => macSatir(m)).join('')}</div>
+      <div class="lig-maclar">${ms.map(m=>macSatir(m)).join('')}</div>
+    </div>`).join('');
+}
+
+function macSatir(m){
+  const ev=m.goals.home??'-',dep=m.goals.away??'-';
+  const dk=m.fixture.status.elapsed,st=m.fixture.status.short;
+  const live=['1H','HT','2H','ET','P'].includes(st);
+  const bitti=['FT','AET','PEN'].includes(st);
+  const localSaat=new Date(m.fixture.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const durumStr=live?`<span class="dk-badge">${dk}'</span>`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
+  return`<div class="mac-satir" onclick="openMac(${m.fixture.id})">
+    <div class="mac-zaman"><div class="saat">${localSaat}</div><div class="durum">${durumStr}</div></div>
+    <div class="mac-takimlar">
+      <div class="mac-takim"><img class="takim-logo" src="${m.teams.home.logo}" onerror="this.style.display='none'"><span class="takim-adi ${live&&ev>dep?'kazanan':''}">${m.teams.home.name}</span></div>
+      <div class="mac-takim"><img class="takim-logo" src="${m.teams.away.logo}" onerror="this.style.display='none'"><span class="takim-adi ${live&&dep>ev?'kazanan':''}">${m.teams.away.name}</span></div>
     </div>
-  `).join('');
+    <div class="mac-skor"><div class="skor-val ${bitti?'bitti':''}">${ev}</div><div class="skor-val ${bitti?'bitti':''}">${dep}</div></div>
+    <div class="mac-durum-col">${m.league.name.substring(0,14)}</div>
+    <div class="mac-arrow">›</div>
+  </div>`;
 }
 
-function macSatir(m) {
-  const ev = m.goals.home ?? '-', dep = m.goals.away ?? '-';
-  const dk = m.fixture.status.elapsed;
-  const st = m.fixture.status.short;
-  const live = ['1H','HT','2H','ET','P'].includes(st);
-  const bitti = ['FT','AET','PEN'].includes(st);
-  const localSaat = new Date(m.fixture.date).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+function aramaYap(q){
+  if(!q.trim()){renderMaclar(maclar);return;}
+  const fl=maclar.filter(m=>
+    m.teams.home.name.toLowerCase().includes(q.toLowerCase())||
+    m.teams.away.name.toLowerCase().includes(q.toLowerCase())||
+    m.league.name.toLowerCase().includes(q.toLowerCase())||
+    m.league.country.toLowerCase().includes(q.toLowerCase())
+  );
+  renderMaclar(fl);
+  showMainTab('maclar');
+}
 
-  const durumRenk = live ? 'var(--green)' : bitti ? 'var(--muted)' : 'var(--blue-lt)';
-  const durumTR = live ? `<span class="dk-badge">${dk}'</span>` :
-    bitti ? `<span style="color:var(--muted);font-size:10px">MS</span>` :
-    `<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
-
-  return `
-    <div class="mac-satir" onclick="openMac(${m.fixture.id})">
-      <div class="mac-zaman">
-        <div class="saat">${localSaat}</div>
-        <div class="durum">${durumTR}</div>
-      </div>
-      <div class="mac-takimlar">
-        <div class="mac-takim">
-          <img class="takim-logo" src="${m.teams.home.logo}" onerror="this.style.display='none'">
-          <span class="takim-adi ${live&&ev>dep?'kazanan':''}">${m.teams.home.name}</span>
-        </div>
-        <div class="mac-takim">
-          <img class="takim-logo" src="${m.teams.away.logo}" onerror="this.style.display='none'">
-          <span class="takim-adi ${live&&dep>ev?'kazanan':''}">${m.teams.away.name}</span>
-        </div>
-      </div>
-      <div class="mac-skor">
-        <div class="skor-val ${bitti?'bitti':''}">${ev}</div>
-        <div class="skor-val ${bitti?'bitti':''}">${dep}</div>
-      </div>
-      <span class="mac-arrow">›</span>
+async function openMac(id){
+  const m=maclar.find(x=>x.fixture.id===id);
+  if(!m)return;
+  currentMac=m;
+  document.getElementById('defaultPanel').style.display='none';
+  document.getElementById('matchDetail').classList.add('active');
+  const ev=m.goals.home??0,dep=m.goals.away??0,dk=m.fixture.status.elapsed;
+  const localSaat=new Date(m.fixture.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('detailHeader').innerHTML=`
+    <div class="detail-lig">${m.league.country} | ${m.league.name} · ${localSaat}</div>
+    <div class="detail-takimlar">
+      <div class="detail-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain"><div class="detail-takim-adi">${m.teams.home.name}</div></div>
+      <div class="detail-skor-kutu">${dk?`<div class="detail-dk">${dk}'</div>`:''}<div class="detail-skor">${ev} - ${dep}</div><div class="detail-iy">IY ${m.score.halftime.home??0}-${m.score.halftime.away??0}</div></div>
+      <div class="detail-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain"><div class="detail-takim-adi">${m.teams.away.name}</div></div>
     </div>`;
+  document.querySelectorAll('.detail-content').forEach(c=>{c.innerHTML='<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';c.classList.remove('active');});
+  document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.getElementById('dc-analiz').classList.add('active');
+  if(detailTimer)clearInterval(detailTimer);
+  loadDetailAnaliz(m);
+  loadDetailIstat(m.fixture.id);
+  loadDetailKadro(m.fixture.id);
+  const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
+  if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac);loadDetailIstat(id);}},30000);}
 }
 
-async function openMac(id) {
-  const m = maclar.find(x => x.fixture.id === id);
-  if (!m) return;
-  currentMac = m;
-
-  document.getElementById('modalOverlay').classList.remove('hidden');
-  const ev = m.goals.home ?? 0, dep = m.goals.away ?? 0;
-  const dk = m.fixture.status.elapsed;
-  const localSaat = new Date(m.fixture.date).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-
-  document.getElementById('modalAppbar').innerHTML = `
-    <div class="modal-lig">${m.league.country} | ${m.league.name} · ${localSaat}</div>
-    <div class="modal-takimlar">
-      <div class="modal-takim">
-        <img src="${m.teams.home.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain">
-        <div class="modal-takim-adi">${m.teams.home.name}</div>
-      </div>
-      <div class="modal-skor-kutu">
-        ${dk ? `<div class="modal-dk-badge">${dk}'</div>` : ''}
-        <div class="modal-skor">${ev} - ${dep}</div>
-        <div class="modal-iy">IY ${m.score.halftime.home??0}-${m.score.halftime.away??0}</div>
-      </div>
-      <div class="modal-takim">
-        <img src="${m.teams.away.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain">
-        <div class="modal-takim-adi">${m.teams.away.name}</div>
-      </div>
-    </div>`;
-
-  document.querySelectorAll('.modal-content').forEach(c => { c.innerHTML = '<div class="loading"><div class="spinner"></div>Yükleniyor...</div>'; c.classList.remove('active'); });
-  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', i===0));
-  document.getElementById('mc-analiz').classList.add('active');
-
-  // Timer temizle
-  if (analizTimer) clearInterval(analizTimer);
-
-  // Paralel yükle
-  loadAnaliz(m);
-  loadIstat(m.fixture.id);
-  loadKadro(m.fixture.id, m);
-
-  // Canlıysa 60s'de bir yenile
-  const live = ['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
-  if (live) {
-    analizTimer = setInterval(() => {
-      if (currentMac && currentMac.fixture.id === id) {
-        loadAnaliz(currentMac);
-        loadIstat(id);
-      }
-    }, 60000);
-  }
-}
-
-async function loadAnaliz(m) {
-  try {
-    // Önce istatistikleri çek
-    const istatResp = await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
-    const istatlar = {};
-    (istatResp.response || []).forEach((team, idx) => {
-      const prefix = idx === 0 ? 'ev' : 'dep';
-      (team.statistics || []).forEach(s => {
-        istatlar[prefix + '_' + s.type] = s.value;
-      });
-    });
-
-    const r = await fetch(`${SU}/functions/v1/analiz`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
-      body: JSON.stringify({
-        macBilgi: {
-          evSahibi: m.teams.home.name,
-          deplasman: m.teams.away.name,
-          evGol: m.goals.home ?? 0,
-          depGol: m.goals.away ?? 0,
-          evGolIY: m.score.halftime.home ?? 0,
-          depGolIY: m.score.halftime.away ?? 0,
-          durum: m.fixture.status.short,
-          elapsed: m.fixture.status.elapsed ?? 0
-        },
-        istatistikler: istatlar,
-        h2h: [], evForm: [], depForm: [], oyuncular: []
-      })
-    });
-    const d = await r.json();
-    if (d.basarili) renderAnaliz(d.analiz, m);
+async function loadDetailAnaliz(m){
+  try{
+    const ir=await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
+    const ist={};
+    (ir.response||[]).forEach((t,i)=>{const p=i===0?'ev':'dep';(t.statistics||[]).forEach(s=>{ist[p+'_'+s.type]=s.value;});});
+    const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
+      body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score.halftime.home??0,depGolIY:m.score.halftime.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0},istatistikler:ist,h2h:[],evForm:[],depForm:[],oyuncular:[]})});
+    const d=await r.json();
+    if(d.basarili)renderDetailAnaliz(d.analiz,m);
     else throw new Error(d.hata);
-  } catch(e) {
-    document.getElementById('mc-analiz').innerHTML = `<div class="error-msg">Analiz hatası: ${e.message}</div>`;
-  }
+  }catch(e){document.getElementById('dc-analiz').innerHTML=`<div class="error">Analiz hatası: ${e.message}</div>`;}
 }
 
-function renderAnaliz(a, m) {
-  const t = a.tahminler || [];
-  const o = a.olasiliklar || {};
-  const live = ['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
-
-  document.getElementById('mc-analiz').innerHTML = `
-    <div class="analiz-card">
-      <div class="analiz-card-title">✦ AI MAÇ ANALİZİ — %${a.tahmin_guveni||0} GÜVEN</div>
-      <div class="analiz-grid">
-        <div class="analiz-stat"><div class="analiz-stat-val" style="color:var(--blue-lt)">${a.skor_tahmini?.ev??0}</div><div class="analiz-stat-lbl">EV SKORU</div></div>
-        <div class="analiz-stat"><div class="analiz-stat-val" style="color:var(--red)">${a.skor_tahmini?.dep??0}</div><div class="analiz-stat-lbl">DEP SKORU</div></div>
-        <div class="analiz-stat"><div class="analiz-stat-val" style="color:var(--yellow)">${a.gol_beklentisi??0}</div><div class="analiz-stat-lbl">GOL BEK.</div></div>
-        <div class="analiz-stat"><div class="analiz-stat-val" style="color:var(--green);font-size:12px">${a.mac_temposu||'-'}</div><div class="analiz-stat-lbl">TEMPO</div></div>
+function renderDetailAnaliz(a,m){
+  const t=a.tahminler||[],o=a.olasiliklar||{};
+  const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
+  document.getElementById('dc-analiz').innerHTML=`
+    <div style="padding:16px">
+    <div class="ai-card">
+      <div class="ai-title">✦ AI ANALİZİ — %${a.tahmin_guveni||0} GÜVEN</div>
+      <div class="ai-grid">
+        <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${a.skor_tahmini?.ev??0}</div><div class="ai-lbl">EV SKORU</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${a.skor_tahmini?.dep??0}</div><div class="ai-lbl">DEP SKORU</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--yellow)">${a.gol_beklentisi??0}</div><div class="ai-lbl">GOL BEK.</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--green);font-size:11px">${a.mac_temposu||'-'}</div><div class="ai-lbl">TEMPO</div></div>
       </div>
     </div>
-    <div class="olasilik-card">
-      <div class="olasilik-title">SONUÇ OLASILIĞI</div>
-      <div class="olasilik-vals">
-        <div><div class="olasilik-val" style="color:var(--blue-lt)">${o.ev_kazanir||0}%</div><div class="olasilik-lbl">${m.teams.home.name.substring(0,12)}</div></div>
-        <div><div class="olasilik-val" style="color:var(--muted)">${o.beraberlik||0}%</div><div class="olasilik-lbl">Beraberlik</div></div>
-        <div><div class="olasilik-val" style="color:var(--red)">${o.dep_kazanir||0}%</div><div class="olasilik-lbl">${m.teams.away.name.substring(0,12)}</div></div>
+    <div class="olas-card">
+      <div class="olas-title">SONUÇ OLASILIĞI</div>
+      <div class="olas-vals">
+        <div><div class="olas-val" style="color:var(--blue-lt)">${o.ev_kazanir||0}%</div><div class="olas-lbl">${m.teams.home.name.substring(0,10)}</div></div>
+        <div><div class="olas-val" style="color:var(--muted)">${o.beraberlik||0}%</div><div class="olas-lbl">Beraberlik</div></div>
+        <div><div class="olas-val" style="color:var(--red)">${o.dep_kazanir||0}%</div><div class="olas-lbl">${m.teams.away.name.substring(0,10)}</div></div>
       </div>
-      <div class="olasilik-bar">
-        <div style="height:100%;background:linear-gradient(90deg,var(--blue-lt) ${o.ev_kazanir||0}%,#444 ${o.ev_kazanir||0}% ${100-(o.dep_kazanir||0)}%,var(--red) ${100-(o.dep_kazanir||0)}%)"></div>
-      </div>
+      <div class="olas-bar"><div style="height:100%;background:linear-gradient(90deg,var(--blue-lt) ${o.ev_kazanir||0}%,#444 ${o.ev_kazanir||0}% ${100-(o.dep_kazanir||0)}%,var(--red) ${100-(o.dep_kazanir||0)}%)"></div></div>
     </div>
-    <div style="font-size:11px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">BAHİS TAHMİNLERİ</div>
-    ${t.map(p => `
-      <div class="tahmin-card">
-        <div class="tahmin-header">
-          <span class="tahmin-kat">${p.kategori}</span>
-          ${p.mevcut > 0 ? `<span class="tahmin-mevcut">Şu an: ${p.mevcut}</span>` : ''}
-        </div>
-        <div class="tahmin-line">
-          <span class="tahmin-tag ${p.ust_alt==='ÜST'?'ust':'alt'}">${p.cizgi} ${p.ust_alt}</span>
-          <span class="tahmin-desc">${p.aciklama||p.tahmin}</span>
-          <span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span>
-        </div>
-      </div>`).join('')}
-    ${a.genel_yorum ? `
-      <div class="genel-yorum">
-        <div class="genel-yorum-title">GENEL DEĞERLENDİRME</div>
-        <div class="genel-yorum-text">${a.genel_yorum}</div>
-      </div>` : ''}
-    ${live ? `<div class="otomatik-guncelleme"><div class="otomatik-dot"></div>Her 60 saniyede otomatik güncelleniyor</div>` : ''}
-    <div class="analiz-footer">* AI tahminleri yalnızca bilgi amaçlıdır.</div>`;
+    ${t.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">Şu an: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin}</span><span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}
+    ${a.genel_yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:6px">GENEL DEĞERLENDİRME</div><div style="font-size:11px;color:var(--muted);line-height:1.6">${a.genel_yorum}</div></div>`:''}
+    ${live?`<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:10px;font-size:10px;color:var(--green);margin-top:8px"><div style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite"></div>Her 30 saniyede otomatik güncelleniyor</div>`:''}
+    <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:6px">* AI tahminleri yalnızca bilgi amaçlıdır.</div>
+    </div>`;
 }
 
-async function loadIstat(fixId) {
-  try {
-    const d = await apiFetch(`/fixtures/statistics?fixture=${fixId}`);
-    const s = d.response || [];
-    if (!s.length) { document.getElementById('mc-istat').innerHTML = '<div class="empty-msg">İstatistik verisi yok.</div>'; return; }
-    const ev = s[0], dp = s[1] || {statistics:[]};
-    document.getElementById('mc-istat').innerHTML = `
-      <div class="istat-header">
+async function loadDetailIstat(fixId){
+  try{
+    const d=await apiFetch(`/fixtures/statistics?fixture=${fixId}`);
+    const s=d.response||[];
+    if(!s.length){document.getElementById('dc-istat').innerHTML='<div class="empty">İstatistik verisi yok.</div>';return;}
+    const ev=s[0],dp=s[1]||{statistics:[]};
+    document.getElementById('dc-istat').innerHTML=`<div style="padding:16px">
+      <div style="display:flex;justify-content:space-between;padding:0 0 8px;font-size:11px;font-weight:700">
         <span style="color:var(--blue-lt)">${ev.team?.name||''}</span>
         <span style="color:var(--red)">${dp.team?.name||''}</span>
       </div>
-      ${(ev.statistics||[]).map((st,i) => `
-        <div class="istat-row">
-          <div class="istat-ev">${st.value??'-'}</div>
-          <div class="istat-lbl">${st.type}</div>
-          <div class="istat-dep">${dp.statistics[i]?.value??'-'}</div>
-        </div>`).join('')}`;
-  } catch(e) {
-    document.getElementById('mc-istat').innerHTML = '<div class="error-msg">İstatistik yüklenemedi.</div>';
-  }
+      ${(ev.statistics||[]).map((st,i)=>`<div class="istat-row"><div class="istat-ev">${st.value??'-'}</div><div class="istat-lbl">${st.type}</div><div class="istat-dep">${dp.statistics[i]?.value??'-'}</div></div>`).join('')}
+    </div>`;
+  }catch(e){document.getElementById('dc-istat').innerHTML='<div class="error">Yüklenemedi.</div>';}
 }
 
-async function loadKadro(fixId, m) {
-  try {
-    const d = await apiFetch(`/fixtures/lineups?fixture=${fixId}`);
-    const lineups = d.response || [];
-    if (!lineups.length) { document.getElementById('mc-kadro').innerHTML = '<div class="empty-msg">Kadro henüz açıklanmadı.</div>'; return; }
-    document.getElementById('mc-kadro').innerHTML = lineups.map(team => {
-      const formation = team.formation || '';
-      const startXI = team.startXI || [];
-      return `
-        <div style="margin-bottom:16px">
-          <div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--surface);border-radius:10px;margin-bottom:8px">
-            <img src="${team.team?.logo||''}" style="width:24px;height:24px;object-fit:contain" onerror="this.style.display='none'">
-            <span style="font-size:13px;font-weight:700;flex:1">${team.team?.name||''}</span>
-            <span style="background:var(--blue);color:white;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700">${formation}</span>
+async function loadDetailKadro(fixId){
+  try{
+    const d=await apiFetch(`/fixtures/lineups?fixture=${fixId}`);
+    const l=d.response||[];
+    if(!l.length){document.getElementById('dc-kadro').innerHTML='<div class="empty">Kadro henüz açıklanmadı.</div>';return;}
+    document.getElementById('dc-kadro').innerHTML=`<div style="padding:16px">${l.map(t=>`
+      <div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface);border-radius:8px;margin-bottom:6px">
+          <img src="${t.team?.logo||''}" style="width:20px;height:20px;object-fit:contain" onerror="this.style.display='none'">
+          <span style="font-size:12px;font-weight:700;flex:1">${t.team?.name||''}</span>
+          <span style="background:var(--blue);color:white;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700">${t.formation||''}</span>
+        </div>
+        ${(t.startXI||[]).map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(46,46,46,.5)"><span style="width:20px;text-align:center;font-size:11px;font-weight:700;color:var(--blue-lt)">${p.player?.number||''}</span><span style="font-size:12px">${p.player?.name||''}</span><span style="margin-left:auto;font-size:10px;color:var(--muted)">${p.player?.pos||''}</span></div>`).join('')}
+      </div>`).join('')}</div>`;
+  }catch(e){document.getElementById('dc-kadro').innerHTML='<div class="error">Yüklenemedi.</div>';}
+}
+
+function switchDetailTab(name){
+  const tabs=['analiz','istat','kadro'];
+  document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===name));
+  document.querySelectorAll('.detail-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById(`dc-${name}`).classList.add('active');
+}
+
+function showMainTab(name){
+  ['maclar','aialysis','dashboard'].forEach(p=>{
+    document.getElementById(`page-${p}`).classList.remove('active');
+    const nb=document.getElementById(`nav-${p}`);
+    if(nb)nb.classList.remove('active');
+    const sb=document.querySelectorAll('.sidebar-item');
+  });
+  document.getElementById(`page-${name}`).classList.add('active');
+  const nb=document.getElementById(`nav-${name}`);
+  if(nb)nb.classList.add('active');
+  if(name==='aialysis')loadAialysis();
+}
+
+async function loadAialysis(){
+  const c=document.getElementById('aialysisContainer');
+  c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Canlı maçlar analiz ediliyor...</div>';
+  try{
+    const d=await apiFetch('/fixtures?live=all');
+    const canlilar=(d.response||[]).sort((a,b)=>ligOncelik(`${b.league.country} | ${b.league.name}`)-ligOncelik(`${a.league.country} | ${a.league.name}`)).slice(0,12);
+    if(!canlilar.length){c.innerHTML='<div class="empty" style="grid-column:1/-1">Şu an canlı maç yok.</div>';return;}
+    c.innerHTML='';
+    for(const m of canlilar){
+      try{
+        const ir=await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
+        const ist={};(ir.response||[]).forEach((t,i)=>{const p=i===0?'ev':'dep';(t.statistics||[]).forEach(s=>{ist[p+'_'+s.type]=s.value;});});
+        const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
+          body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score.halftime.home??0,depGolIY:m.score.halftime.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0},istatistikler:ist,h2h:[],evForm:[],depForm:[],oyuncular:[]})});
+        const an=await r.json();
+        const a=an.analiz||{};
+        const gb=parseFloat(a.gol_beklentisi)||0;
+        const etiket=gb>=3.5?'🔥 Alev Alev':gb>=2.5?'⚽ Gol Geldi Geliyor':'👁 Takipte Kal';
+        const dk=m.fixture.status.elapsed;
+        const card=document.createElement('div');
+        card.className='aia-card';
+        card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);showMainTab('maclar');};
+        card.innerHTML=`
+          <div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket">${etiket}</span></div>
+          <div class="aia-maclar">
+            <div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
+            <div class="aia-skor">${dk?`<div class="aia-dk">${dk}'</div>`:''}<div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
+            <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div>
           </div>
-          ${startXI.map(p => `
-            <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid rgba(46,46,46,.5)">
-              <span style="width:24px;text-align:center;font-size:12px;font-weight:700;color:var(--blue-lt)">${p.player?.number||''}</span>
-              <span style="font-size:13px">${p.player?.name||''}</span>
-              <span style="margin-left:auto;font-size:10px;color:var(--muted)">${p.player?.pos||''}</span>
-            </div>`).join('')}
-        </div>`;
-    }).join('');
-  } catch(e) {
-    document.getElementById('mc-kadro').innerHTML = '<div class="error-msg">Kadro yüklenemedi.</div>';
-  }
-}
-
-function switchModalTab(name) {
-  const tabs = ['analiz','istat','kadro','h2h'];
-  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', tabs[i]===name));
-  document.querySelectorAll('.modal-content').forEach(c => c.classList.remove('active'));
-  document.getElementById(`mc-${name}`).classList.add('active');
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.add('hidden');
-  if (analizTimer) { clearInterval(analizTimer); analizTimer = null; }
-  currentMac = null;
-}
-
-function showMainTab(name) {
-  ['maclar','aialysis'].forEach(t => {
-    document.getElementById(`tab-${t}`).classList.toggle('active', t===name);
-    document.getElementById(`page-${t}`).classList.toggle('active', t===name);
-  });
-  document.getElementById('page-landing').classList.remove('active');
-  if (name === 'aialysis') loadAialysis();
-}
-
-function showPage(name) {
-  ['landing','maclar','aialysis','dashboard','profil'].forEach(p => {
-    const el = document.getElementById(`page-${p}`);
-    if (el) el.classList.remove('active');
-  });
-  const target = document.getElementById(`page-${name}`);
-  if (target) target.classList.add('active');
-  ['maclar','aialysis'].forEach(t => document.getElementById(`tab-${t}`).classList.remove('active'));
-  if (name === 'maclar') document.getElementById('tab-maclar').classList.add('active');
-  if (name === 'aialysis') { document.getElementById('tab-aialysis').classList.add('active'); loadAialysis(); }
-}
-
-async function loadAialysis() {
-  const c = document.getElementById('aialysisContainer');
-  c.innerHTML = '<div class="loading"><div class="spinner"></div>Canlı maçlar analiz ediliyor...</div>';
-  try {
-    const d = await apiFetch('/fixtures?live=all');
-    const canlilar = d.response || [];
-    if (!canlilar.length) { c.innerHTML = '<div class="empty-msg">Şu an canlı maç yok.</div>'; return; }
-
-    const sirali = canlilar.sort((a,b) =>
-      ligOncelik(`${b.league.country} | ${b.league.name}`) -
-      ligOncelik(`${a.league.country} | ${a.league.name}`)
-    ).slice(0, 10);
-
-    c.innerHTML = '<div class="loading"><div class="spinner"></div>AI analiz yapılıyor...</div>';
-
-    let html = '';
-    for (const m of sirali) {
-      try {
-        const istatResp = await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
-        const istatlar = {};
-        (istatResp.response||[]).forEach((team,idx) => {
-          const prefix = idx===0?'ev':'dep';
-          (team.statistics||[]).forEach(s => { istatlar[prefix+'_'+s.type] = s.value; });
-        });
-
-        const r = await fetch(`${SU}/functions/v1/analiz`, {
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
-          body: JSON.stringify({
-            macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score.halftime.home??0,depGolIY:m.score.halftime.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0},
-            istatistikler:istatlar,h2h:[],evForm:[],depForm:[],oyuncular:[]
-          })
-        });
-        const analiz = await r.json();
-        const a = analiz.analiz || {};
-        const gb = parseFloat(a.gol_beklentisi) || 0;
-        const etiket = gb >= 3.5 ? '🔥 Alev Alev' : gb >= 2.5 ? '⚽ Gol Geldi Geliyor' : '👁 Takipte Kal';
-        const dk = m.fixture.status.elapsed;
-
-        html += `
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;cursor:pointer" onclick="maclar=[...maclar.filter(x=>x.fixture.id!==${m.fixture.id}),${JSON.stringify(m).replace(/</g,'\\u003c')}];openMac(${m.fixture.id})">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-              <img src="${m.league.logo||''}" style="width:16px;height:16px;object-fit:contain" onerror="this.style.display='none'">
-              <span style="font-size:11px;color:var(--muted)">${m.league.country} | ${m.league.name}</span>
-              <span style="margin-left:auto;background:rgba(229,115,0,.2);color:var(--orange);border:1px solid rgba(229,115,0,.3);border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700">${etiket}</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-              <div style="text-align:center;flex:1">
-                <img src="${m.teams.home.logo}" style="width:32px;height:32px;object-fit:contain" onerror="this.style.display='none'">
-                <div style="font-size:12px;font-weight:700;margin-top:4px">${m.teams.home.name}</div>
-              </div>
-              <div style="text-align:center;padding:0 12px">
-                ${dk?`<div style="background:rgba(67,160,71,.2);color:var(--green);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin-bottom:4px">${dk}'</div>`:''}
-                <div style="font-size:28px;font-weight:900;color:var(--green);letter-spacing:4px">${m.goals.home??0} - ${m.goals.away??0}</div>
-              </div>
-              <div style="text-align:center;flex:1">
-                <img src="${m.teams.away.logo}" style="width:32px;height:32px;object-fit:contain" onerror="this.style.display='none'">
-                <div style="font-size:12px;font-weight:700;margin-top:4px">${m.teams.away.name}</div>
-              </div>
-            </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              ${(a.tahminler||[]).slice(0,3).map(p => `
-                <div style="background:rgba(67,160,71,.1);border:1px solid rgba(67,160,71,.3);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--green);font-weight:700">${p.cizgi} ${p.ust_alt} <span style="color:var(--muted)">%${p.guc}</span></div>
-              `).join('')}
-            </div>
-          </div>`;
-        c.innerHTML = html || '<div class="empty-msg">Analiz yükleniyor...</div>';
-        await new Promise(r => setTimeout(r, 1000));
-      } catch(_) {}
+          <div class="aia-tahminler">${(a.tahminler||[]).slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
+        c.appendChild(card);
+        await new Promise(r=>setTimeout(r,800));
+      }catch(_){}
     }
-    if (!html) c.innerHTML = '<div class="empty-msg">Analiz yapılamadı.</div>';
-  } catch(e) {
-    c.innerHTML = '<div class="error-msg">Hata: '+e.message+'</div>';
-  }
+  }catch(e){c.innerHTML=`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;}
 }
 
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+// Otomatik yenileme
+setInterval(()=>{
+  const ap=document.querySelector('.page.active');
+  if(ap?.id==='page-maclar')loadMaclar();
+  if(ap?.id==='page-aialysis')loadAialysis();
+},30000);
 
-// Arama
-function toggleArama() {
-  const kutu = document.getElementById('aramaKutu');
-  const input = document.getElementById('aramaInput');
-  kutu.style.display = kutu.style.display === 'none' ? 'block' : 'none';
-  if (kutu.style.display === 'block') input.focus();
-  else { input.value = ''; renderMaclar(maclar); }
-}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadMaclar();});
 
-function aramaYap(q) {
-  if (!q.trim()) { renderMaclar(maclar); return; }
-  const filtered = maclar.filter(m =>
-    m.teams.home.name.toLowerCase().includes(q.toLowerCase()) ||
-    m.teams.away.name.toLowerCase().includes(q.toLowerCase()) ||
-    m.league.name.toLowerCase().includes(q.toLowerCase()) ||
-    m.league.country.toLowerCase().includes(q.toLowerCase())
-  );
-  renderMaclar(filtered);
-}
-
-// Başlat
 loadMaclar();
-
-// Otomatik yenileme — 30s maç listesi
-setInterval(() => {
-  if (!document.getElementById('modalOverlay').classList.contains('hidden')) return;
-  const activePage = document.querySelector('.page.active');
-  if (activePage && activePage.id === 'page-maclar') loadMaclar();
-  if (activePage && activePage.id === 'page-aialysis') loadAialysis();
-}, 30000);
-
-// Modal açıkken istatistik 30s yenile
-setInterval(() => {
-  if (document.getElementById('modalOverlay').classList.contains('hidden')) return;
-  if (!currentMac) return;
-  const activeTab = document.querySelector('.modal-tab.active');
-  if (activeTab && activeTab.textContent.includes('İstatistik')) {
-    loadIstat(currentMac.fixture.id);
-  }
-}, 30000);
-
-// Sekme görünür olduğunda yenile
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    const activePage = document.querySelector('.page.active');
-    if (activePage && activePage.id === 'page-maclar') loadMaclar();
-  }
-});
 </script>
 </body>
 </html>
