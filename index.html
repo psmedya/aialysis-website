@@ -228,6 +228,12 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 
     <!-- MAÇLAR PAGE -->
     <div class="page active" id="page-maclar">
+      <!-- Arama kutusu -->
+      <div id="aramaKutu" style="display:none;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border)">
+        <input id="aramaInput" type="text" placeholder="Takım veya lig ara..." 
+          oninput="aramaYap(this.value)"
+          style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none"/>
+      </div>
       <div class="date-nav">
         <button class="date-btn" onclick="tarihDegistir(-1)">‹</button>
         <div class="date-label" id="dateLabelEl">...</div>
@@ -235,6 +241,33 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
       </div>
       <div id="maclarContainer">
         <div class="loading"><div class="spinner"></div>Yükleniyor...</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page" id="page-dashboard">
+      <div style="padding:16px">
+        <div style="font-size:18px;font-weight:700;margin-bottom:16px">📈 Tahmin Performansı</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;margin-bottom:12px">
+          <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">GENEL DOĞRULUK</div>
+          <div style="font-size:48px;font-weight:900;color:var(--green)">--%</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Henüz yeterli veri yok</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px">
+          <div style="font-size:12px;color:var(--muted);text-align:center;padding:20px">Tahmin geçmişi burada görünecek</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFİL PAGE -->
+    <div class="page" id="page-profil">
+      <div style="padding:16px;text-align:center">
+        <div style="width:80px;height:80px;background:var(--card);border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;border:2px solid var(--border)">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:4px">Misafir</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:24px">Giriş yapılmadı</div>
+        <a href="#" style="display:inline-block;background:var(--blue);color:white;padding:12px 32px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700">Giriş Yap</a>
       </div>
     </div>
 
@@ -286,9 +319,12 @@ let analizTimer = null;
 // Lig öncelik
 function ligOncelik(s) {
   s = s.toLowerCase();
-  if (s.includes('women')||s.includes('ladies')||s.includes('female')) return 1000;
-  if (s.includes('youth')||s.includes(' u17')||s.includes(' u21')) return 480;
-  if (s.includes('reserve')||s.includes('amateur')) return 430;
+  if (s.includes('women')||s.includes('ladies')||s.includes('female')) return 500;
+  if (s.includes(' u16')||s.includes(' u17')||s.includes(' u18')||s.includes(' u19')||
+      s.includes(' u20')||s.includes(' u21')||s.includes(' u23')||
+      s.includes('u-17')||s.includes('u-18')||s.includes('u-19')||s.includes('u-21')) return 400;
+  if (s.includes('youth')) return 450;
+  if (s.includes('reserve')||s.includes('amateur')) return 300;
   if (s.includes('turkey') && (s.includes('süper')||s.includes('super'))) return 20000;
   if (s.includes('turkey') && s.includes('tff')) return 19800;
   if (s.includes('turkey') && s.includes('cup')) return 19700;
@@ -649,8 +685,12 @@ function showMainTab(name) {
 }
 
 function showPage(name) {
-  ['landing','maclar','aialysis'].forEach(p => document.getElementById(`page-${p}`).classList.remove('active'));
-  document.getElementById(`page-${name}`).classList.add('active');
+  ['landing','maclar','aialysis','dashboard','profil'].forEach(p => {
+    const el = document.getElementById(`page-${p}`);
+    if (el) el.classList.remove('active');
+  });
+  const target = document.getElementById(`page-${name}`);
+  if (target) target.classList.add('active');
   ['maclar','aialysis'].forEach(t => document.getElementById(`tab-${t}`).classList.remove('active'));
   if (name === 'maclar') document.getElementById('tab-maclar').classList.add('active');
   if (name === 'aialysis') { document.getElementById('tab-aialysis').classList.add('active'); loadAialysis(); }
@@ -733,6 +773,26 @@ async function loadAialysis() {
 }
 
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// Arama
+function toggleArama() {
+  const kutu = document.getElementById('aramaKutu');
+  const input = document.getElementById('aramaInput');
+  kutu.style.display = kutu.style.display === 'none' ? 'block' : 'none';
+  if (kutu.style.display === 'block') input.focus();
+  else { input.value = ''; renderMaclar(maclar); }
+}
+
+function aramaYap(q) {
+  if (!q.trim()) { renderMaclar(maclar); return; }
+  const filtered = maclar.filter(m =>
+    m.teams.home.name.toLowerCase().includes(q.toLowerCase()) ||
+    m.teams.away.name.toLowerCase().includes(q.toLowerCase()) ||
+    m.league.name.toLowerCase().includes(q.toLowerCase()) ||
+    m.league.country.toLowerCase().includes(q.toLowerCase())
+  );
+  renderMaclar(filtered);
+}
 
 // Başlat
 loadMaclar();
