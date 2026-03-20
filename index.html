@@ -3,1001 +3,426 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AIALYSIS LIVE — AI Destekli Futbol Analiz</title>
-<meta name="description" content="Yapay zeka destekli gerçek zamanlı futbol analiz uygulaması. Canlı maç tahminleri, bahis önerileri ve oyuncu performans analizleri.">
+<title>aiALYSIS Live — AI Destekli Futbol Analiz</title>
+<meta name="description" content="Yapay zeka destekli gerçek zamanlı futbol analiz. Canlı maç tahminleri, bahis önerileri.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #080810;
-    --surface: #0f0f1a;
-    --card: #141422;
-    --border: #1e1e35;
-    --blue: #1565C0;
-    --blue-lt: #42A5F5;
-    --green: #43A047;
-    --orange: #FF6D00;
-    --red: #E53935;
-    --yellow: #FDD835;
-    --text: #EEEEEE;
-    --muted: #666688;
-    --accent: #42A5F5;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    overflow-x: hidden;
-  }
-
-  /* NOISE TEXTURE */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* NAV */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 40px;
-    background: rgba(8,8,16,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .nav-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
-    letter-spacing: 3px;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .nav-logo span { color: var(--blue-lt); }
-
-  .nav-links {
-    display: flex;
-    gap: 32px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-
-  .nav-links a:hover { color: var(--text); }
-
-  .lang-switch {
-    display: flex;
-    gap: 8px;
-  }
-
-  .lang-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .lang-btn.active, .lang-btn:hover {
-    border-color: var(--blue-lt);
-    color: var(--blue-lt);
-  }
-
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    padding: 120px 40px 80px;
-    overflow: hidden;
-  }
-
-  .hero-glow {
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(21,101,192,0.15) 0%, transparent 70%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-  }
-
-  .hero-glow-2 {
-    position: absolute;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(67,160,71,0.08) 0%, transparent 70%);
-    top: 30%;
-    right: 10%;
-    pointer-events: none;
-  }
-
-  /* Grid background */
-  .hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: 
-      linear-gradient(rgba(66,165,245,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(66,165,245,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-  }
-
-  .hero-content {
-    text-align: center;
-    max-width: 800px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(66,165,245,0.1);
-    border: 1px solid rgba(66,165,245,0.3);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: var(--blue-lt);
-    font-weight: 600;
-    letter-spacing: 1px;
-    margin-bottom: 32px;
-    animation: fadeDown 0.6s ease both;
-  }
-
-  .hero-badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--green);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.3); }
-  }
-
-  h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(64px, 12vw, 120px);
-    line-height: 0.95;
-    letter-spacing: 4px;
-    margin-bottom: 24px;
-    animation: fadeDown 0.6s 0.1s ease both;
-  }
-
-  h1 .accent { color: var(--blue-lt); }
-  h1 .accent2 { color: var(--green); }
-
-  .hero-sub {
-    font-size: 18px;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 560px;
-    margin: 0 auto 48px;
-    font-weight: 300;
-    animation: fadeDown 0.6s 0.2s ease both;
-  }
-
-  .hero-buttons {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-    animation: fadeDown 0.6s 0.3s ease both;
-  }
-
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--blue);
-    color: white;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .btn-primary:hover {
-    background: var(--blue-lt);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(66,165,245,0.3);
-  }
-
-  .btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: transparent;
-    color: var(--text);
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .btn-secondary:hover {
-    border-color: var(--blue-lt);
-    color: var(--blue-lt);
-    transform: translateY(-2px);
-  }
-
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* STATS BAR */
-  .stats-bar {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 32px 40px;
-    display: flex;
-    justify-content: center;
-    gap: 80px;
-    flex-wrap: wrap;
-  }
-
-  .stat-item {
-    text-align: center;
-  }
-
-  .stat-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 48px;
-    letter-spacing: 2px;
-    color: var(--blue-lt);
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 500;
-    letter-spacing: 1px;
-    margin-top: 4px;
-  }
-
-  /* FEATURES */
-  .section {
-    padding: 100px 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .section-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--blue-lt);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(36px, 6vw, 64px);
-    letter-spacing: 2px;
-    line-height: 1;
-    margin-bottom: 16px;
-  }
-
-  .section-sub {
-    font-size: 16px;
-    color: var(--muted);
-    max-width: 480px;
-    line-height: 1.7;
-    margin-bottom: 64px;
-  }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
-  }
-
-  .feature-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--blue), var(--blue-lt));
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .feature-card:hover {
-    border-color: rgba(66,165,245,0.3);
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-  }
-
-  .feature-card:hover::before { opacity: 1; }
-
-  .feature-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-
-  .feature-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-
-  .feature-desc {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-
-  /* MOCK PHONE */
-  .phone-section {
-    padding: 100px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 80px;
-    max-width: 1200px;
-    margin: 0 auto;
-    flex-wrap: wrap;
-  }
-
-  .phone-text { max-width: 480px; }
-
-  .phone-mock {
-    width: 280px;
-    background: #0a0a14;
-    border-radius: 40px;
-    border: 2px solid var(--border);
-    padding: 16px;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 60px rgba(66,165,245,0.05);
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .phone-screen {
-    background: var(--surface);
-    border-radius: 28px;
-    overflow: hidden;
-  }
-
-  .phone-header {
-    background: #1565C0;
-    padding: 16px;
-    text-align: center;
-  }
-
-  .phone-header-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    color: white;
-  }
-
-  .phone-match {
-    background: #1565C0;
-    padding: 20px 16px;
-    text-align: center;
-  }
-
-  .phone-score {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 48px;
-    color: #43A047;
-    letter-spacing: 8px;
-  }
-
-  .phone-teams {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 8px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.8);
-    font-weight: 600;
-  }
-
-  .phone-live {
-    display: inline-block;
-    background: rgba(67,160,71,0.3);
-    color: #43A047;
-    border-radius: 12px;
-    padding: 2px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .phone-body { padding: 16px; }
-
-  .phone-card {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 10px;
-    border: 1px solid var(--border);
-  }
-
-  .phone-card-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--blue-lt);
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-  }
-
-  .phone-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-
-  .phone-tag {
-    background: rgba(67,160,71,0.2);
-    color: #43A047;
-    border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 11px;
-    font-weight: 700;
-  }
-
-  .phone-tag-orange {
-    background: rgba(255,109,0,0.2);
-    color: #FF6D00;
-  }
-
-  .pct {
-    font-size: 13px;
-    font-weight: 700;
-    color: #43A047;
-  }
-
-  .phone-label { font-size: 11px; color: var(--muted); }
-
-  /* DOWNLOAD */
-  .download-section {
-    padding: 100px 40px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .download-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, rgba(21,101,192,0.1) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .download-buttons {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    margin-top: 48px;
-    flex-wrap: wrap;
-  }
-
-  .store-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 24px;
-    text-decoration: none;
-    color: var(--text);
-    transition: all 0.2s;
-    min-width: 180px;
-  }
-
-  .store-btn:hover {
-    border-color: var(--blue-lt);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  }
-
-  .store-icon { font-size: 32px; }
-
-  .store-text { text-align: left; }
-  .store-text small { font-size: 10px; color: var(--muted); display: block; }
-  .store-text strong { font-size: 16px; font-weight: 700; }
-
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: gap;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 24px;
-  }
-
-  .footer-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 3px;
-    color: var(--muted);
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 24px;
-    list-style: none;
-  }
-
-  .footer-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 13px;
-    transition: color 0.2s;
-  }
-
-  .footer-links a:hover { color: var(--text); }
-
-  .footer-copy {
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  /* PRIVACY PAGE */
-  .privacy-page { display: none; }
-  .main-page { display: block; }
-
-  .privacy-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 120px 40px 80px;
-  }
-
-  .privacy-content h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 56px;
-    letter-spacing: 3px;
-    margin-bottom: 8px;
-  }
-
-  .privacy-content .date {
-    color: var(--muted);
-    font-size: 13px;
-    margin-bottom: 48px;
-  }
-
-  .privacy-content h2 {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 40px 0 16px;
-    color: var(--blue-lt);
-  }
-
-  .privacy-content p, .privacy-content li {
-    font-size: 15px;
-    color: #aaa;
-    line-height: 1.8;
-    margin-bottom: 12px;
-  }
-
-  .privacy-content ul {
-    padding-left: 24px;
-    margin-bottom: 16px;
-  }
-
-  .highlight-box {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--blue-lt);
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin: 24px 0;
-    font-size: 14px;
-    color: var(--muted);
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    nav { padding: 12px 20px; }
-    .nav-links { display: none; }
-    .hero { padding: 100px 20px 60px; }
-    .stats-bar { gap: 40px; padding: 24px 20px; }
-    .section { padding: 60px 20px; }
-    .phone-section { padding: 60px 20px; gap: 40px; }
-    footer { padding: 32px 20px; flex-direction: column; text-align: center; }
-    .download-section { padding: 60px 20px; }
-    .privacy-content { padding: 100px 20px 60px; }
-  }
+:root{--bg:#080810;--surface:#0f0f1a;--card:#141422;--border:#1e1e35;--blue:#1565C0;--blue-lt:#42A5F5;--green:#43A047;--orange:#FF6D00;--red:#E53935;--yellow:#FDD835;--text:#EEEEEE;--muted:#666688;--gold:#C8971A;--gold-lt:#F5C842;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,16,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:baseline;text-decoration:none;cursor:pointer;}
+.nav-logo .ai{font-family:Georgia,serif;font-size:22px;font-style:italic;color:var(--gold-lt);letter-spacing:1px;}
+.nav-logo .alysis{font-family:'Arial Black','Helvetica Neue',sans-serif;font-size:22px;font-weight:900;color:white;letter-spacing:-1px;}
+.nav-logo .ltag{margin-left:8px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1a1a2e;font-size:10px;font-weight:900;padding:2px 7px;border-radius:4px;letter-spacing:2px;}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s;cursor:pointer;}
+.nav-links a:hover{color:var(--gold-lt);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.lang-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:16px;font-size:11px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.lang-btn.active,.lang-btn:hover{border-color:var(--gold-lt);color:var(--gold-lt);}
+.btn-dl{background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1a1a2e;padding:8px 18px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;transition:all .2s;}
+.btn-dl:hover{opacity:.9;transform:translateY(-1px);}
+.page{display:none;}.page.active{display:block;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 40px 80px;position:relative;overflow:hidden;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(66,165,245,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(66,165,245,.03) 1px,transparent 1px);background-size:60px 60px;}
+.hero-glow{position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(200,151,26,.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);}
+.hero-content{text-align:center;max-width:760px;position:relative;z-index:1;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,151,26,.1);border:1px solid rgba(200,151,26,.3);padding:5px 16px;border-radius:20px;font-size:11px;color:var(--gold-lt);font-weight:600;letter-spacing:1.5px;margin-bottom:28px;animation:fd .5s ease both;}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero-logo{margin-bottom:20px;animation:fd .5s .1s ease both;line-height:1;}
+.hero-logo .ai{font-family:Georgia,serif;font-size:clamp(72px,14vw,138px);font-style:italic;color:var(--gold-lt);}
+.hero-logo .alysis{font-family:'Arial Black','Helvetica Neue',sans-serif;font-size:clamp(72px,14vw,138px);font-weight:900;color:white;letter-spacing:-4px;}
+.hero-sub{font-size:17px;color:var(--muted);line-height:1.8;max-width:500px;margin:0 auto 40px;font-weight:300;animation:fd .5s .2s ease both;}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fd .5s .3s ease both;}
+.btn-p{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1a1a2e;padding:14px 28px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;transition:all .2s;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-p:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,151,26,.3);}
+.btn-s{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text);padding:14px 28px;border-radius:10px;font-size:14px;font-weight:500;text-decoration:none;border:1px solid var(--border);transition:all .2s;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-s:hover{border-color:var(--gold-lt);color:var(--gold-lt);transform:translateY(-2px);}
+@keyframes fd{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+
+.stats-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;justify-content:center;gap:72px;padding:28px 40px;flex-wrap:wrap;}
+.sn{font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--gold-lt);line-height:1;}
+.sl{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
+
+.features{padding:90px 40px;max-width:1100px;margin:0 auto;}
+.sec-lbl{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--gold-lt);margin-bottom:12px;}
+.sec-t{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,60px);letter-spacing:2px;margin-bottom:48px;}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;transition:all .3s;position:relative;overflow:hidden;}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-lt));opacity:0;transition:.3s;}
+.fc:hover{border-color:rgba(200,151,26,.3);transform:translateY(-3px);}
+.fc:hover::before{opacity:1;}
+.fi{font-size:28px;margin-bottom:16px;}
+.ft{font-size:16px;font-weight:700;margin-bottom:8px;}
+.fd{font-size:13px;color:var(--muted);line-height:1.7;}
+
+footer{border-top:1px solid var(--border);padding:32px 40px;display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;flex-wrap:wrap;gap:16px;}
+.fl{display:flex;align-items:baseline;}
+.fl .ai{font-family:Georgia,serif;font-size:16px;font-style:italic;color:var(--gold);}
+.fl .alysis{font-family:'Arial Black',sans-serif;font-size:16px;font-weight:900;color:var(--muted);letter-spacing:-1px;}
+.footer-links{display:flex;gap:20px;list-style:none;}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:12px;transition:color .2s;cursor:pointer;}
+.footer-links a:hover{color:var(--gold-lt);}
+
+/* MATCHES */
+.matches-page{padding-top:70px;min-height:100vh;}
+.mh{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.mt{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;}
+.live-badge{display:flex;align-items:center;gap:7px;background:rgba(67,160,71,.15);border:1px solid rgba(67,160,71,.4);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;color:var(--green);letter-spacing:1px;}
+.ldot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite;}
+.mb{padding:20px 40px;max-width:1100px;margin:0 auto;}
+.lg{margin-bottom:14px;}
+.lh{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;user-select:none;transition:border-color .2s;}
+.lh:hover{border-color:rgba(200,151,26,.3);}
+.ln{font-size:13px;font-weight:600;flex:1;}
+.lc{font-size:11px;color:var(--muted);margin-right:8px;}
+.lch{color:var(--muted);font-size:12px;transition:transform .2s;}
+.lh.open .lch{transform:rotate(180deg);}
+.ml{border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
+.mr{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(30,30,53,.5);cursor:pointer;transition:background .15s;}
+.mr:last-child{border-bottom:none;}
+.mr:hover{background:rgba(255,255,255,.02);}
+.mtime{width:52px;text-align:center;flex-shrink:0;}
+.mtime .t{font-size:12px;color:var(--muted);}
+.mtime .dk{font-size:13px;font-weight:700;color:var(--green);background:rgba(67,160,71,.15);padding:2px 7px;border-radius:6px;}
+.mteams{flex:1;min-width:0;}
+.tr2{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+.tr2:last-child{margin-bottom:0;}
+.tn{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tn.w{font-weight:700;color:white;}
+.ms{text-align:center;flex-shrink:0;width:36px;}
+.sv{font-size:16px;font-weight:700;color:var(--green);}
+.sv.e{color:var(--text);}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.mo.hidden{display:none;}
+.mod{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;}
+.mod-hdr{background:linear-gradient(135deg,#0D47A1,#1565C0);padding:24px;border-radius:16px 16px 0 0;text-align:center;}
+.mod-lig{font-size:11px;color:rgba(255,255,255,.6);margin-bottom:12px;letter-spacing:1px;}
+.mod-teams{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.mod-team{flex:1;text-align:center;}
+.mod-tn{font-size:14px;font-weight:700;color:white;margin-top:8px;}
+.mod-sb{text-align:center;}
+.mod-dk{background:rgba(67,160,71,.3);color:var(--green);padding:3px 12px;border-radius:10px;font-size:12px;font-weight:700;margin-bottom:8px;display:inline-block;}
+.mod-score{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--green);letter-spacing:8px;line-height:1;}
+.mod-iy{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;}
+.mod-body{padding:20px;}
+.mod-tabs{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;}
+.mtab{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:7px;font-size:12px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.mtab.active{background:var(--blue);border-color:var(--blue);color:white;}
+.mcont{display:none;}.mcont.active{display:block;}
+.ai-card{background:linear-gradient(135deg,#0D47A1,#0a3d8f);border-radius:12px;padding:20px;margin-bottom:16px;}
+.ai-ct{font-size:12px;color:rgba(255,255,255,.7);letter-spacing:1px;margin-bottom:12px;font-weight:600;}
+.ai-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.as{text-align:center;}
+.asv{font-size:22px;font-weight:700;}
+.asl{font-size:9px;color:rgba(255,255,255,.6);margin-top:2px;letter-spacing:.5px;}
+.pc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;}
+.ph{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.pk{font-size:12px;font-weight:700;}
+.pcur{font-size:11px;color:var(--muted);margin-left:auto;}
+.pl{display:flex;align-items:center;gap:10px;}
+.ptag{padding:5px 12px;border-radius:7px;font-size:15px;font-weight:800;flex-shrink:0;}
+.ptag.u{background:rgba(67,160,71,.2);color:var(--green);border:1px solid rgba(67,160,71,.4);}
+.ptag.a{background:rgba(229,57,53,.2);color:var(--red);border:1px solid rgba(229,57,53,.4);}
+.pd{font-size:12px;color:var(--muted);line-height:1.5;flex:1;}
+.pg{font-size:13px;font-weight:700;margin-left:auto;}
+.lds{text-align:center;padding:40px 20px;color:var(--muted);}
+.spin{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue-lt);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{text-align:center;padding:32px;color:var(--red);font-size:13px;}
+
+/* PRIVACY */
+.priv{max-width:760px;margin:0 auto;padding:100px 40px 80px;}
+.priv h1{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;margin-bottom:6px;}
+.priv h2{font-size:18px;font-weight:700;color:var(--gold-lt);margin:32px 0 12px;}
+.priv p,.priv li{font-size:14px;color:#aaa;line-height:2;}
+.priv ul{padding-left:20px;}
+
+@media(max-width:768px){
+  nav{padding:12px 16px;}.nav-links{display:none;}
+  .hero{padding:90px 16px 60px;}.stats-bar{gap:40px;padding:20px 16px;}
+  .features{padding:60px 16px;}.mh{padding:14px;}.mb{padding:12px 16px;}
+  footer{padding:24px 16px;flex-direction:column;text-align:center;}
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
-  <div class="nav-logo">✦ AIALYSIS <span>LIVE</span></div>
+  <div class="nav-logo" onclick="showPage('landing')">
+    <span class="ai">ai</span><span class="alysis">ALYSIS</span><span class="ltag">LIVE</span>
+  </div>
   <ul class="nav-links">
-    <li><a href="#features" data-tr="Özellikler" data-en="Features">Özellikler</a></li>
-    <li><a href="#download" data-tr="İndir" data-en="Download">İndir</a></li>
-    <li><a href="#" onclick="showPrivacy()" data-tr="Gizlilik" data-en="Privacy">Gizlilik</a></li>
+    <li><a onclick="showPage('landing')" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+    <li><a onclick="showPage('matches')" data-tr="Canlı Maçlar" data-en="Live Matches">Canlı Maçlar</a></li>
+    <li><a onclick="showPage('privacy')" data-tr="Gizlilik" data-en="Privacy">Gizlilik</a></li>
   </ul>
-  <div class="lang-switch">
+  <div class="nav-right">
     <button class="lang-btn active" onclick="setLang('tr')">TR</button>
     <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <a href="#dl" class="btn-dl" data-tr="İndir" data-en="Download">İndir</a>
   </div>
 </nav>
 
-<!-- MAIN PAGE -->
-<div class="main-page" id="mainPage">
-
-  <!-- HERO -->
+<!-- LANDING -->
+<div class="page active" id="page-landing">
   <section class="hero">
-    <div class="hero-glow"></div>
-    <div class="hero-glow-2"></div>
+    <div class="hero-grid"></div><div class="hero-glow"></div>
     <div class="hero-content">
-      <div class="hero-badge" data-tr="🔴 CANLI ANALİZ MODU" data-en="🔴 LIVE ANALYSIS MODE">🔴 CANLI ANALİZ MODU</div>
-      <h1>
-        <span data-tr="FUTBOL" data-en="FOOTBALL">FUTBOL</span><br>
-        <span class="accent">AIALYSIS</span><br>
-        <span class="accent2" data-tr="LIVE" data-en="LIVE">LIVE</span>
-      </h1>
-      <p class="hero-sub" data-tr="Yapay zeka ile canlı maç analizi. Bahis tahminleri, oyuncu performansları ve gerçek zamanlı istatistikler — tek uygulamada." data-en="Real-time match analysis powered by AI. Betting predictions, player performances and live statistics — all in one app.">
-        Yapay zeka ile canlı maç analizi. Bahis tahminleri, oyuncu performansları ve gerçek zamanlı istatistikler — tek uygulamada.
-      </p>
-      <div class="hero-buttons">
-        <a href="#download" class="btn-primary" data-tr="📱 Hemen İndir" data-en="📱 Download Now">📱 Hemen İndir</a>
-        <a href="#features" class="btn-secondary" data-tr="Nasıl Çalışır?" data-en="How It Works?">Nasıl Çalışır?</a>
+      <div class="hero-badge" data-tr="🔴 CANLI ANALİZ MODU AKTİF" data-en="🔴 LIVE ANALYSIS MODE ACTIVE">🔴 CANLI ANALİZ MODU AKTİF</div>
+      <div class="hero-logo"><span class="ai">ai</span><span class="alysis">ALYSIS</span></div>
+      <p class="hero-sub" data-tr="Yapay zeka ile canlı maç analizi. Bahis tahminleri, oyuncu performansları ve gerçek zamanlı istatistikler." data-en="Real-time match analysis powered by AI. Betting predictions, player performances and live statistics.">Yapay zeka ile canlı maç analizi. Bahis tahminleri, oyuncu performansları ve gerçek zamanlı istatistikler.</p>
+      <div class="hero-btns">
+        <button class="btn-p" onclick="showPage('matches')" data-tr="⚽ Canlı Maçları Gör" data-en="⚽ Watch Live Matches">⚽ Canlı Maçları Gör</button>
+        <a href="#dl" class="btn-s" data-tr="📱 Uygulamayı İndir" data-en="📱 Download App">📱 Uygulamayı İndir</a>
       </div>
     </div>
   </section>
 
-  <!-- STATS -->
   <div class="stats-bar">
-    <div class="stat-item">
-      <div class="stat-num">1000+</div>
-      <div class="stat-label" data-tr="CANLI MAÇ / GÜN" data-en="LIVE MATCHES / DAY">CANLI MAÇ / GÜN</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">50+</div>
-      <div class="stat-label" data-tr="LİG & TURNUVA" data-en="LEAGUES & CUPS">LİG & TURNUVA</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">AI</div>
-      <div class="stat-label" data-tr="GROQ LLAMA 70B" data-en="GROQ LLAMA 70B">GROQ LLAMA 70B</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">60s</div>
-      <div class="stat-label" data-tr="GÜNCELLEME HIZI" data-en="UPDATE SPEED">GÜNCELLEME HIZI</div>
-    </div>
+    <div><div class="sn">1000+</div><div class="sl" data-tr="CANLI MAÇ / GÜN" data-en="LIVE MATCHES / DAY">CANLI MAÇ / GÜN</div></div>
+    <div><div class="sn">50+</div><div class="sl" data-tr="LİG & TURNUVA" data-en="LEAGUES">LİG & TURNUVA</div></div>
+    <div><div class="sn" style="color:var(--gold-lt)">AI</div><div class="sl">GROQ LLAMA 70B</div></div>
+    <div><div class="sn">60s</div><div class="sl" data-tr="GÜNCELLEME" data-en="UPDATE RATE">GÜNCELLEME</div></div>
   </div>
 
-  <!-- FEATURES -->
-  <section class="section" id="features">
-    <div class="section-label" data-tr="ÖZELLİKLER" data-en="FEATURES">ÖZELLİKLER</div>
-    <h2 class="section-title" data-tr="NEDEN AIALYSIS?" data-en="WHY AIALYSIS?">NEDEN AIALYSIS?</h2>
-    <p class="section-sub" data-tr="Sadece skor değil, maçın arkasındaki veriyi görün." data-en="See beyond the score. Understand the data behind the match.">Sadece skor değil, maçın arkasındaki veriyi görün.</p>
-
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(66,165,245,0.1)">⚡</div>
-        <div class="feature-title" data-tr="Canlı AI Analizi" data-en="Live AI Analysis">Canlı AI Analizi</div>
-        <div class="feature-desc" data-tr="Her 60 saniyede otomatik güncellenen yapay zeka tahminleri. Maçın akışına göre dinamik öneriler." data-en="AI predictions updating every 60 seconds. Dynamic recommendations based on match flow.">Her 60 saniyede otomatik güncellenen yapay zeka tahminleri. Maçın akışına göre dinamik öneriler.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(67,160,71,0.1)">📊</div>
-        <div class="feature-title" data-tr="Bahis Tahminleri" data-en="Betting Predictions">Bahis Tahminleri</div>
-        <div class="feature-desc" data-tr="Gol, korner, faul ve kart için Üst/Alt tahminleri. Mevcut istatistiklere dayalı projeksiyon hesaplamaları." data-en="Over/Under predictions for goals, corners, fouls and cards. Projection calculations based on live stats.">Gol, korner, faul ve kart için Üst/Alt tahminleri. Mevcut istatistiklere dayalı projeksiyon hesaplamaları.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(255,109,0,0.1)">🔥</div>
-        <div class="feature-title" data-tr="Sıcak Maç Radarı" data-en="Hot Match Radar">Sıcak Maç Radarı</div>
-        <div class="feature-desc" data-tr="Gol beklentisi yüksek maçları anında tespit et. Alev alev, Gol Geldi Geliyor gibi ısı etiketleri." data-en="Instantly spot high-expectation matches. Heat labels like Blazing Hot, Goals Incoming.">Gol beklentisi yüksek maçları anında tespit et. Alev alev, Gol Geldi Geliyor gibi ısı etiketleri.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(253,216,53,0.1)">👤</div>
-        <div class="feature-title" data-tr="Oyuncu Performansı" data-en="Player Performance">Oyuncu Performansı</div>
-        <div class="feature-desc" data-tr="Maç içi oyuncu puanlarını takip et. Kötü günde olan oyuncuları ve risk faktörlerini analiz et." data-en="Track in-match player ratings. Analyze players having bad days and risk factors.">Maç içi oyuncu puanlarını takip et. Kötü günde olan oyuncuları ve risk faktörlerini analiz et.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(229,57,53,0.1)">📈</div>
-        <div class="feature-title" data-tr="Tahmin Takibi" data-en="Prediction Tracking">Tahmin Takibi</div>
-        <div class="feature-desc" data-tr="AI tahminlerinin doğruluk oranını takip et. Kategoriye ve lige göre performans dashboard'u." data-en="Track the accuracy of AI predictions. Performance dashboard by category and league.">AI tahminlerinin doğruluk oranını takip et. Kategoriye ve lige göre performans dashboard'u.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(123,31,162,0.1)">⚽</div>
-        <div class="feature-title" data-tr="50+ Lig" data-en="50+ Leagues">50+ Lig</div>
-        <div class="feature-desc" data-tr="Türkiye'den Premier League'e, Serie A'dan La Liga'ya. Tüm dünya futbolunu tek ekranda." data-en="From Turkey to Premier League, Serie A to La Liga. All world football on one screen.">Türkiye'den Premier League'e, Serie A'dan La Liga'ya. Tüm dünya futbolunu tek ekranda.</div>
-      </div>
+  <section class="features" id="features">
+    <div class="sec-lbl" data-tr="ÖZELLİKLER" data-en="FEATURES">ÖZELLİKLER</div>
+    <div class="sec-t" data-tr="NEDEN aiALYSIS?" data-en="WHY aiALYSIS?">NEDEN aiALYSIS?</div>
+    <div class="feat-grid">
+      <div class="fc"><div class="fi">⚡</div><div class="ft" data-tr="Canlı AI Analizi" data-en="Live AI Analysis">Canlı AI Analizi</div><div class="fd" data-tr="Her 60 saniyede otomatik güncellenen yapay zeka tahminleri." data-en="AI predictions updating every 60 seconds.">Her 60 saniyede otomatik güncellenen yapay zeka tahminleri.</div></div>
+      <div class="fc"><div class="fi">📊</div><div class="ft" data-tr="Bahis Tahminleri" data-en="Betting Predictions">Bahis Tahminleri</div><div class="fd" data-tr="Gol, korner, faul için Üst/Alt tahminleri. İstatistiklere dayalı projeksiyon." data-en="Over/Under for goals, corners, fouls. Stats-based projections.">Gol, korner, faul için Üst/Alt tahminleri. İstatistiklere dayalı projeksiyon.</div></div>
+      <div class="fc"><div class="fi">🔥</div><div class="ft" data-tr="Sıcak Maç Radarı" data-en="Hot Match Radar">Sıcak Maç Radarı</div><div class="fd" data-tr="Gol beklentisi yüksek maçları otomatik tespit et." data-en="Auto-detect high goal expectation matches.">Gol beklentisi yüksek maçları otomatik tespit et.</div></div>
+      <div class="fc"><div class="fi">👤</div><div class="ft" data-tr="Oyuncu Performansı" data-en="Player Performance">Oyuncu Performansı</div><div class="fd" data-tr="Maç içi oyuncu puanları ve risk analizi." data-en="In-match player ratings and risk analysis.">Maç içi oyuncu puanları ve risk analizi.</div></div>
+      <div class="fc"><div class="fi">📈</div><div class="ft" data-tr="Tahmin Takibi" data-en="Prediction Tracking">Tahmin Takibi</div><div class="fd" data-tr="AI tahminlerinin doğruluk oranını takip et." data-en="Track AI prediction accuracy.">AI tahminlerinin doğruluk oranını takip et.</div></div>
+      <div class="fc"><div class="fi">⚽</div><div class="ft" data-tr="50+ Lig" data-en="50+ Leagues">50+ Lig</div><div class="fd" data-tr="Türkiye'den Premier League'e tüm dünya futbolu." data-en="All world football.">Türkiye'den Premier League'e tüm dünya futbolu.</div></div>
     </div>
   </section>
 
-  <!-- PHONE MOCK -->
-  <div class="phone-section">
-    <div class="phone-text">
-      <div class="section-label" data-tr="UYGULAMA" data-en="THE APP">UYGULAMA</div>
-      <h2 class="section-title" data-tr="MAÇI HİSSET" data-en="FEEL THE MATCH">MAÇI HİSSET</h2>
-      <p style="color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:32px" data-tr="Canlı skor, AI analiz ve bahis tahminleri bir arada. Maça girer girmez yapay zeka çalışmaya başlar." data-en="Live scores, AI analysis and betting predictions combined. The moment you enter a match, AI starts working.">
-        Canlı skor, AI analiz ve bahis tahminleri bir arada. Maça girer girmez yapay zeka çalışmaya başlar.
-      </p>
-      <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
-        <li style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)">
-          <span style="color:var(--green);font-size:18px">✓</span>
-          <span data-tr="Gerçek zamanlı dakika sayacı" data-en="Real-time minute counter">Gerçek zamanlı dakika sayacı</span>
-        </li>
-        <li style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)">
-          <span style="color:var(--green);font-size:18px">✓</span>
-          <span data-tr="İlk yarı bazlı analiz" data-en="First half based analysis">İlk yarı bazlı analiz</span>
-        </li>
-        <li style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)">
-          <span style="color:var(--green);font-size:18px">✓</span>
-          <span data-tr="H2H ve form analizi" data-en="H2H and form analysis">H2H ve form analizi</span>
-        </li>
-        <li style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted)">
-          <span style="color:var(--green);font-size:18px">✓</span>
-          <span data-tr="Karanlık / Aydınlık tema" data-en="Dark / Light theme">Karanlık / Aydınlık tema</span>
-        </li>
-      </ul>
-    </div>
-
-    <div class="phone-mock">
-      <div class="phone-screen">
-        <div class="phone-header">
-          <div class="phone-header-title">✦ AIALYSIS LIVE</div>
-        </div>
-        <div class="phone-match">
-          <div class="phone-teams">
-            <span>Galatasaray</span>
-            <span>Fenerbahçe</span>
-          </div>
-          <div style="margin:8px 0 4px">
-            <span class="phone-live">67'</span>
-          </div>
-          <div class="phone-score">2 - 1</div>
-          <div style="color:rgba(255,255,255,0.5);font-size:11px;margin-top:4px">(IY 1 - 0)</div>
-        </div>
-        <div class="phone-body">
-          <div class="phone-card">
-            <div class="phone-card-title">⚡ AI MAÇ ANALİZİ — %74 GÜVEN</div>
-            <div class="phone-row">
-              <span class="phone-label" data-tr="Toplam Gol" data-en="Total Goals">Toplam Gol</span>
-              <span class="phone-tag">3.5 ÜST</span>
-              <span class="pct">%72</span>
-            </div>
-            <div class="phone-row">
-              <span class="phone-label" data-tr="Korner" data-en="Corners">Korner</span>
-              <span class="phone-tag">11.5 ÜST</span>
-              <span class="pct">%68</span>
-            </div>
-            <div class="phone-row">
-              <span class="phone-label" data-tr="Faul" data-en="Fouls">Faul</span>
-              <span class="phone-tag phone-tag-orange">22.5 ÜST</span>
-              <span class="pct" style="color:var(--orange)">%65</span>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;font-size:11px;color:var(--green);align-items:center;padding:4px 0">
-            <span style="width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block"></span>
-            <span data-tr="Her 60 saniyede güncelleniyor" data-en="Updating every 60 seconds">Her 60 saniyede güncelleniyor</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DOWNLOAD -->
-  <section class="download-section" id="download">
-    <div class="section-label" data-tr="İNDİR" data-en="DOWNLOAD">İNDİR</div>
-    <h2 class="section-title" data-tr="HEMEN BAŞLA" data-en="GET STARTED NOW">HEMEN BAŞLA</h2>
-    <p style="color:var(--muted);font-size:16px;max-width:400px;margin:16px auto 0;line-height:1.7" data-tr="iOS ve Android için ücretsiz. Hemen indir, canlı maçları analiz etmeye başla." data-en="Free for iOS and Android. Download now and start analyzing live matches.">
-      iOS ve Android için ücretsiz. Hemen indir, canlı maçları analiz etmeye başla.
-    </p>
-    <div class="download-buttons">
-      <a href="#" class="store-btn">
-        <div class="store-icon">🤖</div>
-        <div class="store-text">
-          <small data-tr="Google Play'den İndir" data-en="Get it on">Google Play'den İndir</small>
-          <strong>Android APK</strong>
-        </div>
+  <section style="padding:60px 40px;text-align:center" id="dl">
+    <div class="sec-lbl" data-tr="İNDİR" data-en="DOWNLOAD">İNDİR</div>
+    <div class="sec-t" data-tr="HEMEN BAŞLA" data-en="GET STARTED">HEMEN BAŞLA</div>
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:32px;flex-wrap:wrap">
+      <a href="#" style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 24px;text-decoration:none;color:var(--text);transition:border-color .2s" onmouseover="this.style.borderColor='var(--gold-lt)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:28px">🤖</span>
+        <div><div style="font-size:10px;color:var(--muted)" data-tr="Google Play'den İndir" data-en="Get it on">Google Play'den İndir</div><div style="font-size:15px;font-weight:700">Android APK</div></div>
       </a>
-      <a href="#" class="store-btn">
-        <div class="store-icon">🍎</div>
-        <div class="store-text">
-          <small data-tr="App Store'dan İndir" data-en="Download on the">App Store'dan İndir</small>
-          <strong>iOS App</strong>
-        </div>
+      <a href="#" style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 24px;text-decoration:none;color:var(--text);transition:border-color .2s" onmouseover="this.style.borderColor='var(--gold-lt)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:28px">🍎</span>
+        <div><div style="font-size:10px;color:var(--muted)" data-tr="App Store'dan İndir" data-en="Download on">App Store'dan İndir</div><div style="font-size:15px;font-weight:700">iOS App</div></div>
       </a>
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer>
-    <div class="footer-logo">✦ AIALYSIS LIVE</div>
+    <div class="fl"><span class="ai">ai</span><span class="alysis">ALYSIS</span><span style="margin-left:6px;font-size:11px;color:var(--gold);letter-spacing:2px;font-weight:700">LIVE</span></div>
     <ul class="footer-links">
-      <li><a href="#features" data-tr="Özellikler" data-en="Features">Özellikler</a></li>
-      <li><a href="#" onclick="showPrivacy()" data-tr="Gizlilik Politikası" data-en="Privacy Policy">Gizlilik Politikası</a></li>
+      <li><a onclick="showPage('landing')" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+      <li><a onclick="showPage('privacy')" data-tr="Gizlilik" data-en="Privacy">Gizlilik</a></li>
       <li><a href="mailto:contact@aialysis.app">contact@aialysis.app</a></li>
     </ul>
-    <div class="footer-copy">© 2026 AIALYSIS LIVE. <span data-tr="Tüm hakları saklıdır." data-en="All rights reserved.">Tüm hakları saklıdır.</span></div>
+    <div style="font-size:11px;color:var(--muted)">© 2026 aiALYSIS Live</div>
   </footer>
+</div>
 
-</div><!-- /main-page -->
-
-<!-- PRIVACY PAGE -->
-<div class="privacy-page" id="privacyPage">
-  <div class="privacy-content">
-    <a href="#" onclick="showMain()" style="color:var(--blue-lt);text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;margin-bottom:32px">← <span data-tr="Ana Sayfaya Dön" data-en="Back to Home">Ana Sayfaya Dön</span></a>
-    <h1 data-tr="GİZLİLİK POLİTİKASI" data-en="PRIVACY POLICY">GİZLİLİK POLİTİKASI</h1>
-    <div class="date" data-tr="Son güncelleme: Mart 2026" data-en="Last updated: March 2026">Son güncelleme: Mart 2026</div>
-
-    <div class="highlight-box" data-tr="Bu politika, AIALYSIS LIVE uygulamasının kişisel verilerinizi nasıl topladığını, kullandığını ve koruduğunu açıklar." data-en="This policy explains how AIALYSIS LIVE collects, uses and protects your personal data.">
-      Bu politika, AIALYSIS LIVE uygulamasının kişisel verilerinizi nasıl topladığını, kullandığını ve koruduğunu açıklar.
+<!-- MATCHES -->
+<div class="page" id="page-matches">
+  <div class="matches-page">
+    <div class="mh">
+      <div>
+        <div class="mt" data-tr="CANLI MAÇLAR" data-en="LIVE MATCHES">CANLI MAÇLAR</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px" id="mcnt">...</div>
+      </div>
+      <div class="live-badge"><div class="ldot"></div><span>LIVE</span></div>
+      <button onclick="loadMatches()" style="background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:border-color .2s" onmouseover="this.style.borderColor='var(--gold-lt)'" onmouseout="this.style.borderColor='var(--border)'" data-tr="🔄 Yenile" data-en="🔄 Refresh">🔄 Yenile</button>
     </div>
+    <div class="mb"><div id="mc"><div class="lds"><div class="spin"></div><div data-tr="Yükleniyor..." data-en="Loading...">Yükleniyor...</div></div></div></div>
+  </div>
+</div>
 
+<!-- PRIVACY -->
+<div class="page" id="page-privacy">
+  <div class="priv">
+    <a onclick="showPage('landing')" style="color:var(--gold-lt);text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;margin-bottom:28px;cursor:pointer">← <span data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</span></a>
+    <h1 data-tr="GİZLİLİK POLİTİKASI" data-en="PRIVACY POLICY">GİZLİLİK POLİTİKASI</h1>
+    <div style="color:var(--muted);font-size:12px;margin-bottom:40px" data-tr="Son güncelleme: Mart 2026" data-en="Last updated: March 2026">Son güncelleme: Mart 2026</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--gold-lt);border-radius:8px;padding:16px 20px;margin-bottom:32px;font-size:13px;color:var(--muted)" data-tr="Bu politika, aiALYSIS Live uygulamasının kişisel verilerinizi nasıl topladığını açıklar." data-en="This policy explains how aiALYSIS Live collects your personal data.">Bu politika, aiALYSIS Live uygulamasının kişisel verilerinizi nasıl topladığını açıklar.</div>
     <h2 data-tr="1. Toplanan Veriler" data-en="1. Data We Collect">1. Toplanan Veriler</h2>
-    <p data-tr="AIALYSIS LIVE aşağıdaki verileri toplayabilir:" data-en="AIALYSIS LIVE may collect the following data:">AIALYSIS LIVE aşağıdaki verileri toplayabilir:</p>
-    <ul>
-      <li data-tr="Ad, soyad ve kullanıcı adı (isteğe bağlı)" data-en="Name, surname and username (optional)">Ad, soyad ve kullanıcı adı (isteğe bağlı)</li>
-      <li data-tr="E-posta adresi (giriş için)" data-en="Email address (for login)">E-posta adresi (giriş için)</li>
-      <li data-tr="Telegram kullanıcı bilgileri (Telegram ile giriş yapıldığında)" data-en="Telegram user info (when logging in with Telegram)">Telegram kullanıcı bilgileri (Telegram ile giriş yapıldığında)</li>
-      <li data-tr="Favori takımlar ve maçlar (uygulama tercihleri)" data-en="Favorite teams and matches (app preferences)">Favori takımlar ve maçlar (uygulama tercihleri)</li>
-      <li data-tr="Forum yorumları ve beğeniler" data-en="Forum comments and likes">Forum yorumları ve beğeniler</li>
-      <li data-tr="Uygulama kullanım istatistikleri (anonim)" data-en="App usage statistics (anonymous)">Uygulama kullanım istatistikleri (anonim)</li>
-    </ul>
+    <ul><li data-tr="Ad, soyad ve kullanıcı adı" data-en="Name and username">Ad, soyad ve kullanıcı adı</li><li data-tr="E-posta adresi" data-en="Email address">E-posta adresi</li><li data-tr="Telegram kullanıcı bilgileri (isteğe bağlı)" data-en="Telegram user info (optional)">Telegram kullanıcı bilgileri (isteğe bağlı)</li><li data-tr="Favori takımlar ve maçlar" data-en="Favorite teams and matches">Favori takımlar ve maçlar</li></ul>
+    <h2 data-tr="2. Kullanılan Servisler" data-en="2. Services Used">2. Kullanılan Servisler</h2>
+    <ul><li><strong>Supabase</strong> — <span data-tr="Kimlik doğrulama ve veritabanı" data-en="Auth and database">Kimlik doğrulama ve veritabanı</span></li><li><strong>API-Football</strong> — <span data-tr="Maç verileri" data-en="Match data">Maç verileri</span></li><li><strong>Groq AI</strong> — <span data-tr="Yapay zeka motoru" data-en="AI engine">Yapay zeka motoru</span></li></ul>
+    <h2 data-tr="3. Haklarınız" data-en="3. Your Rights">3. Haklarınız</h2>
+    <p data-tr="Verilerinize erişim, düzeltme veya silme talebinde bulunabilirsiniz:" data-en="You may request access, correction or deletion of your data:">Verilerinize erişim, düzeltme veya silme talebinde bulunabilirsiniz: <a href="mailto:contact@aialysis.app" style="color:var(--gold-lt)">contact@aialysis.app</a></p>
+  </div>
+</div>
 
-    <h2 data-tr="2. Verilerin Kullanımı" data-en="2. How We Use Your Data">2. Verilerin Kullanımı</h2>
-    <p data-tr="Toplanan veriler şu amaçlarla kullanılır:" data-en="Collected data is used for the following purposes:">Toplanan veriler şu amaçlarla kullanılır:</p>
-    <ul>
-      <li data-tr="Hesap oluşturma ve kimlik doğrulama" data-en="Account creation and authentication">Hesap oluşturma ve kimlik doğrulama</li>
-      <li data-tr="Kişiselleştirilmiş içerik ve bildirimler" data-en="Personalized content and notifications">Kişiselleştirilmiş içerik ve bildirimler</li>
-      <li data-tr="AI analiz sonuçlarını kaydetme ve doğruluk takibi" data-en="Saving AI analysis results and accuracy tracking">AI analiz sonuçlarını kaydetme ve doğruluk takibi</li>
-      <li data-tr="Uygulama geliştirme ve hata düzeltme" data-en="App improvement and bug fixing">Uygulama geliştirme ve hata düzeltme</li>
-    </ul>
-
-    <h2 data-tr="3. Veri Güvenliği" data-en="3. Data Security">3. Veri Güvenliği</h2>
-    <p data-tr="Verileriniz Supabase altyapısında şifreli olarak saklanmaktadır. SSL/TLS şifreleme kullanılmaktadır. Üçüncü taraflarla paylaşılmamaktadır." data-en="Your data is stored encrypted on Supabase infrastructure. SSL/TLS encryption is used. Not shared with third parties.">Verileriniz Supabase altyapısında şifreli olarak saklanmaktadır. SSL/TLS şifreleme kullanılmaktadır. Üçüncü taraflarla paylaşılmamaktadır.</p>
-
-    <h2 data-tr="4. Üçüncü Taraf Hizmetler" data-en="4. Third Party Services">4. Üçüncü Taraf Hizmetler</h2>
-    <p data-tr="Uygulama aşağıdaki üçüncü taraf hizmetleri kullanmaktadır:" data-en="The app uses the following third party services:">Uygulama aşağıdaki üçüncü taraf hizmetleri kullanmaktadır:</p>
-    <ul>
-      <li><strong>Supabase</strong> — <span data-tr="Kimlik doğrulama ve veritabanı" data-en="Authentication and database">Kimlik doğrulama ve veritabanı</span></li>
-      <li><strong>API-Football</strong> — <span data-tr="Maç ve istatistik verileri" data-en="Match and statistics data">Maç ve istatistik verileri</span></li>
-      <li><strong>Groq AI</strong> — <span data-tr="Yapay zeka analiz motoru" data-en="AI analysis engine">Yapay zeka analiz motoru</span></li>
-      <li><strong>Telegram</strong> — <span data-tr="Giriş servisi (isteğe bağlı)" data-en="Login service (optional)">Giriş servisi (isteğe bağlı)</span></li>
-    </ul>
-
-    <h2 data-tr="5. Haklarınız" data-en="5. Your Rights">5. Haklarınız</h2>
-    <p data-tr="KVKK ve GDPR kapsamında aşağıdaki haklara sahipsiniz:" data-en="Under KVKK and GDPR you have the following rights:">KVKK ve GDPR kapsamında aşağıdaki haklara sahipsiniz:</p>
-    <ul>
-      <li data-tr="Verilerinize erişim hakkı" data-en="Right to access your data">Verilerinize erişim hakkı</li>
-      <li data-tr="Verilerinizi silme hakkı" data-en="Right to delete your data">Verilerinizi silme hakkı</li>
-      <li data-tr="Verilerinizi düzeltme hakkı" data-en="Right to correct your data">Verilerinizi düzeltme hakkı</li>
-      <li data-tr="İşleme itiraz hakkı" data-en="Right to object to processing">İşleme itiraz hakkı</li>
-    </ul>
-    <p data-tr="Talepleriniz için: " data-en="For requests: ">Talepleriniz için: <a href="mailto:contact@aialysis.app" style="color:var(--blue-lt)">contact@aialysis.app</a></p>
-
-    <h2 data-tr="6. Çerezler" data-en="6. Cookies">6. Çerezler</h2>
-    <p data-tr="Mobil uygulama çerez kullanmamaktadır. Web sitesi yalnızca dil tercihi için yerel depolama kullanır." data-en="The mobile app does not use cookies. The website only uses local storage for language preference.">Mobil uygulama çerez kullanmamaktadır. Web sitesi yalnızca dil tercihi için yerel depolama kullanır.</p>
-
-    <h2 data-tr="7. İletişim" data-en="7. Contact">7. İletişim</h2>
-    <p>contact@aialysis.app</p>
+<!-- MODAL -->
+<div class="mo hidden" id="mo" onclick="if(event.target===this)closeModal()">
+  <div class="mod">
+    <div class="mod-hdr" id="mhdr"></div>
+    <div class="mod-body">
+      <div class="mod-tabs">
+        <button class="mtab active" onclick="switchTab('a')" data-tr="✦ AIalysis" data-en="✦ AIalysis">✦ AIalysis</button>
+        <button class="mtab" onclick="switchTab('i')" data-tr="İstatistik" data-en="Stats">İstatistik</button>
+      </div>
+      <div class="mcont active" id="tab-a"></div>
+      <div class="mcont" id="tab-i"></div>
+    </div>
   </div>
 </div>
 
 <script>
-  let currentLang = 'tr';
+const AK='6c9c09e4ce575757e5e725aa07c977b0';
+const AB='https://v3.football.api-sports.io';
+const SU='https://fohmlwoewjupceznwmdr.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4';
+let lang='tr',matches=[];
 
-  function setLang(lang) {
-    currentLang = lang;
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector(`.lang-btn:${lang === 'tr' ? 'first' : 'last'}-child`).classList.add('active');
-    document.querySelectorAll('[data-tr]').forEach(el => {
-      el.textContent = el.getAttribute('data-' + lang);
-    });
-  }
+function lp(s){s=s.toLowerCase();if(s.includes('turkey')&&s.includes('s\xfcper'))return 20000;if(s.includes('turkey'))return 19000;if(s.includes('champions league')&&!s.includes('concacaf'))return 18000;if(s.includes('europa league'))return 17900;if(s.includes('premier league')&&s.includes('england'))return 16000;if(s.includes('la liga'))return 15900;if(s.includes('bundesliga')&&s.includes('germany'))return 15800;if(s.includes('serie a')&&s.includes('italy'))return 15700;if(s.includes('ligue 1'))return 15600;if(s.includes('concacaf'))return 3000;return 5000;}
 
-  function showPrivacy() {
-    document.getElementById('mainPage').style.display = 'none';
-    document.getElementById('privacyPage').style.display = 'block';
-    window.scrollTo(0, 0);
-  }
+function setLang(l){lang=l;document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',(l==='tr'&&i===0)||(l==='en'&&i===1)));document.querySelectorAll('[data-tr]').forEach(el=>{if(el.tagName!=='INPUT')el.textContent=el.getAttribute('data-'+l);});}
 
-  function showMain() {
-    document.getElementById('privacyPage').style.display = 'none';
-    document.getElementById('mainPage').style.display = 'block';
-    window.scrollTo(0, 0);
-  }
+function showPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');window.scrollTo(0,0);if(n==='matches')loadMatches();}
 
-  // Smooth scroll
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const href = a.getAttribute('href');
-      if (href === '#') return;
-      const target = document.querySelector(href);
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
+async function api(ep){const r=await fetch(AB+ep,{headers:{'x-rapidapi-key':AK,'x-rapidapi-host':'v3.football.api-sports.io'}});return r.json();}
 
-  // Scroll animations
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.opacity = '1';
-        e.target.style.transform = 'translateY(0)';
-      }
-    });
-  }, { threshold: 0.1 });
+async function loadMatches(){
+  const c=document.getElementById('mc');
+  c.innerHTML='<div class="lds"><div class="spin"></div><div>Yükleniyor...</div></div>';
+  try{
+    const d=await api('/fixtures?live=all');
+    matches=d.response||[];
+    document.getElementById('mcnt').textContent=matches.length+(lang==='tr'?' canlı maç':' live matches');
+    renderMatches();
+  }catch(e){c.innerHTML='<div class="err">Bağlantı hatası.</div>';}
+}
 
-  document.querySelectorAll('.feature-card, .phone-mock, .stat-item').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(el);
-  });
+function renderMatches(){
+  const c=document.getElementById('mc');
+  if(!matches.length){c.innerHTML='<div style="text-align:center;padding:60px;color:var(--muted)">Şu an canlı maç yok.</div>';return;}
+  const gr={};
+  matches.forEach(m=>{const k=(m.league.country||'World')+' | '+(m.league.name||'');if(!gr[k])gr[k]={l:m.league,ms:[]};gr[k].ms.push(m);});
+  const s=Object.entries(gr).sort((a,b)=>lp(b[0])-lp(a[0]));
+  c.innerHTML=s.map(([k,{l,ms}])=>`
+    <div class="lg">
+      <div class="lh open" onclick="tgl(this)">
+        <img src="${l.logo||''}" onerror="this.style.display='none'" style="width:20px;height:20px;object-fit:contain">
+        <span class="ln">${l.country} | ${l.name}</span>
+        <span class="lc">${ms.length} maç</span>
+        <span class="lch">▲</span>
+      </div>
+      <div class="ml">${ms.map(m=>mr(m)).join('')}</div>
+    </div>`).join('');
+}
+
+function mr(m){
+  const ev=m.goals.home??'-',dep=m.goals.away??'-';
+  const dk=m.fixture.status.elapsed,st=m.fixture.status.short;
+  const live=['1H','HT','2H','ET','P'].includes(st);
+  return `<div class="mr" onclick="openM(${m.fixture.id})">
+    <div class="mtime">${live&&dk?`<div class="dk">${dk}'</div>`:`<div class="t">${st}</div>`}</div>
+    <div class="mteams">
+      <div class="tr2"><img src="${m.teams.home.logo}" onerror="this.style.display='none'" style="width:18px;height:18px;object-fit:contain;flex-shrink:0"><span class="tn${live&&ev>dep?' w':''}">${m.teams.home.name}</span></div>
+      <div class="tr2"><img src="${m.teams.away.logo}" onerror="this.style.display='none'" style="width:18px;height:18px;object-fit:contain;flex-shrink:0"><span class="tn${live&&dep>ev?' w':''}">${m.teams.away.name}</span></div>
+    </div>
+    <div class="ms"><div class="sv${!live?' e':''}">${ev}</div><div class="sv${!live?' e':''}">${dep}</div></div>
+    <span style="font-size:18px;color:var(--muted)">›</span>
+  </div>`;
+}
+
+function tgl(el){el.classList.toggle('open');el.nextElementSibling.style.display=el.classList.contains('open')?'block':'none';}
+
+async function openM(id){
+  const m=matches.find(x=>x.fixture.id===id);if(!m)return;
+  document.getElementById('mo').classList.remove('hidden');
+  const ev=m.goals.home??0,dep=m.goals.away??0,dk=m.fixture.status.elapsed;
+  document.getElementById('mhdr').innerHTML=`
+    <div class="mod-lig">${m.league.country} | ${m.league.name}</div>
+    <div class="mod-teams">
+      <div class="mod-team"><img src="${m.teams.home.logo}" onerror="this.style.display='none'" style="width:44px;height:44px;object-fit:contain"><div class="mod-tn">${m.teams.home.name}</div></div>
+      <div class="mod-sb">${dk?`<div class="mod-dk">${dk}'</div>`:''}<div class="mod-score">${ev} - ${dep}</div><div class="mod-iy">IY ${m.score.halftime.home??0}-${m.score.halftime.away??0}</div></div>
+      <div class="mod-team"><img src="${m.teams.away.logo}" onerror="this.style.display='none'" style="width:44px;height:44px;object-fit:contain"><div class="mod-tn">${m.teams.away.name}</div></div>
+    </div>`;
+  document.getElementById('tab-a').innerHTML='<div class="lds"><div class="spin"></div><div>AI analiz yapılıyor...</div></div>';
+  document.getElementById('tab-i').innerHTML='<div class="lds"><div class="spin"></div><div>İstatistikler yükleniyor...</div></div>';
+  switchTab('a');
+  loadA(m);loadI(id);
+}
+
+async function loadA(m){
+  try{
+    const r=await fetch(SU+'/functions/v1/analiz',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SK,'apikey':SK},
+      body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score.halftime.home??0,depGolIY:m.score.halftime.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0},istatistikler:{ev:{},dep:{}},h2h:[],evForm:[],depForm:[],oyuncular:[]})});
+    const d=await r.json();
+    if(d.basarili)rA(d.analiz,m);else throw new Error(d.hata);
+  }catch(e){document.getElementById('tab-a').innerHTML=`<div class="err">Analiz hatası: ${e.message}</div>`;}
+}
+
+function rA(a,m){
+  const t=a.tahminler||[],o=a.olasiliklar||{};
+  document.getElementById('tab-a').innerHTML=`
+    <div class="ai-card">
+      <div class="ai-ct">✦ AI MAÇ ANALİZİ — %${a.tahmin_guveni||0} GÜVEN</div>
+      <div class="ai-stats">
+        <div class="as"><div class="asv" style="color:var(--blue-lt)">${a.skor_tahmini?.ev??0}</div><div class="asl">EV SKORU</div></div>
+        <div class="as"><div class="asv" style="color:var(--red)">${a.skor_tahmini?.dep??0}</div><div class="asl">DEP SKORU</div></div>
+        <div class="as"><div class="asv" style="color:var(--yellow)">${a.gol_beklentisi??0}</div><div class="asl">GOL BEKLENTİSİ</div></div>
+        <div class="as"><div class="asv" style="color:var(--green);font-size:14px">${a.mac_temposu||'-'}</div><div class="asl">TEMPO</div></div>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:10px">SONUÇ OLASILIĞI</div>
+      <div style="display:flex;justify-content:space-between;text-align:center;margin-bottom:8px">
+        <div><div style="font-size:20px;font-weight:700;color:var(--blue-lt)">${o.ev_kazanir||0}%</div><div style="font-size:10px;color:var(--muted)">${m.teams.home.name.substring(0,12)}</div></div>
+        <div><div style="font-size:20px;font-weight:700;color:var(--muted)">${o.beraberlik||0}%</div><div style="font-size:10px;color:var(--muted)">Beraberlik</div></div>
+        <div><div style="font-size:20px;font-weight:700;color:var(--red)">${o.dep_kazanir||0}%</div><div style="font-size:10px;color:var(--muted)">${m.teams.away.name.substring(0,12)}</div></div>
+      </div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="height:100%;background:linear-gradient(90deg,var(--blue-lt) ${o.ev_kazanir||0}%,#333 ${o.ev_kazanir||0}% ${100-(o.dep_kazanir||0)}%,var(--red) ${100-(o.dep_kazanir||0)}%)"></div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:10px">BAHİS TAHMİNLERİ</div>
+    ${t.map(p=>`<div class="pc"><div class="ph"><span class="pk">${p.kategori}</span>${p.mevcut>0?`<span class="pcur">Şu an: ${p.mevcut}</span>`:''}</div><div class="pl"><span class="ptag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="pd">${p.aciklama||p.tahmin}</span><span class="pg" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}
+    ${a.genel_yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px"><div style="font-size:11px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">GENEL DEĞERLENDİRME</div><p style="font-size:13px;color:var(--muted);line-height:1.7">${a.genel_yorum}</p></div>`:''}
+    <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--muted)">* AI tahminleri yalnızca bilgi amaçlıdır.</div>`;
+}
+
+async function loadI(id){
+  try{
+    const d=await api('/fixtures/statistics?fixture='+id);
+    const s=d.response||[];
+    if(!s.length){document.getElementById('tab-i').innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">İstatistik yok.</div>';return;}
+    const ev=s[0],dp=s[1]||{statistics:[]};
+    document.getElementById('tab-i').innerHTML=`
+      <div style="display:flex;justify-content:space-between;padding:0 0 12px;font-size:12px;font-weight:700">
+        <span style="color:var(--blue-lt)">${ev.team?.name||''}</span>
+        <span style="color:var(--red)">${dp.team?.name||''}</span>
+      </div>
+      ${(ev.statistics||[]).map((st,i)=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(30,30,53,.5)">
+        <div style="font-size:14px;font-weight:700;color:var(--blue-lt);width:48px;text-align:right">${st.value??'-'}</div>
+        <div style="flex:1;text-align:center;font-size:11px;color:var(--muted)">${st.type}</div>
+        <div style="font-size:14px;font-weight:700;color:var(--red);width:48px">${dp.statistics[i]?.value??'-'}</div>
+      </div>`).join('')}`;
+  }catch(e){document.getElementById('tab-i').innerHTML='<div class="err">Yüklenemedi.</div>';}
+}
+
+function switchTab(n){
+  document.querySelectorAll('.mtab').forEach((b,i)=>b.classList.toggle('active',(i===0&&n==='a')||(i===1&&n==='i')));
+  document.querySelectorAll('.mcont').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+}
+function closeModal(){document.getElementById('mo').classList.add('hidden');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:.1});
+document.querySelectorAll('.fc').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity .5s ease,transform .5s ease';io.observe(el);});
 </script>
 </body>
 </html>
