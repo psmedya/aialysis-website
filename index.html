@@ -411,13 +411,13 @@ function tarihDegistir(f){
   tarih=new Date(tarih.getTime()+f*86400000);
   canliMod=false;
   document.getElementById('liveBtnEl').classList.remove('active');
-  loadMaclar();
+  // loadMaclar(); // BAKIM MODU
 }
 
 function toggleCanli(){
   canliMod=!canliMod;
   document.getElementById('liveBtnEl').classList.toggle('active',canliMod);
-  loadMaclar();
+  // loadMaclar(); // BAKIM MODU
 }
 
 async function loadMaclar(){
@@ -846,13 +846,13 @@ async function loadTahminler(filter='hepsi') {
 // Otomatik yenileme
 setInterval(()=>{
   const ap=document.querySelector('.page.active');
-  if(ap?.id==='page-maclar')loadMaclar();
+  if(ap?.id==='page-maclar')// loadMaclar(); // BAKIM MODU
   if(ap?.id==='page-aialysis')loadAialysis();
 },30000);
 
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadMaclar();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)// loadMaclar(); // BAKIM MODU});
 
-loadMaclar();
+// loadMaclar(); // BAKIM MODU
 </script>
 </body>
 </html>
