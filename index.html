@@ -736,6 +736,32 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); }
 
 // Başlat
 loadMaclar();
+
+// Otomatik yenileme — 30s maç listesi
+setInterval(() => {
+  if (!document.getElementById('modalOverlay').classList.contains('hidden')) return;
+  const activePage = document.querySelector('.page.active');
+  if (activePage && activePage.id === 'page-maclar') loadMaclar();
+  if (activePage && activePage.id === 'page-aialysis') loadAialysis();
+}, 30000);
+
+// Modal açıkken istatistik 30s yenile
+setInterval(() => {
+  if (document.getElementById('modalOverlay').classList.contains('hidden')) return;
+  if (!currentMac) return;
+  const activeTab = document.querySelector('.modal-tab.active');
+  if (activeTab && activeTab.textContent.includes('İstatistik')) {
+    loadIstat(currentMac.fixture.id);
+  }
+}, 30000);
+
+// Sekme görünür olduğunda yenile
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    const activePage = document.querySelector('.page.active');
+    if (activePage && activePage.id === 'page-maclar') loadMaclar();
+  }
+});
 </script>
 </body>
 </html>
