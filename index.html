@@ -357,8 +357,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
       <span></span><span></span><span></span>
     </button>
-    <div class="nav-logo"><span class="ai">ai</span><span class="alysis">ALYSIS</span></div>
-    <div class="nav-live" id="liveBtnEl" onclick="toggleCanli()">
+    <div class="nav-logo" onclick="showMainTab('maclar');loadMaclar();" style="cursor:pointer"><span class="ai">ai</span><span class="alysis">ALYSIS</span></div>
+    <div style="flex:1"></div>
+    <div class="nav-live" id="liveBtnEl" onclick="toggleCanli()" style="margin-left:auto">
       <div class="dot"></div>
       <span>CANLI</span>
     </div>
