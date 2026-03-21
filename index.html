@@ -450,7 +450,9 @@ function ligOncelik(s){
 }
 
 async function apiFetch(ep){
-  const r=await fetch(AB+ep,{headers:{'x-rapidapi-key':AK,'x-rapidapi-host':'v3.football.api-sports.io'}});
+  const r=await fetch(`${SU}/functions/v1/api-proxy?path=${encodeURIComponent(ep)}`,{
+    headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}
+  });
   return r.json();
 }
 
