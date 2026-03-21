@@ -21,7 +21,10 @@
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 
 /* LAYOUT */
-.layout{display:grid;grid-template-columns:var(--sidebar) 1fr var(--right);grid-template-rows:60px 1fr;min-height:100vh;transition:grid-template-columns .25s ease;}
+.layout{display:grid;grid-template-columns:var(--sidebar) 1fr 0;grid-template-rows:60px 1fr;min-height:100vh;transition:grid-template-columns .25s ease;}
+.layout.panel-acik{grid-template-columns:var(--sidebar) 1fr var(--right);}
+.layout.sidebar-kapali.panel-acik{grid-template-columns:0 1fr var(--right);}
+.layout.sidebar-kapali{grid-template-columns:0 1fr 0;}
 
 /* NAVBAR */
 .navbar{
@@ -119,9 +122,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   background:var(--surface);
   border-left:1px solid var(--border);
   overflow-y:auto;
+  overflow-x:hidden;
   height:calc(100vh - 60px);
   position:sticky;top:60px;
+  min-width:0;
 }
+.panel-kapat{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.4);border:none;color:rgba(255,255,255,.7);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:10;}
+.panel-kapat:hover{background:rgba(229,57,53,.6);color:white;}
+.detail-header{position:relative;}
 .panel-section{padding:16px;border-bottom:1px solid var(--border);}
 .panel-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;margin-bottom:12px;}
 
@@ -401,7 +409,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div style="font-size:12px;color:var(--muted);line-height:1.6">Bir maça tıkla, AI analizi ve istatistikleri burada görün.</div>
     </div>
     <div id="matchDetail" class="match-detail">
-      <div class="detail-header" id="detailHeader"></div>
+      <div class="detail-header" id="detailHeader">
+        <button class="panel-kapat" onclick="panelKapat()">✕</button>
+      </div>
       <div class="detail-tabs" id="detailTabsEl">
         <div class="detail-tab active" onclick="switchDetailTab('analiz')">✦ AIalysis</div>
         <div class="detail-tab" onclick="switchDetailTab('ozet')">Özet</div>
@@ -436,6 +446,14 @@ function toggleSidebar(){
   const btn=document.getElementById('hamburgerBtn');
   layout.classList.toggle('sidebar-kapali');
   btn.classList.toggle('active');
+}
+
+function panelKapat(){
+  document.querySelector('.layout').classList.remove('panel-acik');
+  document.getElementById('matchDetail').classList.remove('active');
+  document.getElementById('defaultPanel').style.display='';
+  if(detailTimer){clearInterval(detailTimer);detailTimer=null;}
+  currentMac=null;
 }
 
 function pad2(n){return String(n).padStart(2,'0');}
@@ -577,7 +595,11 @@ function aramaYap(q){
 async function openMac(id){
   const m=maclar.find(x=>x.fixture.id===id);
   if(!m)return;
+  const layout=document.querySelector('.layout');
+  // Aynı maça tıklanırsa kapat
+  if(currentMac?.fixture.id===id){panelKapat();return;}
   currentMac=m;
+  layout.classList.add('panel-acik');
   document.getElementById('defaultPanel').style.display='none';
   document.getElementById('matchDetail').classList.add('active');
   const evGol=m.goals.home??0,depGol=m.goals.away??0,dk=m.fixture.status.elapsed;
