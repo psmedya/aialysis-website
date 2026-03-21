@@ -666,7 +666,7 @@ function macSatir(m){
   const live=['1H','HT','2H','ET','P'].includes(st);
   const bitti=['FT','AET','PEN'].includes(st);
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
-  const dkTxt=dk>90?`90+${dk-90}'`:dk>45&&st==='1H'?`45+${dk-45}'`:`${dk}'`;
+  const dkTxt=dk==null?'':dk>90?`90+${dk-90}'`:dk>45&&st==='1H'?`45+${dk-45}'`:`${dk}'`;
   const durumStr=live?`<span class="dk-badge" data-elapsed="${dk}">${dkTxt}</span>`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
   return`<div class="mac-satir" onclick="openMac(${m.fixture.id})">
     <div class="mac-zaman"><div class="saat">${localSaat}</div><div class="durum">${durumStr}</div></div>
@@ -818,7 +818,7 @@ async function loadDetailAnaliz(m){
     const depIst={topSahip:parseInt(flat['dep_Ball Possession'])||0,toplamSut:pf(flat['dep_Total Shots']),isabetliSut:pf(flat['dep_Shots on Goal']),korner:pf(flat['dep_Corner Kicks']),faul:pf(flat['dep_Fouls']),sariKart:pf(flat['dep_Yellow Cards']),kirmziKart:pf(flat['dep_Red Cards'])};
     if(evIst.faul+depIst.faul+evIst.korner+depIst.korner+evIst.toplamSut+depIst.toplamSut===0){document.getElementById('dc-analiz').innerHTML='<div class="empty">Bu mac icin canli istatistik destegi yok.</div>';return;}
     const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
-      body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score.halftime.home??0,depGolIY:m.score.halftime.away??0,durum:st,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:evIst,dep:depIst},h2h:[]})});
+      body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score?.halftime?.home??0,depGolIY:m.score?.halftime?.away??0,durum:st,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:evIst,dep:depIst},h2h:[]})});
     const d=await r.json();
     if(d.basarili)renderDetailAnaliz(d.analiz,m);
     else throw new Error(d.hata);
@@ -1181,7 +1181,7 @@ async function loadAialysis(){
         const dI={topSahip:parseInt(flat['dep_Ball Possession'])||0,toplamSut:pf2(flat['dep_Total Shots']),isabetliSut:pf2(flat['dep_Shots on Goal']),korner:pf2(flat['dep_Corner Kicks']),faul:pf2(flat['dep_Fouls']),sariKart:pf2(flat['dep_Yellow Cards']),kirmziKart:pf2(flat['dep_Red Cards'])};
         if(eI.faul+dI.faul+eI.korner+dI.korner+eI.toplamSut+dI.toplamSut===0) continue;
         const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
-          body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score.halftime.home??0,depGolIY:m.score.halftime.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:eI,dep:dI},h2h:[]})});
+          body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score?.halftime?.home??0,depGolIY:m.score?.halftime?.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:eI,dep:dI},h2h:[]})});
         const an=await r.json();
         const a=an.analiz||{};
         const gb=parseFloat(a.gol_beklentisi)||0;
