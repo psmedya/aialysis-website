@@ -193,6 +193,47 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* FORM BAR */
+.form-bar{display:flex;gap:3px;margin-top:5px;justify-content:center;}
+.form-dot{width:17px;height:17px;border-radius:3px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;}
+.form-dot.g{background:var(--green);}
+.form-dot.b{background:var(--muted);}
+.form-dot.m{background:var(--red);}
+
+/* HOT BADGE */
+.hot-badge{background:rgba(229,57,53,.2);color:var(--red);border:1px solid rgba(229,57,53,.4);border-radius:4px;padding:1px 5px;font-size:9px;font-weight:800;margin-left:4px;}
+
+/* EVENTS — ÖZET */
+.event-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(46,46,46,.4);}
+.event-dk{width:26px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;}
+.event-icon{width:22px;text-align:center;font-size:14px;flex-shrink:0;}
+.event-detail{flex:1;}
+.event-player{font-size:12px;font-weight:700;}
+.event-assist{font-size:10px;color:var(--muted);}
+.event-away{text-align:right;}
+.ev-section-label{font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:12px 0 6px;}
+.match-info-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(46,46,46,.4);font-size:12px;}
+.match-info-label{color:var(--muted);font-size:10px;width:70px;flex-shrink:0;}
+
+/* COMPARISON — KARŞILAŞTIRMA */
+.karsi-sec-title{font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;}
+.karsi-mac{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(46,46,46,.3);}
+.karsi-takim{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.karsi-takim.b{font-weight:700;}
+.karsi-skor{font-size:12px;font-weight:700;min-width:38px;text-align:center;}
+.karsi-res{width:16px;height:16px;border-radius:3px;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;}
+.karsi-res.g{background:var(--green);}
+.karsi-res.b{background:var(--muted);}
+.karsi-res.m{background:var(--red);}
+
+/* ODDS — ORANLAR */
+.odds-bm{margin-bottom:12px;}
+.odds-bm-name{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:5px;}
+.odds-row{display:flex;gap:6px;}
+.odds-val{flex:1;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 4px;text-align:center;}
+.odds-lbl{font-size:9px;color:var(--muted);margin-bottom:3px;}
+.odds-price{font-size:15px;font-weight:700;color:var(--gold-lt);}
+
 /* Responsive */
 @media(max-width:1200px){.layout{grid-template-columns:var(--sidebar) 1fr;}.right-panel{display:none;}}
 @media(max-width:768px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.navbar{padding:0 16px;}}
@@ -348,13 +389,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="detail-header" id="detailHeader"></div>
       <div class="detail-tabs" id="detailTabsEl">
         <div class="detail-tab active" onclick="switchDetailTab('analiz')">✦ AIalysis</div>
+        <div class="detail-tab" onclick="switchDetailTab('ozet')">Özet</div>
         <div class="detail-tab" onclick="switchDetailTab('istat')">İstatistik</div>
         <div class="detail-tab" onclick="switchDetailTab('kadro')">Kadro</div>
+        <div class="detail-tab" onclick="switchDetailTab('karsi')">Karşılaştırma</div>
+        <div class="detail-tab" onclick="switchDetailTab('oranlar')">Oranlar</div>
       </div>
       <div class="detail-body">
         <div class="detail-content active" id="dc-analiz"></div>
+        <div class="detail-content" id="dc-ozet"></div>
         <div class="detail-content" id="dc-istat"></div>
         <div class="detail-content" id="dc-kadro"></div>
+        <div class="detail-content" id="dc-karsi"></div>
+        <div class="detail-content" id="dc-oranlar"></div>
       </div>
     </div>
   </aside>
@@ -509,24 +556,72 @@ async function openMac(id){
   currentMac=m;
   document.getElementById('defaultPanel').style.display='none';
   document.getElementById('matchDetail').classList.add('active');
-  const ev=m.goals.home??0,dep=m.goals.away??0,dk=m.fixture.status.elapsed;
+  const evGol=m.goals.home??0,depGol=m.goals.away??0,dk=m.fixture.status.elapsed;
   const localSaat=new Date(m.fixture.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const iy=m.score?.halftime;
+  const bitti=['FT','AET','PEN'].includes(m.fixture.status.short);
   document.getElementById('detailHeader').innerHTML=`
     <div class="detail-lig">${m.league.country} | ${m.league.name} · ${localSaat}</div>
     <div class="detail-takimlar">
-      <div class="detail-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain"><div class="detail-takim-adi">${m.teams.home.name}</div></div>
-      <div class="detail-skor-kutu">${dk?`<div class="detail-dk">${dk}'</div>`:''}<div class="detail-skor">${ev} - ${dep}</div><div class="detail-iy">IY ${m.score.halftime.home??0}-${m.score.halftime.away??0}</div></div>
-      <div class="detail-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain"><div class="detail-takim-adi">${m.teams.away.name}</div></div>
+      <div class="detail-takim">
+        <img src="${m.teams.home.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain">
+        <div class="detail-takim-adi">${m.teams.home.name}</div>
+        <div class="form-bar" id="formBarEv"></div>
+      </div>
+      <div class="detail-skor-kutu">
+        ${dk?`<div class="detail-dk">${dk}'</div>`:''}
+        <div class="detail-skor">${evGol} - ${depGol}</div>
+        <div class="detail-iy">IY ${iy?.home??'-'} - ${iy?.away??'-'}</div>
+        ${bitti?`<div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px">MAÇ BİTTİ</div>`:''}
+      </div>
+      <div class="detail-takim">
+        <img src="${m.teams.away.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain">
+        <div class="detail-takim-adi">${m.teams.away.name}</div>
+        <div class="form-bar" id="formBarDep"></div>
+      </div>
     </div>`;
   document.querySelectorAll('.detail-content').forEach(c=>{c.innerHTML='<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';c.classList.remove('active');});
   document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
   document.getElementById('dc-analiz').classList.add('active');
   if(detailTimer)clearInterval(detailTimer);
+  // Fetch form bars async (non-blocking)
+  loadFormBars(m.teams.home.id, m.teams.away.id);
   loadDetailAnaliz(m);
+  loadDetailOzet(m.fixture.id, m);
   loadDetailIstat(m.fixture.id);
   loadDetailKadro(m.fixture.id);
+  loadDetailKarsi(m);
+  loadDetailOranlar(m.fixture.id);
   const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
-  if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac);loadDetailIstat(id);}},30000);}
+  if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac);loadDetailIstat(id);loadDetailOzet(id,currentMac);}},30000);}
+}
+
+async function loadFormBars(evId, depId){
+  try{
+    const [evR,depR]=await Promise.all([
+      apiFetch(`/fixtures?team=${evId}&last=5`),
+      apiFetch(`/fixtures?team=${depId}&last=5`)
+    ]);
+    const renderBar=(fixtures, teamId, elId)=>{
+      const el=document.getElementById(elId);
+      if(!el)return;
+      const dots=fixtures.slice().reverse().map(f=>{
+        const st=f.fixture.status.short;
+        if(!['FT','AET','PEN'].includes(st))return null;
+        const evTakim=f.teams.home.id===teamId;
+        const evGol=f.goals.home??0,depGol=f.goals.away??0;
+        let res;
+        if(evGol===depGol)res='b';
+        else if((evTakim&&evGol>depGol)||(!evTakim&&depGol>evGol))res='g';
+        else res='m';
+        const lbl=res==='g'?'G':res==='b'?'B':'M';
+        return`<div class="form-dot ${res}">${lbl}</div>`;
+      }).filter(Boolean);
+      el.innerHTML=dots.join('');
+    };
+    renderBar(evR.response||[], evId, 'formBarEv');
+    renderBar(depR.response||[], depId, 'formBarDep');
+  }catch(_){}
 }
 
 async function loadDetailAnaliz(m){
@@ -654,18 +749,20 @@ async function loadBitmisMacTahminleri(m) {
 }
 
 function renderDetailAnaliz(a,m){
-  const t=a.tahminler||[],o=a.olasiliklar||{};
+  const t=a.tahminler||[],o=a.olasiliklar||{},riskler=a.riskler||[];
   const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
+  const skor=a.skor_tahmini||{};
   document.getElementById('dc-analiz').innerHTML=`
     <div style="padding:16px">
     <div class="ai-card">
       <div class="ai-title">✦ AI ANALİZİ — %${a.tahmin_guveni||0} GÜVEN</div>
       <div class="ai-grid">
-        <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${a.skor_tahmini?.ev??0}</div><div class="ai-lbl">EV SKORU</div></div>
-        <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${a.skor_tahmini?.dep??0}</div><div class="ai-lbl">DEP SKORU</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${skor.ev??'-'}</div><div class="ai-lbl">EV SKORU</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${skor.dep??'-'}</div><div class="ai-lbl">DEP SKORU</div></div>
         <div class="ai-stat"><div class="ai-val" style="color:var(--yellow)">${a.gol_beklentisi??0}</div><div class="ai-lbl">GOL BEK.</div></div>
         <div class="ai-stat"><div class="ai-val" style="color:var(--green);font-size:11px">${a.mac_temposu||'-'}</div><div class="ai-lbl">TEMPO</div></div>
       </div>
+      ${(skor.ev!=null&&skor.dep!=null)?`<div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)"><span style="font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px">TAHMİNİ SKOR </span><span style="font-size:20px;font-weight:900;color:white;letter-spacing:4px">${skor.ev} - ${skor.dep}</span></div>`:''}
     </div>
     <div class="olas-card">
       <div class="olas-title">SONUÇ OLASILIĞI</div>
@@ -676,7 +773,8 @@ function renderDetailAnaliz(a,m){
       </div>
       <div class="olas-bar"><div style="height:100%;background:linear-gradient(90deg,var(--blue-lt) ${o.ev_kazanir||0}%,#444 ${o.ev_kazanir||0}% ${100-(o.dep_kazanir||0)}%,var(--red) ${100-(o.dep_kazanir||0)}%)"></div></div>
     </div>
-    ${t.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">Şu an: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin}</span><span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}
+    ${t.length?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:10px 0 6px">TAHMİNLER</div>${t.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">Şu an: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin||''}</span><span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}`:'<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;font-size:12px;color:var(--muted)">Yüksek güvenli tahmin bulunamadı.</div>'}
+    ${riskler.length?`<div style="background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.25);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--red);font-weight:700;letter-spacing:1px;margin-bottom:6px">⚠ RİSKLER</div>${riskler.map(r=>`<div style="font-size:11px;color:rgba(238,238,238,.7);margin-bottom:3px;line-height:1.4">• ${r}</div>`).join('')}</div>`:''}
     ${a.genel_yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:6px">GENEL DEĞERLENDİRME</div><div style="font-size:11px;color:var(--muted);line-height:1.6">${a.genel_yorum}</div></div>`:''}
     ${live?`<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:10px;font-size:10px;color:var(--green);margin-top:8px"><div style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite"></div>Her 30 saniyede otomatik güncelleniyor</div>`:''}
     <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:6px">* AI tahminleri yalnızca bilgi amaçlıdır.</div>
@@ -716,8 +814,190 @@ async function loadDetailKadro(fixId){
   }catch(e){document.getElementById('dc-kadro').innerHTML='<div class="error">Yüklenemedi.</div>';}
 }
 
+async function loadDetailOzet(fixId, m){
+  const c=document.getElementById('dc-ozet');
+  try{
+    const [evR,infoR]=await Promise.all([
+      apiFetch(`/fixtures/events?fixture=${fixId}`),
+      apiFetch(`/fixtures?id=${fixId}`)
+    ]);
+    const events=evR.response||[];
+    const fix=(infoR.response||[])[0];
+    const venue=fix?.fixture?.venue;
+    const ref=fix?.fixture?.referee;
+    const season=fix?.league?.season;
+    const round=fix?.league?.round;
+
+    const evName=m.teams.home.name, depName=m.teams.away.name;
+
+    if(!events.length&&!venue?.name){c.innerHTML='<div class="empty">Maç bilgisi henüz yok.</div>';return;}
+
+    const eventIcon=(type,detail)=>{
+      if(type==='Goal')return detail?.includes('Penalty')?'⚽🅿️':detail?.includes('Own')?'⚽🔴':'⚽';
+      if(type==='Card')return detail?.includes('Yellow')&&detail?.includes('Red')?'🟧':detail?.includes('Red')?'🟥':'🟨';
+      if(type==='subst')return'🔄';
+      if(type==='Var')return'📺';
+      return'📌';
+    };
+
+    const evSide=(ev)=>ev.team.name===evName;
+
+    const eventsHtml=events.length?`
+      <div class="ev-section-label">MAÇ OLAYLARI</div>
+      ${events.map(ev=>{
+        const isEv=evSide(ev);
+        const icon=eventIcon(ev.type,ev.detail);
+        const dk=`${ev.time.elapsed}${ev.time.extra?'+'+ev.time.extra:''}'`;
+        const player=ev.player?.name||'';
+        const assist=ev.assist?.name?`<div class="event-assist">${ev.type==='subst'?'⬇ '+ev.assist.name:'↪ '+ev.assist.name}</div>`:'';
+        if(isEv){
+          return`<div class="event-item">
+            <div class="event-dk">${dk}</div>
+            <div class="event-icon">${icon}</div>
+            <div class="event-detail"><div class="event-player">${player}</div>${assist}</div>
+            <div style="flex:1"></div>
+          </div>`;
+        }else{
+          return`<div class="event-item">
+            <div style="flex:1"></div>
+            <div class="event-detail event-away"><div class="event-player">${player}</div>${assist}</div>
+            <div class="event-icon">${icon}</div>
+            <div class="event-dk">${dk}</div>
+          </div>`;
+        }
+      }).join('')}`:'';
+
+    const infoHtml=`
+      <div class="ev-section-label" style="margin-top:16px">MAÇ BİLGİSİ</div>
+      ${venue?.name?`<div class="match-info-row"><span class="match-info-label">Stadyum</span><span>${venue.name}${venue.city?', '+venue.city:''}</span></div>`:''}
+      ${ref?`<div class="match-info-row"><span class="match-info-label">Hakem</span><span>${ref}</span></div>`:''}
+      ${season?`<div class="match-info-row"><span class="match-info-label">Sezon</span><span>${season}</span></div>`:''}
+      ${round?`<div class="match-info-row"><span class="match-info-label">Hafta</span><span>${round}</span></div>`:''}`;
+
+    c.innerHTML=`<div style="padding:16px">
+      <div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;margin-bottom:4px">
+        <span style="color:var(--blue-lt)">${evName}</span>
+        <span style="color:var(--red)">${depName}</span>
+      </div>
+      ${eventsHtml}
+      ${infoHtml}
+    </div>`;
+  }catch(e){c.innerHTML=`<div class="error">Yüklenemedi: ${e.message}</div>`;}
+}
+
+async function loadDetailKarsi(m){
+  const c=document.getElementById('dc-karsi');
+  const evId=m.teams.home.id, depId=m.teams.away.id;
+  const evName=m.teams.home.name, depName=m.teams.away.name;
+  try{
+    const [ev5,dep5,evEv5,depDep5,h2hR]=await Promise.all([
+      apiFetch(`/fixtures?team=${evId}&last=5`),
+      apiFetch(`/fixtures?team=${depId}&last=5`),
+      apiFetch(`/fixtures?team=${evId}&last=5&venue=home`),
+      apiFetch(`/fixtures?team=${depId}&last=5&venue=away`),
+      apiFetch(`/fixtures/headtohead?h2h=${evId}-${depId}&last=20`)
+    ]);
+
+    const macSatirKarsi=(fixtures, focusId, label)=>{
+      const finished=(fixtures||[]).filter(f=>['FT','AET','PEN'].includes(f.fixture.status.short));
+      if(!finished.length)return`<div class="karsi-sec-title">${label}</div><div style="font-size:11px;color:var(--muted);padding:6px 0">Maç bulunamadı.</div>`;
+      return`<div class="karsi-sec-title">${label}</div>
+        ${finished.map(f=>{
+          const isHome=f.teams.home.id===focusId;
+          const eg=f.goals.home??0,dg=f.goals.away??0;
+          const focusGol=isHome?eg:dg, opGol=isHome?dg:eg;
+          let res;
+          if(eg===dg)res='b';
+          else if((isHome&&eg>dg)||(!isHome&&dg>eg))res='g';
+          else res='m';
+          const resLbl=res==='g'?'G':res==='b'?'B':'M';
+          const tarih=new Date(f.fixture.date).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'});
+          const oponent=isHome?f.teams.away.name:f.teams.home.name;
+          return`<div class="karsi-mac">
+            <div class="karsi-res ${res}">${resLbl}</div>
+            <div class="karsi-takim b" style="max-width:90px">${isHome?f.teams.home.name:f.teams.away.name}</div>
+            <div class="karsi-skor">${focusGol}-${opGol}</div>
+            <div class="karsi-takim" style="max-width:90px">${oponent}</div>
+            <div style="font-size:9px;color:var(--muted);flex-shrink:0">${tarih}</div>
+          </div>`;
+        }).join('')}`;
+    };
+
+    const h2hFinished=(h2hR.response||[]).filter(f=>['FT','AET','PEN'].includes(f.fixture.status.short));
+    const h2hHtml=`<div class="karsi-sec-title">H2H — İKİ TAKIM ARASINDAKİ SON 20 MAÇ</div>
+      ${h2hFinished.length?h2hFinished.map(f=>{
+        const eg=f.goals.home??0,dg=f.goals.away??0;
+        const tarih=new Date(f.fixture.date).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+        const evWin=eg>dg,depWin=dg>eg;
+        return`<div class="karsi-mac">
+          <div class="karsi-res ${evWin?'g':depWin?'m':'b'}">${evWin?'G':depWin?'M':'B'}</div>
+          <div class="karsi-takim ${evWin?'b':''}" style="max-width:85px">${f.teams.home.name}</div>
+          <div class="karsi-skor">${eg}-${dg}</div>
+          <div class="karsi-takim ${depWin?'b':''}" style="max-width:85px">${f.teams.away.name}</div>
+          <div style="font-size:9px;color:var(--muted);flex-shrink:0">${tarih}</div>
+        </div>`;
+      }).join(''):'<div style="font-size:11px;color:var(--muted);padding:6px 0">Karşılaşma bulunamadı.</div>'}`;
+
+    c.innerHTML=`<div style="padding:16px">
+      ${macSatirKarsi(ev5.response, evId, `${evName} — SON 5 MAÇ`)}
+      <div style="margin-top:12px"></div>
+      ${macSatirKarsi(dep5.response, depId, `${depName} — SON 5 MAÇ`)}
+      <div style="margin-top:12px"></div>
+      ${macSatirKarsi(evEv5.response, evId, `${evName} — EV SAHİBİ SON 5`)}
+      <div style="margin-top:12px"></div>
+      ${macSatirKarsi(depDep5.response, depId, `${depName} — DEPLASMAN SON 5`)}
+      <div style="margin-top:12px"></div>
+      ${h2hHtml}
+    </div>`;
+  }catch(e){c.innerHTML=`<div class="error">Yüklenemedi: ${e.message}</div>`;}
+}
+
+async function loadDetailOranlar(fixId){
+  const c=document.getElementById('dc-oranlar');
+  try{
+    const d=await apiFetch(`/odds?fixture=${fixId}&bookmaker=8`);
+    const resp=d.response||[];
+    if(!resp.length){
+      // Try without bookmaker filter
+      const d2=await apiFetch(`/odds?fixture=${fixId}`);
+      const resp2=d2.response||[];
+      if(!resp2.length){c.innerHTML='<div class="empty">Bu maç için oran verisi bulunamadı.<br><span style="font-size:10px;color:var(--muted)">Oran verileri premium API planı gerektirebilir.</span></div>';return;}
+      renderOranlar(c, resp2);
+    } else {
+      renderOranlar(c, resp);
+    }
+  }catch(e){c.innerHTML=`<div class="error">Yüklenemedi: ${e.message}</div>`;}
+}
+
+function renderOranlar(c, resp){
+  const bets=[];
+  resp.forEach(r=>{
+    const bmName=r.bookmakers?.[0]?.name||r.bookmaker?.name||'';
+    (r.bookmakers||[r]).forEach(bm=>{
+      const name=bm.name||bmName;
+      (bm.bets||[]).forEach(bet=>{
+        if(bet.name==='Match Winner'||bet.name==='Home/Draw/Away'){
+          bets.push({name,values:bet.values});
+        }
+      });
+    });
+  });
+  if(!bets.length){c.innerHTML='<div class="empty">Oran verisi bulunamadı.</div>';return;}
+  c.innerHTML=`<div style="padding:16px">
+    <div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:10px">MAÇIN SONUCU ORANLARI</div>
+    ${bets.slice(0,8).map(b=>`
+      <div class="odds-bm">
+        <div class="odds-bm-name">${b.name}</div>
+        <div class="odds-row">
+          ${b.values.map(v=>`<div class="odds-val"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}
+        </div>
+      </div>`).join('')}
+    <div style="font-size:10px;color:var(--muted);margin-top:8px;text-align:center">* Oranlar bilgi amaçlıdır.</div>
+  </div>`;
+}
+
 function switchDetailTab(name){
-  const tabs=['analiz','istat','kadro'];
+  const tabs=['analiz','ozet','istat','kadro','karsi','oranlar'];
   document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===name));
   document.querySelectorAll('.detail-content').forEach(c=>c.classList.remove('active'));
   document.getElementById(`dc-${name}`).classList.add('active');
