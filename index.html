@@ -458,7 +458,9 @@ function panelKapat(){
 
 function pad2(n){return String(n).padStart(2,'0');}
 function fmtApi(d){return`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;}
-function fmtTR(d){return`${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`;}
+function fmtTR(d){
+  return new Intl.DateTimeFormat('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'Europe/Istanbul'}).format(d);
+}
 
 function ligOncelik(s){
   s=s.toLowerCase();
@@ -520,15 +522,23 @@ async function loadMaclar(){
       liste=d.response||[];
       document.getElementById('matchesTitle').textContent='🔴 Canlı Maçlar';
     } else {
-      const offset=new Date().getTimezoneOffset()/-60;
+      // Seçili tarihi Istanbul timezone'da formatla
+      const istFmt=(d)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Istanbul'}).format(d);
+      const tarihStr=istFmt(tarih);
+      const dunStr=istFmt(new Date(tarih.getTime()-86400000));
+      const yarinStr=istFmt(new Date(tarih.getTime()+86400000));
       const [bugun,dun,yarin]=await Promise.all([
-        apiFetch(`/fixtures?date=${fmtApi(tarih)}`),
-        apiFetch(`/fixtures?date=${fmtApi(new Date(tarih.getTime()-86400000))}`),
-        apiFetch(`/fixtures?date=${fmtApi(new Date(tarih.getTime()+86400000))}`)
+        apiFetch(`/fixtures?date=${tarihStr}&timezone=Europe/Istanbul`),
+        apiFetch(`/fixtures?date=${dunStr}&timezone=Europe/Istanbul`),
+        apiFetch(`/fixtures?date=${yarinStr}&timezone=Europe/Istanbul`)
       ]);
-      const dunGece=(dun.response||[]).filter(m=>{const h=new Date(m.fixture.date).getUTCHours();return(h+offset)>=24;});
-      const yarinErken=(yarin.response||[]).filter(m=>{const h=new Date(m.fixture.date).getUTCHours();const lh=h+offset;return lh>=0&&lh<24&&h<6;});
-      liste=[...dunGece,...(bugun.response||[]),...yarinErken];
+      // API timezone=Istanbul ile döndüğünde maç tarihleri zaten Istanbul'da
+      // Sadece seçili güne ait olanları filtrele
+      const tumMaclar=[...(bugun.response||[]),...(dun.response||[]),...(yarin.response||[])];
+      liste=tumMaclar.filter(m=>{
+        const macTarih=istFmt(new Date(m.fixture.date));
+        return macTarih===tarihStr;
+      });
       document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
     }
     maclar=liste;
@@ -566,7 +576,7 @@ function macSatir(m){
   const dk=m.fixture.status.elapsed,st=m.fixture.status.short;
   const live=['1H','HT','2H','ET','P'].includes(st);
   const bitti=['FT','AET','PEN'].includes(st);
-  const localSaat=new Date(m.fixture.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const durumStr=live?`<span class="dk-badge">${dk}'</span>`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
   return`<div class="mac-satir" onclick="openMac(${m.fixture.id})">
     <div class="mac-zaman"><div class="saat">${localSaat}</div><div class="durum">${durumStr}</div></div>
@@ -603,7 +613,7 @@ async function openMac(id){
   document.getElementById('defaultPanel').style.display='none';
   document.getElementById('matchDetail').classList.add('active');
   const evGol=m.goals.home??0,depGol=m.goals.away??0,dk=m.fixture.status.elapsed;
-  const localSaat=new Date(m.fixture.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const iy=m.score?.halftime;
   const bitti=['FT','AET','PEN'].includes(m.fixture.status.short);
   document.getElementById('detailHeader').innerHTML=`
