@@ -681,11 +681,42 @@ async function loadFormBars(evId, depId){
 }
 
 async function loadDetailAnaliz(m){
-  const bitti = ['FT','AET','PEN'].includes(m.fixture.status.short);
-  
-  if(bitti) {
-    // Maç bitti — Supabase'den kaydedilmiş tahminleri göster
-    loadBitmisMacTahminleri(m);
+  const st = m.fixture.status.short;
+  const bitti = ['FT','AET','PEN'].includes(st);
+  const baslamadi = ['NS','TBD','PST'].includes(st);
+
+  if(bitti) { loadBitmisMacTahminleri(m); return; }
+
+  // Maç başlamadıysa — Supabase'den ön analiz çek
+  if(baslamadi) {
+    const c = document.getElementById('dc-analiz');
+    c.innerHTML = '<div class="loading"><div class="spinner"></div>Ön analiz yükleniyor...</div>';
+    try {
+      const r = await fetch(`${SU}/rest/v1/mac_oncu_analizler?fixture_id=eq.${m.fixture.id}&select=analiz,created_at`,
+        {headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}});
+      const rows = await r.json();
+      if(rows && rows.length > 0) {
+        const analiz = rows[0].analiz;
+        analiz.on_analiz = true;
+        renderDetailAnaliz(analiz, m);
+        return;
+      }
+      // Ön analiz henüz yoksa bilgi ver
+      const kickoff = new Date(m.fixture.date);
+      const farkDk = Math.round((kickoff - Date.now()) / 60000);
+      c.innerHTML = `<div style="padding:24px;text-align:center">
+        <div style="font-size:32px;margin-bottom:12px">⏳</div>
+        <div style="color:var(--muted);font-size:13px;line-height:1.7">
+          ${farkDk > 70
+            ? `Maça <b style="color:white">${farkDk} dakika</b> kaldı.<br>Kickoff'a 1 saat kala Claude Haiku ön analiz yapacak.`
+            : farkDk > 0
+              ? `Maça <b style="color:var(--gold-lt)">${farkDk} dakika</b> kaldı.<br>Ön analiz birkaç dakika içinde hazırlanıyor...`
+              : 'Ön analiz hazırlanıyor...'}
+        </div>
+      </div>`;
+    } catch(e) {
+      c.innerHTML = `<div class="error">Ön analiz yüklenemedi: ${e.message}</div>`;
+    }
     return;
   }
 
@@ -694,7 +725,7 @@ async function loadDetailAnaliz(m){
     const ist={};
     (ir.response||[]).forEach((t,i)=>{const p=i===0?'ev':'dep';(t.statistics||[]).forEach(s=>{ist[p+'_'+s.type]=s.value;});});
     const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
-      body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score.halftime.home??0,depGolIY:m.score.halftime.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0},istatistikler:ist,h2h:[],evForm:[],depForm:[],oyuncular:[]})});
+      body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score.halftime.home??0,depGolIY:m.score.halftime.away??0,durum:st,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:ist,h2h:[],evForm:[],depForm:[],oyuncular:[]})});
     const d=await r.json();
     if(d.basarili)renderDetailAnaliz(d.analiz,m);
     else throw new Error(d.hata);
@@ -811,7 +842,7 @@ function renderDetailAnaliz(a,m){
   document.getElementById('dc-analiz').innerHTML=`
     <div style="padding:16px">
     <div class="ai-card">
-      <div class="ai-title">✦ AI ANALİZİ — %${a.tahmin_guveni||0} GÜVEN</div>
+      <div class="ai-title">${a.on_analiz?'🔮 MAÇ ÖNCESİ ANALİZ':'✦ AI ANALİZİ'} — %${a.tahmin_guveni||0} GÜVEN</div>
       <div class="ai-grid">
         <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${skor.ev??'-'}</div><div class="ai-lbl">EV SKORU</div></div>
         <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${skor.dep??'-'}</div><div class="ai-lbl">DEP SKORU</div></div>
