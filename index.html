@@ -388,6 +388,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <!-- Filtreler -->
         <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
           <button onclick="loadTahminler('hepsi')" class="filter-btn active" id="f-hepsi">Tümü</button>
+          <button onclick="loadTahminler('tamamlandi')" class="filter-btn" id="f-tamamlandi">✔ Tamamlanmış</button>
           <button onclick="loadTahminler('DOGRU')" class="filter-btn" id="f-DOGRU">✅ Doğru</button>
           <button onclick="loadTahminler('YANLIS')" class="filter-btn" id="f-YANLIS">❌ Yanlış</button>
           <button onclick="loadTahminler('BEKLIYOR')" class="filter-btn" id="f-BEKLIYOR">⏳ Bekliyor</button>
@@ -1089,7 +1090,8 @@ async function loadTahminler(filter='hepsi') {
 
   try {
     let url = `${SU}/rest/v1/tahmin_sonuclari?order=created_at.desc&limit=100`;
-    if (filter !== 'hepsi') url += `&sonuc=eq.${filter}`;
+    if (filter === 'tamamlandi') url += `&sonuc=neq.BEKLIYOR`;
+    else if (filter !== 'hepsi') url += `&sonuc=eq.${filter}`;
 
     const r = await fetch(url, {
       headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`, 'Content-Type': 'application/json'}
