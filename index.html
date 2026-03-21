@@ -1117,7 +1117,7 @@ async function loadTahminler(filter='hepsi') {
     c.innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
         <div style="display:grid;grid-template-columns:140px 1fr 120px 80px 60px;padding:10px 16px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);gap:12px">
-          <span>MAÇ</span><span>TAHMİN</span><span>KATEGORİ</span><span>GÜVEN</span><span>SONUÇ</span>
+          <span>MAÇ</span><span>TAHMİN → GERÇEK</span><span>KATEGORİ</span><span>GÜVEN</span><span>SONUÇ</span>
         </div>
         <div style="padding:0 16px">
           ${data.map(t => {
@@ -1125,12 +1125,18 @@ async function loadTahminler(filter='hepsi') {
             const sonucIcon = t.sonuc === 'DOGRU' ? '✅' : t.sonuc === 'YANLIS' ? '❌' : '⏳';
             const sonucRenk = t.sonuc === 'DOGRU' ? 'var(--green)' : t.sonuc === 'YANLIS' ? 'var(--red)' : 'var(--muted)';
             const tagClass = t.ust_alt === 'ÜST' ? 'u' : 'a';
+            const gercekRenk = t.sonuc === 'DOGRU' ? 'var(--green)' : t.sonuc === 'YANLIS' ? 'var(--red)' : 'var(--muted)';
             return `<div class="tahmin-row">
               <div>
                 <div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.ev_sahibi} - ${t.deplasman}</div>
                 <div style="font-size:10px;color:var(--muted)">${tarihStr} · ${t.lig}</div>
               </div>
-              <div style="font-size:12px"><span class="t-tag ${tagClass}" style="font-size:11px">${t.cizgi} ${t.ust_alt}</span>${t.gercek_deger !== null ? `<span style="font-size:10px;color:var(--muted);margin-left:6px">Gerçek: ${t.gercek_deger}</span>` : ''}</div>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <span class="t-tag ${tagClass}" style="font-size:11px">${t.cizgi} ${t.ust_alt}</span>
+                ${t.gercek_deger !== null
+                  ? `<span style="font-size:12px;font-weight:700;color:${gercekRenk}">→ ${t.gercek_deger}</span>`
+                  : '<span style="font-size:10px;color:var(--muted)">bekliyor</span>'}
+              </div>
               <div style="font-size:11px;color:var(--muted)">${t.kategori}</div>
               <div style="font-size:12px;font-weight:700;color:${t.guc>=70?'var(--green)':t.guc>=55?'var(--yellow)':'var(--red)'}">%${t.guc}</div>
               <div style="font-size:18px;color:${sonucRenk};text-align:center">${sonucIcon}</div>
