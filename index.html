@@ -418,7 +418,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <div class="detail-tab" onclick="switchDetailTab('istat')">İstatistik</div>
         <div class="detail-tab" onclick="switchDetailTab('kadro')">Kadro</div>
         <div class="detail-tab" onclick="switchDetailTab('karsi')">Karşılaştırma</div>
-        <div class="detail-tab" onclick="switchDetailTab('oranlar')">Oranlar</div>
       </div>
       <div class="detail-body">
         <div class="detail-content active" id="dc-analiz"></div>
@@ -426,7 +425,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <div class="detail-content" id="dc-istat"></div>
         <div class="detail-content" id="dc-kadro"></div>
         <div class="detail-content" id="dc-karsi"></div>
-        <div class="detail-content" id="dc-oranlar"></div>
       </div>
     </div>
   </aside>
@@ -647,7 +645,6 @@ async function openMac(id){
   loadDetailIstat(m.fixture.id);
   loadDetailKadro(m.fixture.id);
   loadDetailKarsi(m);
-  loadDetailOranlar(m.fixture.id);
   const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
   if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac);loadDetailIstat(id);loadDetailOzet(id,currentMac);}},30000);}
 }
@@ -1018,52 +1015,9 @@ async function loadDetailKarsi(m){
   }catch(e){c.innerHTML=`<div class="error">Yüklenemedi: ${e.message}</div>`;}
 }
 
-async function loadDetailOranlar(fixId){
-  const c=document.getElementById('dc-oranlar');
-  try{
-    const d=await apiFetch(`/odds?fixture=${fixId}&bookmaker=8`);
-    const resp=d.response||[];
-    if(!resp.length){
-      // Try without bookmaker filter
-      const d2=await apiFetch(`/odds?fixture=${fixId}`);
-      const resp2=d2.response||[];
-      if(!resp2.length){c.innerHTML='<div class="empty">Bu maç için oran verisi bulunamadı.<br><span style="font-size:10px;color:var(--muted)">Oran verileri premium API planı gerektirebilir.</span></div>';return;}
-      renderOranlar(c, resp2);
-    } else {
-      renderOranlar(c, resp);
-    }
-  }catch(e){c.innerHTML=`<div class="error">Yüklenemedi: ${e.message}</div>`;}
-}
-
-function renderOranlar(c, resp){
-  const bets=[];
-  resp.forEach(r=>{
-    const bmName=r.bookmakers?.[0]?.name||r.bookmaker?.name||'';
-    (r.bookmakers||[r]).forEach(bm=>{
-      const name=bm.name||bmName;
-      (bm.bets||[]).forEach(bet=>{
-        if(bet.name==='Match Winner'||bet.name==='Home/Draw/Away'){
-          bets.push({name,values:bet.values});
-        }
-      });
-    });
-  });
-  if(!bets.length){c.innerHTML='<div class="empty">Oran verisi bulunamadı.</div>';return;}
-  c.innerHTML=`<div style="padding:16px">
-    <div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:10px">MAÇIN SONUCU ORANLARI</div>
-    ${bets.slice(0,8).map(b=>`
-      <div class="odds-bm">
-        <div class="odds-bm-name">${b.name}</div>
-        <div class="odds-row">
-          ${b.values.map(v=>`<div class="odds-val"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}
-        </div>
-      </div>`).join('')}
-    <div style="font-size:10px;color:var(--muted);margin-top:8px;text-align:center">* Oranlar bilgi amaçlıdır.</div>
-  </div>`;
-}
 
 function switchDetailTab(name){
-  const tabs=['analiz','ozet','istat','kadro','karsi','oranlar'];
+  const tabs=['analiz','ozet','istat','kadro','karsi'];
   document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===name));
   document.querySelectorAll('.detail-content').forEach(c=>c.classList.remove('active'));
   document.getElementById(`dc-${name}`).classList.add('active');
