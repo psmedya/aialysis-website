@@ -261,6 +261,83 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </style>
 </head>
 <body>
+
+<!-- LANDING SAYFA -->
+<div id="landingPage" style="position:fixed;inset:0;z-index:9999;background:#0E0E0E;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+  <style>
+    .landing{text-align:center;max-width:480px;padding:40px 24px;}
+    .landing-logo{margin-bottom:8px;}
+    .landing-logo .ai{font-style:italic;font-size:48px;font-weight:300;color:#F5C842;}
+    .landing-logo .alysis{font-size:48px;font-weight:900;color:white;letter-spacing:-2px;}
+    .landing-live{display:inline-flex;align-items:center;gap:6px;background:rgba(67,160,71,.15);border:1px solid rgba(67,160,71,.4);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:700;color:#43A047;letter-spacing:2px;margin-bottom:24px;}
+    .landing-live .dot{width:7px;height:7px;background:#43A047;border-radius:50%;animation:pulse 1.5s infinite;}
+    .landing-desc{color:#888;font-size:15px;line-height:1.6;margin-bottom:40px;}
+    .landing-desc b{color:#eee;}
+    .store-buttons{display:flex;flex-direction:column;gap:14px;align-items:center;margin-bottom:32px;}
+    .store-btn{display:flex;align-items:center;gap:14px;background:#1A1A1A;border:1px solid #2E2E2E;border-radius:14px;padding:14px 28px;width:280px;cursor:pointer;transition:all .2s;text-decoration:none;}
+    .store-btn:hover{border-color:#F5C842;background:#222;}
+    .store-btn svg{width:32px;height:32px;flex-shrink:0;}
+    .store-btn .store-text{text-align:left;}
+    .store-btn .store-sub{font-size:11px;color:#888;display:block;}
+    .store-btn .store-name{font-size:16px;font-weight:700;color:#eee;display:block;margin-top:2px;}
+    .store-btn.coming .store-name{color:#666;}
+    .store-btn.coming{opacity:.5;cursor:default;}
+    .store-btn.coming:hover{border-color:#2E2E2E;background:#1A1A1A;}
+    .landing-divider{display:flex;align-items:center;gap:12px;margin:28px 0;color:#555;font-size:12px;}
+    .landing-divider::before,.landing-divider::after{content:'';flex:1;height:1px;background:#2E2E2E;}
+    .web-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1565C0,#42A5F5);color:white;border:none;border-radius:12px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;}
+    .web-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(21,101,192,.4);}
+    .web-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;}
+  </style>
+
+  <div class="landing">
+    <div class="landing-logo">
+      <span class="ai">ai</span><span class="alysis">ALYSIS</span>
+    </div>
+    <div class="landing-live"><span class="dot"></span> LIVE</div>
+    <p class="landing-desc">
+      <b>AI destekli futbol analiz</b> platformu.<br>
+      Canli mac takibi, akilli tahminler, detayli istatistikler.
+    </p>
+
+    <div class="store-buttons">
+      <!-- App Store -->
+      <div class="store-btn coming">
+        <svg viewBox="0 0 24 24" fill="#666"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        <div class="store-text">
+          <span class="store-sub">Cok Yakinda</span>
+          <span class="store-name">App Store</span>
+        </div>
+      </div>
+
+      <!-- Google Play -->
+      <div class="store-btn coming">
+        <svg viewBox="0 0 24 24" fill="#666"><path d="M3.18 23.04c-.18-.09-.18-.29-.18-.46V1.42c0-.17 0-.37.18-.46L13.54 12 3.18 23.04zm.82.46L15.6 13.06l2.59 2.59L4 23.5zM15.6 10.94L4 .5l14.19 7.85-2.59 2.59zM19.15 11.12l-2.59 1.45L19.15 14l2.42-1.34c.33-.19.33-.5 0-.69l-2.42-1.34v.49z"/></svg>
+        <div class="store-text">
+          <span class="store-sub">Cok Yakinda</span>
+          <span class="store-name">Google Play</span>
+        </div>
+      </div>
+
+      <!-- APK -->
+      <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk" class="store-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F5C842" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <div class="store-text">
+          <span class="store-sub">Android APK indir</span>
+          <span class="store-name" style="color:#F5C842;">APK v1.1.0</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="landing-divider">veya</div>
+
+    <button class="web-btn" onclick="document.getElementById('landingPage').style.display='none';">
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Web Versiyonuna Gir
+    </button>
+  </div>
+</div>
+
 <div class="layout sidebar-kapali">
 
   <!-- NAVBAR -->
