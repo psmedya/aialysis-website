@@ -261,7 +261,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </style>
 </head>
 <body>
-<div class="layout">
+<div class="layout sidebar-kapali">
 
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -827,6 +827,16 @@ function renderDetailAnaliz(a,m){
     </div>`;
 }
 
+const ISTAT_TR={
+  'Shots on Goal':'İsabetli Şut','Shots off Goal':'İsabetsiz Şut','Total Shots':'Toplam Şut',
+  'Blocked Shots':'Engellenen Şut','Shots insidebox':'Ceza İçi Şut','Shots outsidebox':'Ceza Dışı Şut',
+  'Fouls':'Faul','Corner Kicks':'Korner','Offsides':'Ofsayt','Ball Possession':'Top Hakimiyeti',
+  'Yellow Cards':'Sarı Kart','Red Cards':'Kırmızı Kart','Yellow Cards Red':'K.Sarı Kart',
+  'Goalkeeper Saves':'Kurtarış','Total passes':'Toplam Pas','Passes accurate':'İsabetli Pas',
+  'Passes %':'Pas İsabeti','expected_goals':'Beklenen Gol (xG)','Ball Safe':'Korunan Top',
+  'Penalties':'Penaltı',
+};
+
 async function loadDetailIstat(fixId){
   try{
     const d=await apiFetch(`/fixtures/statistics?fixture=${fixId}`);
@@ -838,7 +848,7 @@ async function loadDetailIstat(fixId){
         <span style="color:var(--blue-lt)">${ev.team?.name||''}</span>
         <span style="color:var(--red)">${dp.team?.name||''}</span>
       </div>
-      ${(ev.statistics||[]).map((st,i)=>`<div class="istat-row"><div class="istat-ev">${st.value??'-'}</div><div class="istat-lbl">${st.type}</div><div class="istat-dep">${dp.statistics[i]?.value??'-'}</div></div>`).join('')}
+      ${(ev.statistics||[]).map((st,i)=>`<div class="istat-row"><div class="istat-ev">${st.value??'-'}</div><div class="istat-lbl">${ISTAT_TR[st.type]||st.type}</div><div class="istat-dep">${dp.statistics[i]?.value??'-'}</div></div>`).join('')}
     </div>`;
   }catch(e){document.getElementById('dc-istat').innerHTML='<div class="error">Yüklenemedi.</div>';}
 }
