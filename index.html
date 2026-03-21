@@ -8,10 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0E0E0E;--surface:#1A1A1A;--card:#222222;--border:#2E2E2E;
-  --blue:#1565C0;--blue-lt:#42A5F5;--green:#43A047;--orange:#FF6D00;
-  --red:#E53935;--yellow:#FDD835;--text:#EEEEEE;--muted:#888888;
-  --gold:#C8971A;--gold-lt:#F5C842;
+  --bg:#0A0A12;--surface:#12121E;--card:#1A1A2E;--border:#2A2A3E;
+  --blue:#4A3AFF;--blue-lt:#7C6FFF;--green:#2ED573;--orange:#FF7F50;
+  --red:#FF4757;--yellow:#FFD32A;--text:#F0F0F5;--muted:#7A7A95;
+  --gold:#D4A24C;--gold-lt:#FFD54F;
   --sidebar:240px;
   --right:480px;
 }
@@ -136,7 +136,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 /* MAÇ DETAY SAĞ PANEL */
 .match-detail{display:none;}
 .match-detail.active{display:block;}
-.detail-header{background:linear-gradient(135deg,#0D47A1,#1565C0);padding:20px;text-align:center;}
+.detail-header{background:linear-gradient(135deg,#2A1F6E,#4A3AFF);padding:20px;text-align:center;}
 .detail-lig{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:1px;margin-bottom:10px;}
 .detail-takimlar{display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .detail-takim{flex:1;text-align:center;}
@@ -153,7 +153,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .detail-content{display:none;padding:16px;}.detail-content.active{display:block;}
 
 /* ANALİZ */
-.ai-card{background:linear-gradient(135deg,#0D47A1,#0a3d8f);border-radius:10px;padding:14px;margin-bottom:10px;}
+.ai-card{background:linear-gradient(135deg,#2A1F6E,#0a3d8f);border-radius:10px;padding:14px;margin-bottom:10px;}
 .ai-title{font-size:10px;color:rgba(255,255,255,.7);letter-spacing:1px;margin-bottom:10px;font-weight:600;}
 .ai-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
 .ai-stat{text-align:center;}
@@ -263,29 +263,29 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <body>
 
 <!-- LANDING SAYFA -->
-<div id="landingPage" style="position:fixed;inset:0;z-index:9999;background:#0E0E0E;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+<div id="landingPage" style="position:fixed;inset:0;z-index:9999;background:#0A0A12;display:flex;align-items:center;justify-content:center;flex-direction:column;">
   <style>
     .landing{text-align:center;max-width:480px;padding:40px 24px;}
     .landing-logo{margin-bottom:8px;}
-    .landing-logo .ai{font-style:italic;font-size:48px;font-weight:300;color:#F5C842;}
+    .landing-logo .ai{font-style:italic;font-size:48px;font-weight:300;color:#FFD54F;}
     .landing-logo .alysis{font-size:48px;font-weight:900;color:white;letter-spacing:-2px;}
-    .landing-live{display:inline-flex;align-items:center;gap:6px;background:rgba(67,160,71,.15);border:1px solid rgba(67,160,71,.4);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:700;color:#43A047;letter-spacing:2px;margin-bottom:24px;}
-    .landing-live .dot{width:7px;height:7px;background:#43A047;border-radius:50%;animation:pulse 1.5s infinite;}
+    .landing-live{display:inline-flex;align-items:center;gap:6px;background:rgba(67,160,71,.15);border:1px solid rgba(67,160,71,.4);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:700;color:#2ED573;letter-spacing:2px;margin-bottom:24px;}
+    .landing-live .dot{width:7px;height:7px;background:#2ED573;border-radius:50%;animation:pulse 1.5s infinite;}
     .landing-desc{color:#888;font-size:15px;line-height:1.6;margin-bottom:40px;}
     .landing-desc b{color:#eee;}
     .store-buttons{display:flex;flex-direction:column;gap:14px;align-items:center;margin-bottom:32px;}
-    .store-btn{display:flex;align-items:center;gap:14px;background:#1A1A1A;border:1px solid #2E2E2E;border-radius:14px;padding:14px 28px;width:280px;cursor:pointer;transition:all .2s;text-decoration:none;}
-    .store-btn:hover{border-color:#F5C842;background:#222;}
+    .store-btn{display:flex;align-items:center;gap:14px;background:#12121E;border:1px solid #2A2A3E;border-radius:14px;padding:14px 28px;width:280px;cursor:pointer;transition:all .2s;text-decoration:none;}
+    .store-btn:hover{border-color:#FFD54F;background:#222;}
     .store-btn svg{width:32px;height:32px;flex-shrink:0;}
     .store-btn .store-text{text-align:left;}
     .store-btn .store-sub{font-size:11px;color:#888;display:block;}
     .store-btn .store-name{font-size:16px;font-weight:700;color:#eee;display:block;margin-top:2px;}
     .store-btn.coming .store-name{color:#666;}
     .store-btn.coming{opacity:.5;cursor:default;}
-    .store-btn.coming:hover{border-color:#2E2E2E;background:#1A1A1A;}
+    .store-btn.coming:hover{border-color:#2A2A3E;background:#12121E;}
     .landing-divider{display:flex;align-items:center;gap:12px;margin:28px 0;color:#555;font-size:12px;}
-    .landing-divider::before,.landing-divider::after{content:'';flex:1;height:1px;background:#2E2E2E;}
-    .web-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1565C0,#42A5F5);color:white;border:none;border-radius:12px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;}
+    .landing-divider::before,.landing-divider::after{content:'';flex:1;height:1px;background:#2A2A3E;}
+    .web-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4A3AFF,#7C6FFF);color:white;border:none;border-radius:12px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;}
     .web-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(21,101,192,.4);}
     .web-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;}
   </style>
@@ -321,10 +321,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
       <!-- APK -->
       <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk" class="store-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#F5C842" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FFD54F" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <div class="store-text">
           <span class="store-sub">Android APK indir</span>
-          <span class="store-name" style="color:#F5C842;">APK v1.1.0</span>
+          <span class="store-name" style="color:#FFD54F;">APK v1.1.0</span>
         </div>
       </a>
     </div>
@@ -1165,7 +1165,7 @@ async function loadAialysis(){
         const an=await r.json();
         const a=an.analiz||{};
         const gb=parseFloat(a.gol_beklentisi)||0;
-        const etiket=gb>=3.5?'Mac Yaniyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Mac';
+        const etiket=gb>=3.5?'Maç Yanıyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Maç';
         const etiketRenk=gb>=3.5?'#E53935':gb>=2.5?'#FF6D00':gb>=1.5?'#FDD835':'#4FC3F7';
         const dk=m.fixture.status.elapsed;
         const card=document.createElement('div');
