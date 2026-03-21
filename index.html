@@ -1203,7 +1203,21 @@ setInterval(()=>{
   });
 },60000);
 
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadMaclar();});
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden){
+    loadMaclar();
+    // Maç detay açıksa onu da yenile
+    if(currentMac){
+      const id=currentMac.fixture.id;
+      const live=['1H','HT','2H','ET','P'].includes(currentMac.fixture.status?.short);
+      if(live){loadDetailAnaliz(currentMac);loadDetailIstat(id);loadDetailOzet(id,currentMac);}
+    }
+    // AIALYSIS sayfası aktifse onu da yenile
+    const ap=document.querySelector('.page.active');
+    if(ap?.id==='page-aialysis')loadAialysis();
+    fetchedAt=Date.now();
+  }
+});
 
 loadMaclar();
 </script>
