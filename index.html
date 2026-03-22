@@ -1920,42 +1920,75 @@ async function loadDetailOzet(fixId, m){
     const round=fix?.league?.round;
 
     const evName=m.teams.home.name, depName=m.teams.away.name;
+    const evLogo=m.teams.home.logo||'', depLogo=m.teams.away.logo||'';
+    const homeId=m.teams.home.id;
 
     if(!events.length&&!venue?.name){c.innerHTML='<div class="empty">Maç bilgisi henüz yok.</div>';return;}
 
     const eventIcon=(type,detail)=>{
-      if(type==='Goal')return detail?.includes('Penalty')?'⚽🅿️':detail?.includes('Own')?'⚽🔴':'⚽';
+      if(type==='Goal')return'⚽';
       if(type==='Card')return detail?.includes('Yellow')&&detail?.includes('Red')?'🟧':detail?.includes('Red')?'🟥':'🟨';
       if(type==='subst')return'🔄';
       if(type==='Var')return'📺';
       return'📌';
     };
 
-    const evSide=(ev)=>ev.team.name===evName;
+    // Build events with running score
+    let hg=0, ag=0;
+    const eventsWithScore=events.map(ev=>{
+      const isHome=ev.team.id===homeId;
+      if(ev.type==='Goal'&&!ev.detail?.includes('Missed')){
+        if(isHome)hg++;else ag++;
+      }
+      return{...ev,_isHome:isHome,_score:`${hg}-${ag}`};
+    });
 
-    const eventsHtml=events.length?`
+    const buildEventText=(ev,isHome)=>{
+      const player=ev.player?.name||'';
+      const icon=eventIcon(ev.type,ev.detail);
+      if(ev.type==='Goal'){
+        const penalty=ev.detail?.includes('Penalty')?' (P)':'';
+        const own=ev.detail?.includes('Own')?' (KK)':'';
+        return`${isHome?icon+' ':''}${player}${penalty}${own} <span style="font-weight:700;color:var(--gold)">(${ev._score})</span>${!isHome?' '+icon:''}`;
+      }
+      if(ev.type==='Card'){
+        return`${isHome?icon+' ':''}${player}${!isHome?' '+icon:''}`;
+      }
+      if(ev.type==='subst'){
+        const inP=ev.player?.name||'';
+        const outP=ev.assist?.name||'';
+        return`${isHome?'🔄 ':''}` +
+          `<span style="color:var(--green)">↑ ${inP}</span>` +
+          (outP?` <span style="color:var(--red)">↓ ${outP}</span>`:'') +
+          `${!isHome?' 🔄':''}`;
+      }
+      return`${icon} ${player}`;
+    };
+
+    const eventsHtml=eventsWithScore.length?`
       <div class="ev-section-label">MAÇ OLAYLARI</div>
-      ${events.map(ev=>{
-        const isEv=evSide(ev);
-        const icon=eventIcon(ev.type,ev.detail);
-        const dk=`${ev.time.elapsed}${ev.time.extra?'+'+ev.time.extra:''}'`;
-        const player=ev.player?.name||'';
-        const assist=ev.assist?.name?`<div class="event-assist">${ev.type==='subst'?'⬇ '+ev.assist.name:'↪ '+ev.assist.name}</div>`:'';
-        if(isEv){
-          return`<div class="event-item">
-            <div class="event-dk">${dk}</div>
-            <div class="event-icon">${icon}</div>
-            <div class="event-detail"><div class="event-player">${player}</div>${assist}</div>
-            <div style="flex:1"></div>
-          </div>`;
-        }else{
-          return`<div class="event-item">
-            <div style="flex:1"></div>
-            <div class="event-detail event-away"><div class="event-player">${player}</div>${assist}</div>
-            <div class="event-icon">${icon}</div>
-            <div class="event-dk">${dk}</div>
-          </div>`;
-        }
+      <div style="display:flex;align-items:center;padding:8px 0;border-bottom:2px solid var(--border);">
+        <div style="flex:1;display:flex;align-items:center;justify-content:flex-end;gap:6px;padding-right:8px;">
+          <span style="font-size:11px;font-weight:700;color:var(--blue-lt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${evName}</span>
+          <img src="${evLogo}" style="width:20px;height:20px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
+        </div>
+        <div style="min-width:36px;text-align:center;font-size:10px;font-weight:700;color:var(--muted)">DK</div>
+        <div style="flex:1;display:flex;align-items:center;gap:6px;padding-left:8px;">
+          <img src="${depLogo}" style="width:20px;height:20px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
+          <span style="font-size:11px;font-weight:700;color:var(--red);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${depName}</span>
+        </div>
+      </div>
+      ${eventsWithScore.map(ev=>{
+        const isHome=ev._isHome;
+        const dk=`${ev.time.elapsed}${ev.time.extra?'+'+ev.time.extra:''}`;
+        const txt=buildEventText(ev,isHome);
+        const dkBg=ev.type==='Goal'?'var(--green)':ev.type==='Card'?(ev.detail?.includes('Red')?'var(--red)':'var(--yellow)'):'var(--blue)';
+        const dkColor=ev.type==='Card'&&!ev.detail?.includes('Red')?'#000':'#fff';
+        return`<div style="display:flex;align-items:center;min-height:36px;border-bottom:1px solid var(--border);padding:4px 0;">
+          <div style="flex:1;text-align:right;font-size:12px;padding-right:8px;">${isHome?txt:''}</div>
+          <div style="background:${dkBg};color:${dkColor};font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;min-width:36px;text-align:center;flex-shrink:0;">${dk}'</div>
+          <div style="flex:1;text-align:left;font-size:12px;padding-left:8px;">${!isHome?txt:''}</div>
+        </div>`;
       }).join('')}`:'';
 
     const infoHtml=`
@@ -1966,10 +1999,6 @@ async function loadDetailOzet(fixId, m){
       ${round?`<div class="match-info-row"><span class="match-info-label">Hafta</span><span>${round}</span></div>`:''}`;
 
     c.innerHTML=`<div style="padding:16px">
-      <div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;margin-bottom:4px">
-        <span style="color:var(--blue-lt)">${evName}</span>
-        <span style="color:var(--red)">${depName}</span>
-      </div>
       ${eventsHtml}
       ${infoHtml}
     </div>`;
