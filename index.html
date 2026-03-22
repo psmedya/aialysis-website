@@ -1735,6 +1735,10 @@ async function loadAialysis(){
       }catch(e){document.getElementById(`aia-${m.fixture.id}`)?.remove();}
     });
     await Promise.allSettled(promises);
+    // Tüm kartlar kaldırıldıysa mesaj göster
+    if(!c.querySelector('.aia-card')){
+      c.innerHTML='<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.5">🔍</div><div style="color:var(--text);font-weight:700;margin-bottom:8px">Şu an yeterli güvenilirlikte tahmin yok</div><div style="color:var(--muted);font-size:12px">Canlı maçlar analiz ediliyor. Yeterli veri toplandığında tahminler burada görünecek.</div></div>';
+    }
   }catch(e){c.innerHTML=`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;}
 }
 
