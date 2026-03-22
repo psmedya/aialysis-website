@@ -222,10 +222,16 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .tahmin-guc{font-size:12px;font-weight:700;flex-shrink:0;}
 
 /* İSTATİSTİK */
-.istat-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(46,46,46,.5);}
-.istat-ev{font-size:12px;font-weight:700;color:var(--blue-lt);width:40px;text-align:right;}
-.istat-lbl{flex:1;text-align:center;font-size:10px;color:var(--muted);}
-.istat-dep{font-size:12px;font-weight:700;color:var(--red);width:40px;}
+.istat-row{padding:10px 0;border-bottom:1px solid rgba(46,46,62,.5);}
+.istat-vals{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.istat-ev{font-size:13px;font-weight:700;color:var(--blue-lt);width:44px;text-align:right;}
+.istat-lbl{flex:1;text-align:center;font-size:10px;color:var(--muted);letter-spacing:0.5px;}
+.istat-dep{font-size:13px;font-weight:700;color:var(--red);width:44px;}
+.istat-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px;}
+.istat-bar-ev{background:var(--blue-lt);border-radius:3px;transition:width .5s ease;}
+.istat-bar-dep{background:var(--red);border-radius:3px;transition:width .5s ease;margin-left:auto;}
+.istat-ev.win{background:var(--blue-lt);color:white;padding:1px 6px;border-radius:4px;}
+.istat-dep.win{background:var(--red);color:white;padding:1px 6px;border-radius:4px;}
 
 /* LOADING */
 .loading{text-align:center;padding:40px;color:var(--muted);}
@@ -1391,12 +1397,33 @@ async function loadDetailIstat(fixId){
     const s=d.response||[];
     if(!s.length){document.getElementById('dc-istat').innerHTML='<div class="empty">İstatistik verisi yok.</div>';return;}
     const ev=s[0],dp=s[1]||{statistics:[]};
+    const rows=(ev.statistics||[]).map((st,i)=>{
+      const evV=parseFloat(st.value)||0, depV=parseFloat(dp.statistics[i]?.value)||0;
+      const total=evV+depV;
+      const evPct=total>0?Math.round(evV/total*100):50;
+      const depPct=100-evPct;
+      const evWin=evV>depV, depWin=depV>evV;
+      const evStr=st.value??'-', depStr=dp.statistics[i]?.value??'-';
+      const label=ISTAT_TR[st.type]||st.type;
+      if(evStr==='-'&&depStr==='-') return '';
+      return `<div class="istat-row">
+        <div class="istat-vals">
+          <div class="istat-ev${evWin?' win':''}">${evStr}</div>
+          <div class="istat-lbl">${label}</div>
+          <div class="istat-dep${depWin?' win':''}">${depStr}</div>
+        </div>
+        <div class="istat-bar">
+          <div class="istat-bar-ev" style="width:${evPct}%"></div>
+          <div class="istat-bar-dep" style="width:${depPct}%"></div>
+        </div>
+      </div>`;
+    }).filter(Boolean).join('');
     document.getElementById('dc-istat').innerHTML=`<div style="padding:16px">
-      <div style="display:flex;justify-content:space-between;padding:0 0 8px;font-size:11px;font-weight:700">
+      <div style="display:flex;justify-content:space-between;padding:0 0 12px;font-size:12px;font-weight:700">
         <span style="color:var(--blue-lt)">${ev.team?.name||''}</span>
         <span style="color:var(--red)">${dp.team?.name||''}</span>
       </div>
-      ${(ev.statistics||[]).map((st,i)=>`<div class="istat-row"><div class="istat-ev">${st.value??'-'}</div><div class="istat-lbl">${ISTAT_TR[st.type]||st.type}</div><div class="istat-dep">${dp.statistics[i]?.value??'-'}</div></div>`).join('')}
+      ${rows}
     </div>`;
   }catch(e){document.getElementById('dc-istat').innerHTML='<div class="error">Yüklenemedi.</div>';}
 }
