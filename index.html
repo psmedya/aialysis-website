@@ -1741,21 +1741,29 @@ const ISTAT_TR={
   'Penalties':'Penaltı',
 };
 
+const ISTAT_ORDER=['Ball Possession','Total Shots','Shots on Goal','Shots off Goal','Blocked Shots','Corner Kicks','Fouls','Yellow Cards','Red Cards','Offsides','Goalkeeper Saves','Total passes','Passes accurate','Passes %'];
+
 async function loadDetailIstat(fixId){
   try{
     const d=await apiFetch(`/fixtures/statistics?fixture=${fixId}`);
     const s=d.response||[];
     if(!s.length){document.getElementById('dc-istat').innerHTML='<div class="empty">İstatistik verisi yok.</div>';return;}
     const ev=s[0],dp=s[1]||{statistics:[]};
-    const rows=(ev.statistics||[]).map((st,i)=>{
-      const evV=parseFloat(st.value)||0, depV=parseFloat(dp.statistics[i]?.value)||0;
+    const evMap=Object.fromEntries((ev.statistics||[]).map(st=>[st.type,st.value]));
+    const dpMap=Object.fromEntries((dp.statistics||[]).map(st=>[st.type,st.value]));
+    const allTypes=new Set([...Object.keys(evMap),...Object.keys(dpMap)]);
+    const sortedTypes=[...ISTAT_ORDER.filter(t=>allTypes.has(t)),...[...allTypes].filter(t=>!ISTAT_ORDER.includes(t))];
+    const rows=sortedTypes.map(type=>{
+      const evRaw=evMap[type], dpRaw=dpMap[type];
+      const evStr=evRaw??'-', depStr=dpRaw??'-';
+      const isEmpty=(v)=>v===null||v===undefined||v==='-'||v===0||v==='0'||v==='0%';
+      if(isEmpty(evRaw)&&isEmpty(dpRaw)) return '';
+      const evV=parseFloat(evRaw)||0, depV=parseFloat(dpRaw)||0;
       const total=evV+depV;
       const evPct=total>0?Math.round(evV/total*100):50;
       const depPct=100-evPct;
       const evWin=evV>depV, depWin=depV>evV;
-      const evStr=st.value??'-', depStr=dp.statistics[i]?.value??'-';
-      const label=ISTAT_TR[st.type]||st.type;
-      if(evStr==='-'&&depStr==='-') return '';
+      const label=ISTAT_TR[type]||type;
       return `<div class="istat-row">
         <div class="istat-vals">
           <div class="istat-ev${evWin?' win':''}">${evStr}</div>
