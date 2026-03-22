@@ -387,7 +387,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div class="landing-live"><span class="dot"></span> LIVE</div>
     <p class="landing-desc">
       <b>AI destekli futbol analiz</b> platformu.<br>
-      Canli mac takibi, akilli tahminler, detayli istatistikler.
+      Canlı maç takibi, akıllı tahminler, detaylı istatistikler.
     </p>
 
     <div class="store-buttons">
@@ -533,11 +533,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="matches-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div>
           <div class="matches-title">✦ aiALYSIS</div>
-          <div class="matches-count">AI analiz edilmis canli maclar</div>
+          <div class="matches-count">AI analiz edilmiş canlı maçlar</div>
         </div>
         <div id="aiaSortBtns" style="display:flex;gap:4px;">
           <button class="filter-btn active" onclick="aiaSort='lig';loadAialysis();this.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Lig</button>
-          <button class="filter-btn" onclick="aiaSort='ihtimal';loadAialysis();this.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Ihtimal</button>
+          <button class="filter-btn" onclick="aiaSort='ihtimal';loadAialysis();this.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">İhtimal</button>
         </div>
       </div>
       <div class="aialysis-grid" id="aialysisContainer">
@@ -558,15 +558,15 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
             <div id="stat-toplam" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--text)">--</div>
           </div>
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOGRU</div>
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOĞRU</div>
             <div id="stat-dogru" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--green)">--</div>
           </div>
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">YANLIS</div>
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">YANLIŞ</div>
             <div id="stat-yanlis" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--red)">--</div>
           </div>
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOGRULUK</div>
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOĞRULUK</div>
             <div id="stat-pct" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--gold-lt)">--%</div>
           </div>
         </div>
@@ -731,7 +731,7 @@ async function loadMaclar(){
     document.getElementById('matchesCount').textContent=`${liste.length} maç`;
     renderMaclar(liste);
   }catch(e){
-    c.innerHTML=`<div class="error">Baglanti hatasi: ${e.message||e}</div>`;
+    c.innerHTML=`<div class="error">Bağlantı hatası: ${e.message||e}</div>`;
     console.error('loadMaclar hata:',e);
   }
 }
@@ -915,7 +915,7 @@ async function loadDetailAnaliz(m){
     const pf=(v)=>parseFloat(v)||0;
     const evIst={topSahip:parseInt(flat['ev_Ball Possession'])||0,toplamSut:pf(flat['ev_Total Shots']),isabetliSut:pf(flat['ev_Shots on Goal']),korner:pf(flat['ev_Corner Kicks']),faul:pf(flat['ev_Fouls']),sariKart:pf(flat['ev_Yellow Cards']),kirmziKart:pf(flat['ev_Red Cards'])};
     const depIst={topSahip:parseInt(flat['dep_Ball Possession'])||0,toplamSut:pf(flat['dep_Total Shots']),isabetliSut:pf(flat['dep_Shots on Goal']),korner:pf(flat['dep_Corner Kicks']),faul:pf(flat['dep_Fouls']),sariKart:pf(flat['dep_Yellow Cards']),kirmziKart:pf(flat['dep_Red Cards'])};
-    if(evIst.faul+depIst.faul+evIst.korner+depIst.korner+evIst.toplamSut+depIst.toplamSut===0){document.getElementById('dc-analiz').innerHTML='<div class="empty">Bu mac icin canli istatistik destegi yok.</div>';return;}
+    if(evIst.faul+depIst.faul+evIst.korner+depIst.korner+evIst.toplamSut+depIst.toplamSut===0){document.getElementById('dc-analiz').innerHTML='<div class="empty">Bu maç için canlı istatistik desteği yok.</div>';return;}
     const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
       body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score?.halftime?.home??0,depGolIY:m.score?.halftime?.away??0,durum:st,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:evIst,dep:depIst},h2h:[]})});
     const d=await r.json();
@@ -1267,7 +1267,7 @@ function showMainTab(name){
 
 async function loadAialysis(){
   const c=document.getElementById('aialysisContainer');
-  c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Canli maclar yukleniyor...</div>';
+  c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Canlı maçlar yükleniyor...</div>';
   try{
     // Önce Supabase'den hazır tahminleri çek (cron'un ürettiği)
     let hazirTahminler={};
@@ -1279,7 +1279,7 @@ async function loadAialysis(){
 
     const d=await apiFetch('/fixtures?live=all');
     let canlilar=(d.response||[]).sort((a,b)=>ligOncelik(`${b.league.country} | ${b.league.name}`)-ligOncelik(`${a.league.country} | ${a.league.name}`)).slice(0,12);
-    if(!canlilar.length){c.innerHTML='<div class="empty" style="grid-column:1/-1">Su an canli mac yok.</div>';return;}
+    if(!canlilar.length){c.innerHTML='<div class="empty" style="grid-column:1/-1">Şu an canlı maç yok.</div>';return;}
 
     // Hazır tahminleri olan maçları önce göster
     c.innerHTML='';
@@ -1395,7 +1395,7 @@ async function loadTahminler(filter='hepsi') {
     c.innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
         <div class="tahmin-header-grid" style="display:grid;grid-template-columns:140px 1fr 120px 80px 60px;padding:10px 16px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);gap:12px">
-          <span>MAC</span><span>TAHMIN</span><span>KATEGORI</span><span>GUVEN</span><span>SONUC</span>
+          <span>MAÇ</span><span>TAHMİN</span><span>KATEGORİ</span><span>GÜVEN</span><span>SONUÇ</span>
         </div>
         <div style="padding:0 16px">
           ${data.map(t => {
@@ -1490,9 +1490,9 @@ loadMaclar();
 <!-- SEO Footer -->
 <footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:11px;color:var(--muted);line-height:1.8">
   <h2 style="font-size:13px;color:var(--text);margin-bottom:8px;font-weight:700">aiALYSIS Live — Yapay Zeka Destekli Mac Tahmini</h2>
-  <p>Canli mac analizi, mac tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini. Super Lig, Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Sampiyonlar Ligi canli skor ve istatistikler.</p>
-  <p style="margin-top:8px">Futbol istatistikleri, canli mac sonuclari, mac oncesi analiz, bahis analizi, banko maclar. AI destekli akilli tahmin platformu.</p>
-  <p style="margin-top:12px;color:var(--muted);font-size:10px">© 2026 aiALYSIS Live. Tum hakları saklıdır. Bu site yalnizca bilgi amaclidir.</p>
+  <p>Canlı maç analizi, maç tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Şampiyonlar Ligi canlı skor ve istatistikler.</p>
+  <p style="margin-top:8px">Futbol istatistikleri, canlı maç sonuçları, maç öncesi analiz, bahis analizi, banko maçlar. AI destekli akıllı tahmin platformu.</p>
+  <p style="margin-top:12px;color:var(--muted);font-size:10px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
 </footer>
 </body>
 </html>
