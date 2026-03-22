@@ -1265,9 +1265,11 @@ async function loadDetailAnaliz(m){
             else if(k.includes('korner'))cur=mevcutIstat.korner;
             else if(k.includes('faul'))cur=mevcutIstat.faul;
             else if(k.includes('kart'))cur=mevcutIstat.sari;
-            const tuttu=t.ust_alt==='ÜST'?cur>t.cizgi:cur<t.cizgi;
-            return{kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:cur,tahmin:tuttu?'Şu an tutmuş durumda':'Henüz gerçekleşmedi',aciklama:`Mevcut: ${cur} | Çizgi: ${t.cizgi} ${t.ust_alt}`};
-          });
+            // Zaten gerçekleşmiş tahmini atla (ÜST: mevcut > çizgi, ALT: mevcut < çizgi ve mantıksız)
+            const zatenTuttu=t.ust_alt==='ÜST'&&cur>t.cizgi;
+            if(zatenTuttu) return null; // Zaten olmuş, göstermeye gerek yok
+            return{kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:cur,tahmin:`Şu an: ${cur}`,aciklama:`Mevcut: ${cur} | Çizgi: ${t.cizgi} ${t.ust_alt}`};
+          }).filter(Boolean);
         })(),
         riskler:[],mac_temposu:dk>60?'Yüksek':dk>30?'Orta':'Düşük',
         gol_beklentisi:eg+dg+(90-dk)/90*1.5,
