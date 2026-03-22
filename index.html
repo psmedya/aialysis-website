@@ -145,7 +145,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 /* MAÇ SATIRI — tablo stili */
 .mac-tablo-header{display:grid;grid-template-columns:80px 1fr 80px 80px 40px;padding:6px 24px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);}
-.mac-satir{display:grid;grid-template-columns:80px 1fr 80px 80px 40px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(46,46,46,.5);cursor:pointer;transition:background .15s;}
+.mac-satir{display:grid;grid-template-columns:80px 1fr 80px 80px 36px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(46,46,46,.5);cursor:pointer;transition:background .15s,border-color .2s;}
 .mac-satir:hover{background:rgba(255,255,255,.02);}
 .mac-zaman{text-align:center;}
 .mac-zaman .saat{font-size:13px;font-weight:700;}
@@ -319,7 +319,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .main{padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .matches-header{padding:10px 12px !important;}
   .mac-tablo-header{display:none !important;}
-  .mac-satir{display:grid !important;grid-template-columns:55px 1fr 50px !important;align-items:center;padding:10px 12px;gap:6px;}
+  .mac-satir{display:grid !important;grid-template-columns:55px 1fr 50px 28px !important;align-items:center;padding:10px 12px;gap:6px;}
   .mac-durum-col{display:none !important;}
   .mac-arrow{display:none !important;}
   .takim-adi{font-size:12px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -348,6 +348,16 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .mobil-nav-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;}
 @media(max-width:768px){.mobil-nav{display:block;}.main{padding-bottom:60px !important;}}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* FAVORİLER */
+.fav-star{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:2px 6px;transition:color .2s,transform .15s;flex-shrink:0;line-height:1;}
+.fav-star:hover{color:var(--gold-lt);transform:scale(1.2);}
+.fav-star.aktif{color:var(--gold);}
+.mac-satir.fav-mac{border-left:3px solid var(--gold);background:rgba(212,162,76,.04);}
+.lig-grup.fav-lig{border-left:3px solid var(--gold);}
+.lig-grup.fav-lig>.lig-header{background:rgba(212,162,76,.06);}
+.fav-bos{text-align:center;padding:60px 24px;color:var(--muted);}
+.fav-bos svg{width:48px;height:48px;stroke:var(--muted);margin-bottom:12px;}
 </style>
 </head>
 <body>
@@ -458,6 +468,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <button class="nav-btn" onclick="showMainTab('aialysis')" id="nav-aialysis">
         ✦ aiALYSIS
       </button>
+      <button class="nav-btn" onclick="showMainTab('favoriler')" id="nav-favoriler">
+        <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Favoriler
+      </button>
       <button class="nav-btn" onclick="showMainTab('dashboard')" id="nav-dashboard">
         <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Performans
       </button>
@@ -529,6 +542,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       </div>
       <div id="maclarContainer">
         <div class="loading"><div class="spinner"></div>Yükleniyor...</div>
+      </div>
+    </div>
+
+    <!-- Favoriler -->
+    <div class="page" id="page-favoriler">
+      <div class="matches-header">
+        <div>
+          <div class="matches-title">&#9733; Favoriler</div>
+          <div class="matches-count" id="favCount">Favori maclariniz</div>
+        </div>
+      </div>
+      <div id="favContainer">
+        <div class="fav-bos"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><div>Henuz favori eklemediniz.<br><span style="font-size:12px;">Mac veya lig satirlarindaki yildiz ikonuna tiklayarak favori ekleyebilirsiniz.</span></div></div>
       </div>
     </div>
 
@@ -757,6 +783,90 @@ function panelKapat(){
   currentMac=null;
 }
 
+// FAVORİ SİSTEMİ
+function getFavMaclar(){try{return JSON.parse(localStorage.getItem('fav_maclar')||'[]');}catch(e){return[];}}
+function getFavLigler(){try{return JSON.parse(localStorage.getItem('fav_ligler')||'[]');}catch(e){return[];}}
+function setFavMaclar(arr){localStorage.setItem('fav_maclar',JSON.stringify(arr));}
+function setFavLigler(arr){localStorage.setItem('fav_ligler',JSON.stringify(arr));}
+
+function toggleFavMac(id,e){
+  if(e){e.stopPropagation();e.preventDefault();}
+  let favs=getFavMaclar();
+  const idx=favs.indexOf(id);
+  if(idx>-1)favs.splice(idx,1);else favs.push(id);
+  setFavMaclar(favs);
+  // Update star icon in-place
+  document.querySelectorAll(`.fav-star-mac[data-id="${id}"]`).forEach(el=>{
+    el.classList.toggle('aktif',favs.includes(id));
+    el.textContent=favs.includes(id)?'\u2605':'\u2606';
+  });
+  // Update mac-satir gold border
+  document.querySelectorAll(`.mac-satir[data-macid="${id}"]`).forEach(el=>{
+    el.classList.toggle('fav-mac',favs.includes(id));
+  });
+}
+
+function toggleFavLig(ligKey,e){
+  if(e){e.stopPropagation();e.preventDefault();}
+  let favs=getFavLigler();
+  const idx=favs.indexOf(ligKey);
+  if(idx>-1)favs.splice(idx,1);else favs.push(ligKey);
+  setFavLigler(favs);
+  // Update star icon in-place
+  document.querySelectorAll(`.fav-star-lig`).forEach(el=>{
+    const k=el.getAttribute('data-lig');
+    el.classList.toggle('aktif',favs.includes(k));
+    el.textContent=favs.includes(k)?'\u2605':'\u2606';
+  });
+  // Update lig-grup gold border
+  document.querySelectorAll('.lig-grup').forEach(el=>{
+    const k=el.getAttribute('data-ligkey');
+    if(k)el.classList.toggle('fav-lig',favs.includes(k));
+  });
+}
+
+function renderFavoriler(){
+  const c=document.getElementById('favContainer');
+  const favMacIds=getFavMaclar();
+  const favLigKeys=getFavLigler();
+  if(!maclar||!maclar.length){
+    c.innerHTML='<div class="fav-bos">Mac verisi yukleniyor, lutfen bekleyin...</div>';
+    return;
+  }
+  // Collect fav matches: direct fav + matches in fav leagues
+  const favMaclar=maclar.filter(m=>{
+    const macId=m.fixture.id;
+    const ligKey=`${m.league.country} | ${m.league.name}`;
+    return favMacIds.includes(macId)||favLigKeys.includes(ligKey);
+  });
+  if(!favMaclar.length){
+    c.innerHTML='<div class="fav-bos"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><div>Henuz favori eklemediniz.<br><span style="font-size:12px;">Mac veya lig satirlarindaki yildiz ikonuna tiklayarak favori ekleyebilirsiniz.</span></div></div>';
+    document.getElementById('favCount').textContent='Favori maclariniz';
+    return;
+  }
+  document.getElementById('favCount').textContent=`${favMaclar.length} favori mac`;
+  const gr={};
+  favMaclar.forEach(m=>{
+    const k=`${m.league.country} | ${m.league.name}`;
+    if(!gr[k])gr[k]={l:m.league,ms:[]};
+    gr[k].ms.push(m);
+  });
+  const sorted=Object.entries(gr).sort((a,b)=>ligOncelik(b[0])-ligOncelik(a[0]));
+  c.innerHTML=sorted.map(([k,{l,ms}])=>{
+    const isFavLig=favLigKeys.includes(k);
+    return`<div class="lig-grup${isFavLig?' fav-lig':''}" data-ligkey="${k}">
+      <div class="lig-header" onclick="this.classList.toggle('kapali')">
+        <button class="fav-star fav-star-lig${isFavLig?' aktif':''}" data-lig="${k}" onclick="toggleFavLig('${k.replace(/'/g,"\\'")}',event)">${isFavLig?'\u2605':'\u2606'}</button>
+        <img class="lig-logo" src="${l.logo||''}" onerror="this.style.display='none'">
+        <span class="lig-adi">${k}</span>
+        <span class="lig-sayac">${ms.length} mac</span>
+        <span class="lig-chevron">\u25be</span>
+      </div>
+      <div class="lig-maclar">${ms.map(m=>macSatir(m)).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
 function pad2(n){return String(n).padStart(2,'0');}
 function fmtApi(d){return`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;}
 function fmtTR(d){
@@ -856,23 +966,32 @@ function renderMaclar(liste){
   fetchedAt=Date.now();
   const c=document.getElementById('maclarContainer');
   if(!liste.length){c.innerHTML='<div class="empty">Bu tarihte maç bulunamadı.</div>';return;}
+  const favLigKeys=getFavLigler();
   const gr={};
   liste.forEach(m=>{
     const k=`${m.league.country} | ${m.league.name}`;
     if(!gr[k])gr[k]={l:m.league,ms:[]};
     gr[k].ms.push(m);
   });
-  const sorted=Object.entries(gr).sort((a,b)=>ligOncelik(b[0])-ligOncelik(a[0]));
-  c.innerHTML=sorted.map(([k,{l,ms}])=>`
-    <div class="lig-grup">
+  const sorted=Object.entries(gr).sort((a,b)=>{
+    const aFav=favLigKeys.includes(a[0])?1:0;
+    const bFav=favLigKeys.includes(b[0])?1:0;
+    if(aFav!==bFav)return bFav-aFav;
+    return ligOncelik(b[0])-ligOncelik(a[0]);
+  });
+  c.innerHTML=sorted.map(([k,{l,ms}])=>{
+    const isFavLig=favLigKeys.includes(k);
+    return`<div class="lig-grup${isFavLig?' fav-lig':''}" data-ligkey="${k}">
       <div class="lig-header" onclick="this.classList.toggle('kapali')">
+        <button class="fav-star fav-star-lig${isFavLig?' aktif':''}" data-lig="${k}" onclick="toggleFavLig('${k.replace(/'/g,"\\'")}',event)">${isFavLig?'\u2605':'\u2606'}</button>
         <img class="lig-logo" src="${l.logo||''}" onerror="this.style.display='none'">
         <span class="lig-adi">${l.country} | ${l.name}</span>
         <span class="lig-sayac">${ms.length} maç</span>
-        <span class="lig-chevron">▾</span>
+        <span class="lig-chevron">\u25be</span>
       </div>
       <div class="lig-maclar">${ms.map(m=>macSatir(m)).join('')}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function macSatir(m){
@@ -883,7 +1002,8 @@ function macSatir(m){
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const dkTxt=dk==null?'':dk>90?`90+${dk-90}'`:dk>45&&st==='1H'?`45+${dk-45}'`:`${dk}'`;
   const durumStr=live?`<span class="dk-badge" data-elapsed="${dk}">${dkTxt}</span>`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
-  return`<div class="mac-satir" onclick="openMac(${m.fixture.id})">
+  const isFav=getFavMaclar().includes(m.fixture.id);
+  return`<div class="mac-satir${isFav?' fav-mac':''}" data-macid="${m.fixture.id}" onclick="openMac(${m.fixture.id})">
     <div class="mac-zaman"><div class="saat">${localSaat}</div><div class="durum">${durumStr}</div></div>
     <div class="mac-takimlar">
       <div class="mac-takim"><img class="takim-logo" src="${m.teams.home.logo}" onerror="this.style.display='none'"><span class="takim-adi ${live&&ev>dep?'kazanan':''}">${m.teams.home.name}</span></div>
@@ -891,7 +1011,7 @@ function macSatir(m){
     </div>
     <div class="mac-skor"><div class="skor-val ${bitti?'bitti':''}">${ev}</div><div class="skor-val ${bitti?'bitti':''}">${dep}</div></div>
     <div class="mac-durum-col">${m.league.name.substring(0,14)}</div>
-    <div class="mac-arrow">›</div>
+    <button class="fav-star fav-star-mac${isFav?' aktif':''}" data-id="${m.fixture.id}" onclick="toggleFavMac(${m.fixture.id},event)">${isFav?'\u2605':'\u2606'}</button>
   </div>`;
 }
 
@@ -1205,6 +1325,7 @@ async function loadDetailKadro(fixId){
     const d=await apiFetch(`/fixtures/lineups?fixture=${fixId}`);
     const l=d.response||[];
     if(!l.length){document.getElementById('dc-kadro').innerHTML='<div class="empty">Kadro henüz açıklanmadı.</div>';return;}
+    const playerRow=(p,isSub)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(46,46,46,.5)${isSub?';opacity:.7':''}"><span style="width:20px;text-align:center;font-size:11px;font-weight:700;color:${isSub?'var(--muted)':'var(--blue-lt)'}">${p.player?.number||''}</span><span style="font-size:12px">${p.player?.name||''}</span><span style="margin-left:auto;font-size:10px;color:var(--muted)">${p.player?.pos||''}</span></div>`;
     document.getElementById('dc-kadro').innerHTML=`<div style="padding:16px">${l.map(t=>`
       <div style="margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface);border-radius:8px;margin-bottom:6px">
@@ -1212,7 +1333,9 @@ async function loadDetailKadro(fixId){
           <span style="font-size:12px;font-weight:700;flex:1">${t.team?.name||''}</span>
           <span style="background:var(--blue);color:white;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700">${t.formation||''}</span>
         </div>
-        ${(t.startXI||[]).map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(46,46,46,.5)"><span style="width:20px;text-align:center;font-size:11px;font-weight:700;color:var(--blue-lt)">${p.player?.number||''}</span><span style="font-size:12px">${p.player?.name||''}</span><span style="margin-left:auto;font-size:10px;color:var(--muted)">${p.player?.pos||''}</span></div>`).join('')}
+        <div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:6px 8px;border-bottom:1px solid var(--border)">İLK 11</div>
+        ${(t.startXI||[]).map(p=>playerRow(p,false)).join('')}
+        ${(t.substitutes&&t.substitutes.length)?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:6px 8px;margin-top:8px;border-bottom:1px solid var(--border)">YEDEKLER</div>${t.substitutes.map(p=>playerRow(p,true)).join('')}`:''}
       </div>`).join('')}</div>`;
   }catch(e){document.getElementById('dc-kadro').innerHTML='<div class="error">Yüklenemedi.</div>';}
 }
@@ -1292,6 +1415,7 @@ async function loadDetailKarsi(m){
   const c=document.getElementById('dc-karsi');
   const evId=m.teams.home.id, depId=m.teams.away.id;
   const evName=m.teams.home.name, depName=m.teams.away.name;
+  const evLogo=m.teams.home.logo||'', depLogo=m.teams.away.logo||'';
   try{
     const [ev5,dep5,evEv5,depDep5,h2hR]=await Promise.all([
       apiFetch(`/fixtures?team=${evId}&last=5`),
@@ -1308,35 +1432,60 @@ async function loadDetailKarsi(m){
         ${finished.map(f=>{
           const isHome=f.teams.home.id===focusId;
           const eg=f.goals.home??0,dg=f.goals.away??0;
-          const focusGol=isHome?eg:dg, opGol=isHome?dg:eg;
           let res;
           if(eg===dg)res='b';
           else if((isHome&&eg>dg)||(!isHome&&dg>eg))res='g';
           else res='m';
           const resLbl=res==='g'?'G':res==='b'?'B':'M';
           const tarih=new Date(f.fixture.date).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'});
-          const oponent=isHome?f.teams.away.name:f.teams.home.name;
+          const homeLogo=f.teams.home.logo||'';
+          const awayLogo=f.teams.away.logo||'';
           return`<div class="karsi-mac">
             <div class="karsi-res ${res}">${resLbl}</div>
-            <div class="karsi-takim b" style="max-width:90px">${isHome?f.teams.home.name:f.teams.away.name}</div>
-            <div class="karsi-skor">${focusGol}-${opGol}</div>
-            <div class="karsi-takim" style="max-width:90px">${oponent}</div>
+            <img src="${homeLogo}" style="width:16px;height:16px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
+            <div class="karsi-takim ${isHome?'b':''}" style="max-width:85px">${f.teams.home.name}</div>
+            <div class="karsi-skor">${eg}-${dg}</div>
+            <div class="karsi-takim ${!isHome?'b':''}" style="max-width:85px">${f.teams.away.name}</div>
+            <img src="${awayLogo}" style="width:16px;height:16px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
             <div style="font-size:9px;color:var(--muted);flex-shrink:0">${tarih}</div>
           </div>`;
         }).join('')}`;
     };
 
     const h2hFinished=(h2hR.response||[]).filter(f=>['FT','AET','PEN'].includes(f.fixture.status.short));
-    const h2hHtml=`<div class="karsi-sec-title">H2H — İKİ TAKIM ARASINDAKİ SON 20 MAÇ</div>
+    // H2H stats from current home team perspective
+    let evKazanma=0, beraberlik=0, depKazanma=0;
+    h2hFinished.forEach(f=>{
+      const eg=f.goals.home??0,dg=f.goals.away??0;
+      const evIsHome=f.teams.home.id===evId;
+      const evGoals=evIsHome?eg:dg, depGoals=evIsHome?dg:eg;
+      if(evGoals>depGoals)evKazanma++;
+      else if(evGoals<depGoals)depKazanma++;
+      else beraberlik++;
+    });
+    const h2hStatsHtml=h2hFinished.length?`<div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 0;margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:4px"><img src="${evLogo}" style="width:16px;height:16px;object-fit:contain" onerror="this.style.display='none'"><span style="font-size:11px;font-weight:700;color:var(--green)">${evKazanma} G</span></div>
+      <span style="font-size:11px;font-weight:700;color:var(--muted)">${beraberlik} B</span>
+      <div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;font-weight:700;color:var(--red)">${depKazanma} G</span><img src="${depLogo}" style="width:16px;height:16px;object-fit:contain" onerror="this.style.display='none'"></div>
+    </div>`:'';
+    const h2hHtml=`<div class="karsi-sec-title">H2H — SON ${h2hFinished.length} KARŞILAŞMA</div>
+      ${h2hStatsHtml}
       ${h2hFinished.length?h2hFinished.map(f=>{
         const eg=f.goals.home??0,dg=f.goals.away??0;
         const tarih=new Date(f.fixture.date).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'2-digit'});
-        const evWin=eg>dg,depWin=dg>eg;
+        // Result from current home team's perspective
+        const evIsHome=f.teams.home.id===evId;
+        const evGoals=evIsHome?eg:dg, depGoals=evIsHome?dg:eg;
+        const evW=evGoals>depGoals, depW=depGoals>evGoals;
+        const homeLogo=f.teams.home.logo||'';
+        const awayLogo=f.teams.away.logo||'';
         return`<div class="karsi-mac">
-          <div class="karsi-res ${evWin?'g':depWin?'m':'b'}">${evWin?'G':depWin?'M':'B'}</div>
-          <div class="karsi-takim ${evWin?'b':''}" style="max-width:85px">${f.teams.home.name}</div>
+          <div class="karsi-res ${evW?'g':depW?'m':'b'}">${evW?'G':depW?'M':'B'}</div>
+          <img src="${homeLogo}" style="width:16px;height:16px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
+          <div class="karsi-takim" style="max-width:85px">${f.teams.home.name}</div>
           <div class="karsi-skor">${eg}-${dg}</div>
-          <div class="karsi-takim ${depWin?'b':''}" style="max-width:85px">${f.teams.away.name}</div>
+          <div class="karsi-takim" style="max-width:85px">${f.teams.away.name}</div>
+          <img src="${awayLogo}" style="width:16px;height:16px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
           <div style="font-size:9px;color:var(--muted);flex-shrink:0">${tarih}</div>
         </div>`;
       }).join(''):'<div style="font-size:11px;color:var(--muted);padding:6px 0">Karşılaşma bulunamadı.</div>'}`;
@@ -1366,7 +1515,7 @@ function switchDetailTab(name){
 function showMainTab(name){
   // Panel açıksa kapat
   panelKapat();
-  ['maclar','aialysis','dashboard'].forEach(p=>{
+  ['maclar','favoriler','aialysis','dashboard'].forEach(p=>{
     document.getElementById(`page-${p}`).classList.remove('active');
     const nb=document.getElementById(`nav-${p}`);
     if(nb)nb.classList.remove('active');
@@ -1377,6 +1526,7 @@ function showMainTab(name){
   if(nb)nb.classList.add('active');
   if(name==='aialysis')loadAialysis();
   if(name==='dashboard')loadTahminler(aktifFilter);
+  if(name==='favoriler')renderFavoriler();
 }
 
 async function loadAialysis(){
@@ -1589,6 +1739,10 @@ loadMaclar();
     <button class="mobil-nav-btn active" onclick="showMainTab('maclar');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
       <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Maclar
+    </button>
+    <button class="mobil-nav-btn" onclick="showMainTab('favoriler');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
+      <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Favoriler
     </button>
     <button class="mobil-nav-btn" onclick="showMainTab('aialysis');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
       <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
