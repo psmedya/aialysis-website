@@ -1352,10 +1352,21 @@ function renderDetailAnaliz(a,m){
   const t=a.tahminler||[],o=a.olasiliklar||{};
   const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
   const skor=a.skor_tahmini||{};
+  const guven=a.tahmin_guveni||0;
+  // Güven 0 veya tarihsel veri yoksa boş analiz gösterme
+  if(guven===0||a.tarihsel_veri_yok){
+    document.getElementById('dc-analiz').innerHTML=`<div style="padding:40px;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px;opacity:.5">🔍</div>
+      <div style="color:var(--text);font-size:15px;font-weight:700;margin-bottom:8px">Yeterli güvenilirlikte tahmin üretilemedi</div>
+      <div style="color:var(--muted);font-size:12px;line-height:1.6">${a.genel_yorum||'Bu maç için yeterli tarihsel veri bulunmuyor.'}<br><br>aiALYSIS Live sadece yüksek olasılıklı öneriler sunar.</div>
+      ${live?'<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:10px;font-size:10px;color:var(--green);margin-top:16px"><div style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite"></div>Veri toplandıkça analiz güncellenecek</div>':''}
+    </div>`;
+    return;
+  }
   document.getElementById('dc-analiz').innerHTML=`
     <div style="padding:16px">
     <div class="ai-card">
-      <div class="ai-title">${a.on_analiz?'🔮 MAÇ ÖNCESİ ANALİZ':'✦ AI ANALİZİ'} — %${a.tahmin_guveni||0} GÜVEN</div>
+      <div class="ai-title">${a.on_analiz?'🔮 MAÇ ÖNCESİ ANALİZ':'✦ AI ANALİZİ'} — %${guven} GÜVEN</div>
       <div class="ai-grid">
         <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${skor.ev??'-'}</div><div class="ai-lbl">EV SKORU</div></div>
         <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${skor.dep??'-'}</div><div class="ai-lbl">DEP SKORU</div></div>
@@ -1653,8 +1664,10 @@ async function loadAialysis(){
     let canlilar=(d.response||[]).sort((a,b)=>ligOncelik(`${b.league.country} | ${b.league.name}`)-ligOncelik(`${a.league.country} | ${a.league.name}`)).slice(0,12);
     if(!canlilar.length){c.innerHTML='<div class="empty" style="grid-column:1/-1">Şu an canlı maç yok.</div>';return;}
 
-    // Hazır tahminleri olan maçları önce göster
-    c.innerHTML='';
+    // Hazır tahminleri olan maçları göster — mevcut kartları koru
+    const mevcutKartlar=new Set();
+    c.querySelectorAll('[id^="aia-"]').forEach(el=>mevcutKartlar.add(el.id));
+    if(!mevcutKartlar.size) c.innerHTML='';
     const gosterilenIds=new Set();
     for(const m of canlilar){
       const tahminler=hazirTahminler[m.fixture.id];
@@ -1664,20 +1677,22 @@ async function loadAialysis(){
         const etiket=gb>=3.5?'Maç Yanıyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Maç';
         const etiketRenk=gb>=3.5?'#FF4757':gb>=2.5?'#FF7F50':gb>=1.5?'#FFD32A':'#4FC3F7';
         const dk=m.fixture.status.elapsed;
-        const card=document.createElement('div');card.className='aia-card';card.id=`aia-${m.fixture.id}`;card.style.cursor='pointer';
-        card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);};
-        card.innerHTML=`<div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
+        const html=`<div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
           <div class="aia-maclar"><div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
           <div class="aia-skor">${dk?`<div class="aia-dk">${dk}'</div>`:''}<div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
           <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div></div>
           <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
-        c.appendChild(card);
+        let card=document.getElementById(`aia-${m.fixture.id}`);
+        if(card){card.innerHTML=html;}
+        else{card=document.createElement('div');card.className='aia-card';card.id=`aia-${m.fixture.id}`;card.style.cursor='pointer';card.innerHTML=html;c.appendChild(card);}
+        card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);};
         gosterilenIds.add(m.fixture.id);
       }
     }
     // Gösterilenlerin dışındaki maçları skeleton olarak ekle
     const kalanlar=canlilar.filter(m=>!gosterilenIds.has(m.fixture.id));
     kalanlar.forEach(m=>{
+      if(document.getElementById(`aia-${m.fixture.id}`)) return; // zaten var
       const el=document.createElement('div');el.className='aia-card';el.id=`aia-${m.fixture.id}`;
       el.innerHTML=`<div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket">Analiz ediliyor...</span></div>
         <div class="aia-maclar"><div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
