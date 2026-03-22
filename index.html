@@ -588,9 +588,8 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 </div>
 <script>
 (function(){
-  var bakimBitis=localStorage.getItem('bakim_bitis');
-  if(!bakimBitis){bakimBitis=(Date.now()+6*60*60*1000).toString();localStorage.setItem('bakim_bitis',bakimBitis);}
-  var bitis=parseInt(bakimBitis);
+  // SABİT BİTİŞ ZAMANI — UTC 2026-03-23 03:00 (İstanbul 06:00)
+  var bitis = new Date('2026-03-23T03:00:00Z').getTime();
   function guncelle(){
     var kalan=Math.max(0,bitis-Date.now());
     if(kalan<=0){document.getElementById('bakimModu').style.display='none';localStorage.removeItem('bakim_bitis');return;}
