@@ -587,20 +587,36 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   </div>
 </div>
 <script>
-(function(){
-  // SABİT BİTİŞ ZAMANI — UTC 2026-03-23 03:00 (İstanbul 06:00)
-  var bitis = new Date('2026-03-23T03:00:00Z').getTime();
-  function guncelle(){
-    var kalan=Math.max(0,bitis-Date.now());
-    if(kalan<=0){document.getElementById('bakimModu').style.display='none';localStorage.removeItem('bakim_bitis');return;}
-    var s=Math.floor(kalan/3600000),d=Math.floor((kalan%3600000)/60000),sn=Math.floor((kalan%60000)/1000);
-    document.getElementById('bakimSaat').textContent=String(s).padStart(2,'0');
-    document.getElementById('bakimDk').textContent=String(d).padStart(2,'0');
-    document.getElementById('bakimSn').textContent=String(sn).padStart(2,'0');
-    document.getElementById('bakimBar').style.width=((6*3600000-kalan)/(6*3600000)*100)+'%';
-    setTimeout(guncelle,1000);
+(async function(){
+  try {
+    var apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4';
+    var r = await fetch('https://fohmlwoewjupceznwmdr.supabase.co/rest/v1/app_config?key=eq.bakim_modu&select=value', {
+      headers: { 'apikey': apikey, 'Authorization': 'Bearer ' + apikey }
+    });
+    var data = await r.json();
+    var config = data && data[0] && data[0].value ? data[0].value : {};
+    if (!config.aktif) { document.getElementById('bakimModu').style.display='none'; return; }
+    if (config.mesaj) {
+      var msgEl = document.querySelector('#bakimModu p[style*="color:#7A7A95"]');
+      if (msgEl) msgEl.textContent = config.mesaj;
+    }
+    var bitis = new Date(config.bitis).getTime();
+    var baslangic = bitis - 6*3600000;
+    function guncelle(){
+      var kalan=Math.max(0,bitis-Date.now());
+      if(kalan<=0){document.getElementById('bakimModu').style.display='none';return;}
+      var s=Math.floor(kalan/3600000),d=Math.floor((kalan%3600000)/60000),sn=Math.floor((kalan%60000)/1000);
+      document.getElementById('bakimSaat').textContent=String(s).padStart(2,'0');
+      document.getElementById('bakimDk').textContent=String(d).padStart(2,'0');
+      document.getElementById('bakimSn').textContent=String(sn).padStart(2,'0');
+      var toplam = bitis - baslangic;
+      document.getElementById('bakimBar').style.width=((toplam-kalan)/toplam*100)+'%';
+      setTimeout(guncelle,1000);
+    }
+    guncelle();
+  } catch(e) {
+    document.getElementById('bakimModu').style.display='none';
   }
-  guncelle();
 })();
 </script>
 
@@ -1067,24 +1083,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         </div>
       </div>
 
-      <!-- Premium Plan Section -->
-      <div id="premiumPlanSection" class="premium-plan-box">
-        <div id="premiumFreeView">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <span style="color:var(--muted);font-size:12px;font-weight:600;">Mevcut Plan</span>
-            <span style="color:var(--text);font-size:12px;font-weight:700;">Ucretsiz Plan</span>
-          </div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">Gunde 3 tahmin goruntuleyebilirsiniz.</div>
-          <button onclick="premiumInfoModal()" class="premium-upgrade-btn">Premium'a Gec</button>
-        </div>
-        <div id="premiumActiveView" style="display:none;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span class="premium-badge">&#11088; Premium</span>
-            <span style="color:var(--gold-lt);font-size:12px;font-weight:700;">Aktif</span>
-          </div>
-          <div style="font-size:11px;color:var(--muted);">Sinirsiz tahmin ve tum ozel ozelliklere erisim.</div>
-        </div>
-      </div>
+      <!-- Premium removed -->
 
       <!-- Logout Button -->
       <button onclick="authLogout()" style="width:100%;padding:12px;background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.3);border-radius:10px;color:var(--red);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;" onmouseover="this.style.background='var(--red)';this.style.color='white'" onmouseout="this.style.background='rgba(255,71,87,.1)';this.style.color='var(--red)'">Çıkış Yap</button>
@@ -1092,35 +1091,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   </div>
 </div>
 
-<!-- PREMIUM INFO MODAL -->
-<div id="premiumOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9500;align-items:center;justify-content:center;">
-  <div style="background:var(--surface);border:1px solid var(--gold);border-radius:16px;width:90%;max-width:420px;padding:28px;position:relative;overflow-y:auto;max-height:90vh;">
-    <button onclick="document.getElementById('premiumOverlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">&times;</button>
-    <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:48px;margin-bottom:8px;">&#11088;</div>
-      <h3 style="color:var(--gold-lt);font-size:20px;font-weight:900;margin-bottom:4px;">aiALYSIS Premium</h3>
-      <p style="color:var(--muted);font-size:12px;">Tum ozelliklerin kilidini ac</p>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;">
-      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
-        <span style="font-size:20px;">&#9854;</span>
-        <div><div style="font-size:13px;font-weight:700;color:var(--text);">Sinirsiz Tahmin</div><div style="font-size:11px;color:var(--muted);">Gun limiti olmadan tum tahminlere eris</div></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
-        <span style="font-size:20px;">&#9200;</span>
-        <div><div style="font-size:13px;font-weight:700;color:var(--text);">Erken Erisim</div><div style="font-size:11px;color:var(--muted);">Mac oncesi AI analiz raporlari</div></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
-        <span style="font-size:20px;">&#128683;</span>
-        <div><div style="font-size:13px;font-weight:700;color:var(--text);">Reklamsiz Deneyim</div><div style="font-size:11px;color:var(--muted);">Reklam olmadan kesintisiz kullanim</div></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
-        <span style="font-size:20px;">&#127942;</span>
-        <div><div style="font-size:13px;font-weight:700;color:var(--text);">Ozel Rozet</div><div style="font-size:11px;color:var(--muted);">Profilinde premium rozeti goster</div></div>
-      </div>
-    </div>
-    <button onclick="activatePremiumDemo()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:12px;color:#1A1A2E;font-size:15px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px;">Yakinda</button>
-    <p style="text-align:center;font-size:10px;color:var(--muted);">Odeme entegrasyonu yakinda aktif olacak.</p>
+<!-- Premium modal removed -->
   </div>
 </div>
 
@@ -1171,13 +1142,12 @@ function authModal(){
 
       // Display name
       const displayName=meta.aialysis_username||meta.full_name||meta.name||(u.email?u.email.split('@')[0]:'Kullanıcı');
-      document.getElementById('profileDisplayName').innerHTML=displayName+(isPremium()?' <span class="premium-badge">&#11088; Premium</span>':'');
+      document.getElementById('profileDisplayName').innerHTML=displayName;
 
       // Email
       document.getElementById('profileEmail').textContent=u.email||'';
 
-      // Update premium section
-      updatePremiumUI();
+      // Premium removed
 
       // Provider
       const provider=u.app_metadata?.provider||'email';
@@ -1271,24 +1241,7 @@ async function authLogout(){
   document.getElementById('authBtn').style.background='var(--blue-lt)';
 }
 
-// Premium system
-function isPremium(){return localStorage.getItem('is_premium')==='true';}
-function premiumInfoModal(){document.getElementById('premiumOverlay').style.display='flex';}
-function activatePremiumDemo(){
-  localStorage.setItem('is_premium','true');
-  document.getElementById('premiumOverlay').style.display='none';
-  updatePremiumUI();
-  authModal();
-}
-function updatePremiumUI(){
-  const prem=isPremium();
-  const freeView=document.getElementById('premiumFreeView');
-  const activeView=document.getElementById('premiumActiveView');
-  if(freeView)freeView.style.display=prem?'none':'block';
-  if(activeView)activeView.style.display=prem?'block':'none';
-  document.querySelectorAll('.ad-slot').forEach(el=>{el.style.display=prem?'none':'';});
-}
-updatePremiumUI();
+// Premium system removed
 
 async function saveAialysisUsername(){
   const input=document.getElementById('profileUsernameInput');
@@ -1580,6 +1533,22 @@ function ligOncelik(s){
   return 3000;
 }
 
+async function sbQuery(table,filters=''){
+  const r=await fetch(`${SU}/rest/v1/${table}?${filters}`,{
+    headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}
+  });
+  return r.json();
+}
+function sbToApiFormat(row){
+  return {
+    fixture:{id:row.fixture_id,date:row.mac_tarihi,referee:row.hakem,venue:{name:row.stadyum,city:row.sehir},status:{short:row.durum,elapsed:row.elapsed,extra:row.extra}},
+    teams:{home:{id:row.ev_takim_id,name:row.ev_takim_adi,logo:row.ev_logo},away:{id:row.dep_takim_id,name:row.dep_takim_adi,logo:row.dep_logo}},
+    goals:{home:row.ev_gol,away:row.dep_gol},
+    score:{halftime:{home:row.ev_gol_iy,away:row.dep_gol_iy}},
+    league:{id:row.lig_id,name:row.lig_adi,logo:row.lig_logo,country:row.ulke,season:row.sezon,round:row.tur}
+  };
+}
+// Eski apiFetch uyumluluğu — takım arama gibi nadir çağrılar için
 async function apiFetch(ep){
   const r=await fetch(`${SU}/functions/v1/api-proxy?path=${encodeURIComponent(ep)}`,{
     headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}
@@ -1608,15 +1577,14 @@ async function loadMaclar(){
   try{
     let liste=[];
     if(canliMod){
-      const d=await apiFetch('/fixtures?live=all');
-      liste=d.response||[];
+      const rows=await sbQuery('maclar','durum=in.(1H,HT,2H,ET,P,LIVE)&order=mac_tarihi');
+      liste=(rows||[]).map(sbToApiFormat);
       document.getElementById('matchesTitle').textContent='🔴 Canlı Maçlar';
     } else {
-      // Seçili tarihi Istanbul timezone'da formatla
       const istFmt=(d)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Istanbul'}).format(d);
       const tarihStr=istFmt(tarih);
-      const bugun=await apiFetch(`/fixtures?date=${tarihStr}&timezone=Europe/Istanbul`);
-      liste=bugun.response||[];
+      const rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`);
+      liste=(rows||[]).map(sbToApiFormat);
       document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
     }
     maclar=liste;
@@ -1645,7 +1613,7 @@ function renderMaclar(liste){
     if(aFav!==bFav)return bFav-aFav;
     return ligOncelik(b[0])-ligOncelik(a[0]);
   });
-  const adSlotHtml=isPremium()?'':'<div class="ad-slot"><span>Reklam Alani</span></div>';
+  const adSlotHtml='';
   c.innerHTML=sorted.map(([k,{l,ms}],idx)=>{
     const isFavLig=favLigKeys.includes(k);
     const ligHtml=`<div class="lig-grup${isFavLig?' fav-lig':''}" data-ligkey="${k}">
@@ -1760,10 +1728,20 @@ async function openMac(id){
 
 async function loadFormBars(evId, depId){
   try{
-    const [evR,depR]=await Promise.all([
-      apiFetch(`/fixtures?team=${evId}&last=5`),
-      apiFetch(`/fixtures?team=${depId}&last=5`)
+    const formToFixtures=(data)=>{
+      if(!data||!data.length)return[];
+      return(data[0].maclar||[]).map(fm=>({
+        fixture:{id:fm.fixture_id,status:{short:fm.status}},
+        teams:{home:{id:fm.home_id},away:{id:fm.away_id}},
+        goals:{home:fm.home_goals,away:fm.away_goals}
+      }));
+    };
+    const [evFormData,depFormData]=await Promise.all([
+      sbQuery('takim_form',`takim_id=eq.${evId}&tip=eq.genel`),
+      sbQuery('takim_form',`takim_id=eq.${depId}&tip=eq.genel`)
     ]);
+    const evR={response:formToFixtures(evFormData)};
+    const depR={response:formToFixtures(depFormData)};
     const renderBar=(fixtures, teamId, elId)=>{
       const el=document.getElementById(elId);
       if(!el)return;
@@ -1789,8 +1767,8 @@ async function loadFormBars(evId, depId){
 // Odds helper — fetch bet365 odds and build a lookup map
 async function fetchOddsMap(fixtureId){
   try{
-    const oddsR=await apiFetch(`/odds?fixture=${fixtureId}&bookmaker=8`);
-    const bets=(oddsR.response||[])[0]?.bookmakers?.[0]?.bets||[];
+    const oranRows=await sbQuery('mac_oranlar',`fixture_id=eq.${fixtureId}`);
+    const bets=(oranRows&&oranRows.length)?oranRows[0].api_odds||[]:[];
     const map={};
     bets.forEach(b=>{
       const name=(b.name||'').toLowerCase();
@@ -1893,20 +1871,15 @@ async function loadDetailAnaliz(m){
   const c=document.getElementById('dc-analiz');
   c.innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
 
-  // Canlı istatistikleri çek (mevcut korner/faul/kart/gol için)
+  // Canlı istatistikleri Supabase'den çek
   let mevcutIstat={gol:(m.goals.home??0)+(m.goals.away??0),korner:0,faul:0,sari:0};
   try{
-    const ir=await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
-    const ss=ir.response||[];
-    if(ss.length>=2){
-      const pf=v=>parseFloat(v)||0;
-      const ev=ss[0].statistics||[],dp=ss[1].statistics||[];
-      ev.forEach((s,i)=>{
-        const t=s.type?.toLowerCase()||'';
-        if(t.includes('corner'))mevcutIstat.korner=pf(s.value)+pf(dp[i]?.value);
-        if(t.includes('foul'))mevcutIstat.faul=pf(s.value)+pf(dp[i]?.value);
-        if(t.includes('yellow'))mevcutIstat.sari=pf(s.value)+pf(dp[i]?.value);
-      });
+    const istatRows=await sbQuery('mac_canli_istatistikler',`fixture_id=eq.${m.fixture.id}`);
+    if(istatRows&&istatRows.length){
+      const r=istatRows[0];
+      mevcutIstat.korner=(r.ev_korner||0)+(r.dep_korner||0);
+      mevcutIstat.faul=(r.ev_faul||0)+(r.dep_faul||0);
+      mevcutIstat.sari=(r.ev_sari_kart||0)+(r.dep_sari_kart||0);
     }
   }catch(_){}
 
@@ -1962,12 +1935,11 @@ async function loadDetailAnaliz(m){
 
   // 2) Arka planda taze analiz yap (varsa üzerine yazar)
   try{
-    const ir=await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
-    const flat={};
-    (ir.response||[]).forEach((t,i)=>{const p=i===0?'ev':'dep';(t.statistics||[]).forEach(s=>{flat[p+'_'+s.type]=s.value;});});
-    const pf=(v)=>parseFloat(v)||0;
-    const evIst={topSahip:parseInt(flat['ev_Ball Possession'])||0,toplamSut:pf(flat['ev_Total Shots']),isabetliSut:pf(flat['ev_Shots on Goal']),korner:pf(flat['ev_Corner Kicks']),faul:pf(flat['ev_Fouls']),sariKart:pf(flat['ev_Yellow Cards']),kirmziKart:pf(flat['ev_Red Cards'])};
-    const depIst={topSahip:parseInt(flat['dep_Ball Possession'])||0,toplamSut:pf(flat['dep_Total Shots']),isabetliSut:pf(flat['dep_Shots on Goal']),korner:pf(flat['dep_Corner Kicks']),faul:pf(flat['dep_Fouls']),sariKart:pf(flat['dep_Yellow Cards']),kirmziKart:pf(flat['dep_Red Cards'])};
+    const istatR2=await sbQuery('mac_canli_istatistikler',`fixture_id=eq.${m.fixture.id}`);
+    if(!istatR2||!istatR2.length) return;
+    const ri=istatR2[0];
+    const evIst={topSahip:ri.ev_top_sahip||0,toplamSut:ri.ev_toplam_sut||0,isabetliSut:ri.ev_isabetli_sut||0,korner:ri.ev_korner||0,faul:ri.ev_faul||0,sariKart:ri.ev_sari_kart||0,kirmziKart:ri.ev_kirmizi_kart||0};
+    const depIst={topSahip:ri.dep_top_sahip||0,toplamSut:ri.dep_toplam_sut||0,isabetliSut:ri.dep_isabetli_sut||0,korner:ri.dep_korner||0,faul:ri.dep_faul||0,sariKart:ri.dep_sari_kart||0,kirmziKart:ri.dep_kirmizi_kart||0};
     if(evIst.faul+depIst.faul+evIst.korner+depIst.korner+evIst.toplamSut+depIst.toplamSut+evIst.topSahip+depIst.topSahip===0) return;
     const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
       body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score?.halftime?.home??0,depGolIY:m.score?.halftime?.away??0,durum:st,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:evIst,dep:depIst},h2h:[]})});
@@ -2010,23 +1982,16 @@ async function loadBitmisMacTahminleri(m) {
     try{bitOddsMap=await fetchOddsMap(m.fixture.id);}catch(_){}
 
     // Sonuç kontrolü — gerçek istatistiklerle karşılaştır
-    const istatR = await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
-    const istatlar = istatR.response || [];
-    
+    const istatR3 = await sbQuery('mac_canli_istatistikler',`fixture_id=eq.${m.fixture.id}`);
+    const ri3 = istatR3&&istatR3.length?istatR3[0]:null;
+
     const gercekGol = (m.goals.home ?? 0) + (m.goals.away ?? 0);
     let gercekKorner = 0, gercekFaul = 0, gercekSari = 0;
-    
-    if (istatlar.length) {
-      const ev = istatlar[0]?.statistics || [];
-      const dep = istatlar[1]?.statistics || [];
-      ev.forEach((s, i) => {
-        const lbl = s.type.toLowerCase();
-        const evVal = parseFloat(s.value) || 0;
-        const depVal = parseFloat(dep[i]?.value) || 0;
-        if (lbl.includes('corner')) gercekKorner = evVal + depVal;
-        if (lbl.includes('foul')) gercekFaul = evVal + depVal;
-        if (lbl.includes('yellow')) gercekSari = evVal + depVal;
-      });
+
+    if (ri3) {
+      gercekKorner = (ri3.ev_korner||0) + (ri3.dep_korner||0);
+      gercekFaul = (ri3.ev_faul||0) + (ri3.dep_faul||0);
+      gercekSari = (ri3.ev_sari_kart||0) + (ri3.dep_sari_kart||0);
     }
 
     // Her tahmin için sonuç hesapla ve güncelle
@@ -2283,10 +2248,21 @@ const ISTAT_ORDER=['Ball Possession','Total Shots','Shots on Goal','Shots off Go
 
 async function loadDetailIstat(fixId){
   try{
-    const d=await apiFetch(`/fixtures/statistics?fixture=${fixId}`);
-    const s=d.response||[];
-    if(!s.length){document.getElementById('dc-istat').innerHTML='<div class="empty">İstatistik verisi yok.</div>';return;}
-    const ev=s[0],dp=s[1]||{statistics:[]};
+    const istatRows=await sbQuery('mac_canli_istatistikler',`fixture_id=eq.${fixId}`);
+    if(!istatRows||!istatRows.length){document.getElementById('dc-istat').innerHTML='<div class="empty">İstatistik verisi yok.</div>';return;}
+    const r=istatRows[0];
+    const ISTAT_PAIRS=[
+      ['Ball Possession',r.ev_top_sahip?r.ev_top_sahip+'%':null,r.dep_top_sahip?r.dep_top_sahip+'%':null],
+      ['Total Shots',r.ev_toplam_sut,r.dep_toplam_sut],['Shots on Goal',r.ev_isabetli_sut,r.dep_isabetli_sut],
+      ['Shots off Goal',r.ev_isabetsiz_sut,r.dep_isabetsiz_sut],['Blocked Shots',r.ev_engel_sut,r.dep_engel_sut],
+      ['Corner Kicks',r.ev_korner,r.dep_korner],['Fouls',r.ev_faul,r.dep_faul],
+      ['Yellow Cards',r.ev_sari_kart,r.dep_sari_kart],['Red Cards',r.ev_kirmizi_kart,r.dep_kirmizi_kart],
+      ['Offsides',r.ev_ofsayt,r.dep_ofsayt],['Goalkeeper Saves',r.ev_kaleci,r.dep_kaleci],
+      ['Total passes',r.ev_toplam_pas,r.dep_toplam_pas],['Passes accurate',r.ev_isabetli_pas,r.dep_isabetli_pas],
+      ['Passes %',r.ev_pas_yuzdesi?r.ev_pas_yuzdesi+'%':null,r.dep_pas_yuzdesi?r.dep_pas_yuzdesi+'%':null]
+    ];
+    const ev={team:{name:currentMac?.teams?.home?.name||'Ev'},statistics:ISTAT_PAIRS.map(p=>({type:p[0],value:p[1]}))};
+    const dp={team:{name:currentMac?.teams?.away?.name||'Dep'},statistics:ISTAT_PAIRS.map(p=>({type:p[0],value:p[2]}))};
     const evMap=Object.fromEntries((ev.statistics||[]).map(st=>[st.type,st.value]));
     const dpMap=Object.fromEntries((dp.statistics||[]).map(st=>[st.type,st.value]));
     const allTypes=new Set([...Object.keys(evMap),...Object.keys(dpMap)]);
@@ -2326,8 +2302,8 @@ async function loadDetailIstat(fixId){
 
 async function loadDetailKadro(fixId){
   try{
-    const d=await apiFetch(`/fixtures/lineups?fixture=${fixId}`);
-    const l=d.response||[];
+    const kadroRows=await sbQuery('mac_kadrolar',`fixture_id=eq.${fixId}`);
+    const l=(kadroRows&&kadroRows.length)?kadroRows[0].veri||[]:[];
     if(!l.length){document.getElementById('dc-kadro').innerHTML='<div class="empty">Kadro henüz açıklanmadı.</div>';return;}
     const playerRow=(p,isSub)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(46,46,46,.5)${isSub?';opacity:.7':''}"><span style="width:20px;text-align:center;font-size:11px;font-weight:700;color:${isSub?'var(--muted)':'var(--blue-lt)'}">${p.player?.number||''}</span><span style="font-size:12px">${p.player?.name||''}</span><span style="margin-left:auto;font-size:10px;color:var(--muted)">${p.player?.pos||''}</span></div>`;
     document.getElementById('dc-kadro').innerHTML=`<div style="padding:16px">${l.map(t=>`
@@ -2347,16 +2323,24 @@ async function loadDetailKadro(fixId){
 async function loadDetailOzet(fixId, m){
   const c=document.getElementById('dc-ozet');
   try{
-    const [evR,infoR]=await Promise.all([
-      apiFetch(`/fixtures/events?fixture=${fixId}`),
-      apiFetch(`/fixtures?id=${fixId}`)
+    const [olayRows,macRows]=await Promise.all([
+      sbQuery('mac_olaylari',`fixture_id=eq.${fixId}&order=dakika`),
+      sbQuery('maclar',`fixture_id=eq.${fixId}`)
     ]);
-    const events=evR.response||[];
-    const fix=(infoR.response||[])[0];
-    const venue=fix?.fixture?.venue;
-    const ref=fix?.fixture?.referee;
-    const season=fix?.league?.season;
-    const round=fix?.league?.round;
+    const events=(olayRows||[]).map(r=>({
+      time:{elapsed:r.dakika,extra:r.extra_dakika},
+      team:{id:r.takim_id,name:r.takim_adi},
+      player:{id:r.oyuncu_id,name:r.oyuncu_adi},
+      assist:{name:r.asist_adi},
+      type:r.olay_tipi,
+      detail:r.olay_detay,
+      comments:r.yorum
+    }));
+    const fix=macRows&&macRows.length?macRows[0]:null;
+    const venue=fix?{name:fix.stadyum,city:fix.sehir}:null;
+    const ref=fix?.hakem;
+    const season=fix?.sezon;
+    const round=fix?.tur;
 
     const evName=m.teams.home.name, depName=m.teams.away.name;
     const evLogo=m.teams.home.logo||'', depLogo=m.teams.away.logo||'';
@@ -2450,17 +2434,26 @@ async function loadDetailKarsi(m){
   const evName=m.teams.home.name, depName=m.teams.away.name;
   const evLogo=m.teams.home.logo||'', depLogo=m.teams.away.logo||'';
   try{
-    const [ev10,dep10,h2hR]=await Promise.all([
-      apiFetch(`/fixtures?team=${evId}&last=10`),
-      apiFetch(`/fixtures?team=${depId}&last=10`),
-      apiFetch(`/fixtures/headtohead?h2h=${evId}-${depId}&last=20`)
+    const formToApi=(formRows)=>{
+      if(!formRows||!formRows.length)return[];
+      return(formRows[0].maclar||[]).map(fm=>({
+        fixture:{id:fm.fixture_id,date:fm.date,status:{short:fm.status}},
+        teams:{home:{id:fm.home_id,name:fm.home_name},away:{id:fm.away_id,name:fm.away_name}},
+        goals:{home:fm.home_goals,away:fm.away_goals},
+        league:{name:fm.league}
+      }));
+    };
+    const [evFormData,depFormData,h2hData]=await Promise.all([
+      sbQuery('takim_form',`takim_id=eq.${evId}&tip=eq.genel`),
+      sbQuery('takim_form',`takim_id=eq.${depId}&tip=eq.genel`),
+      sbQuery('h2h_cache',`or=(and(ev_takim_id.eq.${evId},dep_takim_id.eq.${depId}),and(ev_takim_id.eq.${depId},dep_takim_id.eq.${evId}))`)
     ]);
-    // Son 5 maç
-    const ev5={response:(ev10.response||[]).slice(0,5)};
-    const dep5={response:(dep10.response||[]).slice(0,5)};
-    // Ev sahibi evdeki / Deplasman deplasmandaki son 5
-    const evEv5={response:(ev10.response||[]).filter(f=>f.teams.home.id===evId).slice(0,5)};
-    const depDep5={response:(dep10.response||[]).filter(f=>f.teams.away.id===depId).slice(0,5)};
+    const evAll=formToApi(evFormData), depAll=formToApi(depFormData);
+    const ev5={response:evAll.slice(0,5)};
+    const dep5={response:depAll.slice(0,5)};
+    const evEv5={response:evAll.filter(f=>f.teams.home.id===evId).slice(0,5)};
+    const depDep5={response:depAll.filter(f=>f.teams.away.id===depId).slice(0,5)};
+    const h2hR={response:formToApi(h2hData)};
 
     const macSatirKarsi=(fixtures, focusId, label)=>{
       const finished=(fixtures||[]).filter(f=>['FT','AET','PEN'].includes(f.fixture.status.short));
@@ -2589,20 +2582,20 @@ async function loadAialysis(){
       const istFmt=(d)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Istanbul'}).format(d);
       const bugunStr=istFmt(new Date());
       const dunStr=istFmt(new Date(Date.now()-86400000));
-      const [live,bugun,dun]=await Promise.all([
-        apiFetch('/fixtures?live=all'),
-        apiFetch(`/fixtures?date=${bugunStr}&timezone=Europe/Istanbul`),
-        apiFetch(`/fixtures?date=${dunStr}&timezone=Europe/Istanbul`)
+      const [liveRows,bugunRows,dunRows]=await Promise.all([
+        sbQuery('maclar','durum=in.(1H,HT,2H,ET,P,LIVE)&order=mac_tarihi'),
+        sbQuery('maclar',`mac_tarihi=gte.${bugunStr}T00:00:00&mac_tarihi=lte.${bugunStr}T23:59:59&order=mac_tarihi`),
+        sbQuery('maclar',`mac_tarihi=gte.${dunStr}T00:00:00&mac_tarihi=lte.${dunStr}T23:59:59&order=mac_tarihi`)
       ]);
-      (live.response||[]).forEach(m=>{canliMap[m.fixture.id]=m;});
-      (bugun.response||[]).forEach(m=>{if(!canliMap[m.fixture.id])canliMap[m.fixture.id]=m;});
-      (dun.response||[]).forEach(m=>{if(!canliMap[m.fixture.id])canliMap[m.fixture.id]=m;});
+      (liveRows||[]).forEach(r=>{canliMap[r.fixture_id]=sbToApiFormat(r);});
+      (bugunRows||[]).forEach(r=>{if(!canliMap[r.fixture_id])canliMap[r.fixture_id]=sbToApiFormat(r);});
+      (dunRows||[]).forEach(r=>{if(!canliMap[r.fixture_id])canliMap[r.fixture_id]=sbToApiFormat(r);});
     }catch(_){}
 
     // 3) Her tahmin grubunu kart olarak göster — bitmiş maçları atla
     c.innerHTML='';
     let aiaCardCount=0;
-    const prem=isPremium();
+    const prem=true;
     for(const macId of macIds){
       const tahminler=hazir[macId];
       const m=canliMap[parseInt(macId)];
