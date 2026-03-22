@@ -301,28 +301,49 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 /* Responsive */
 @media(max-width:1200px){
-  .layout{grid-template-columns:var(--sidebar) 1fr 0;}
-  .layout.panel-acik{grid-template-columns:0 0 1fr;}
-  .layout.panel-acik .main{display:none;}
-  .layout.panel-acik .sidebar{display:none;}
-  .layout.panel-acik .right-panel{display:block !important;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;}
+  .layout{grid-template-columns:0 1fr 0 !important;}
+  .sidebar{display:none !important;}
   .right-panel{display:none;}
+  .layout.panel-acik .right-panel{display:block !important;position:fixed;inset:0;top:60px;z-index:200;background:var(--bg);overflow-y:auto;}
+  .layout.panel-acik .main{display:none;}
 }
 @media(max-width:768px){
-  .layout{grid-template-columns:1fr;}
-  .sidebar{display:none;}
-  .navbar{padding:0 12px;gap:8px;}
-  .nav-search{max-width:200px;}
-  .nav-links{gap:0;}
-  .nav-btn{padding:6px 8px;font-size:11px;}
-  .mac-satir{font-size:12px;}
-  .layout.panel-acik{grid-template-columns:1fr;}
-  .layout.panel-acik .main{display:none;}
-  .layout.panel-acik .right-panel{display:block !important;position:fixed;inset:0;top:60px;z-index:200;background:var(--bg);overflow-y:auto;}
-  .detail-header{padding:14px;}
-  .detail-tabs{font-size:11px;}
-  .detail-tab{padding:8px 10px;}
+  .navbar{padding:0 10px;gap:6px;height:50px;}
+  .nav-search{display:none;}
+  .nav-links .nav-btn span,.nav-btn svg{display:none;}
+  .nav-links{gap:2px;}
+  .nav-btn{padding:6px 10px;font-size:10px;}
+  .hamburger{display:none;}
+  .nav-logo .ai{font-size:16px;}
+  .nav-logo .alysis{font-size:16px;}
+  .layout{grid-template-rows:50px 1fr;}
+  .main{padding:0;}
+  .matches-header{padding:10px 12px !important;}
+  .mac-satir{padding:8px 10px;font-size:12px;}
+  .takim-adi{font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .takim-logo{width:18px;height:18px;}
+  .skor-val{font-size:16px;}
+  .lig-header{padding:6px 12px;font-size:11px;}
+  .mac-durum-col{display:none;}
+  .mac-arrow{display:none;}
+  .detail-header{padding:12px;}
+  .detail-tabs{overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
+  .detail-tab{padding:8px 10px;font-size:10px;flex-shrink:0;}
+  .detail-content{padding:10px !important;}
+  .layout.panel-acik .right-panel{top:50px;}
 }
+@media(max-width:400px){
+  .nav-links{display:none;}
+  .navbar{justify-content:space-between;}
+}
+
+/* Mobil bottom nav */
+.mobil-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:300;padding:6px 0 env(safe-area-inset-bottom,6px);}
+.mobil-nav-items{display:flex;justify-content:space-around;align-items:center;}
+.mobil-nav-btn{background:none;border:none;color:var(--muted);font-size:10px;font-family:'DM Sans',sans-serif;padding:6px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .2s;}
+.mobil-nav-btn.active{color:var(--blue-lt);}
+.mobil-nav-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;}
+@media(max-width:768px){.mobil-nav{display:block;}.main{padding-bottom:60px !important;}}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 </style>
 </head>
@@ -484,6 +505,15 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
     <!-- MAÇLAR -->
     <div class="page active" id="page-maclar">
+      <!-- Mobil tarih nav -->
+      <div id="mobilTarihNav" style="display:none;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button onclick="tarihDegistir(-1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:6px;font-size:16px;cursor:pointer;">‹</button>
+          <div id="mobilTarihLabel" style="flex:1;text-align:center;background:var(--blue);color:white;padding:6px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;" onclick="tarihDegistir(0)">...</div>
+          <button onclick="tarihDegistir(1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:6px;font-size:16px;cursor:pointer;">›</button>
+          <button onclick="toggleCanli()" id="mobilCanliBtn" style="background:rgba(46,213,115,.15);border:1px solid rgba(46,213,115,.4);color:var(--green);padding:6px 12px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;">CANLI</button>
+        </div>
+      </div>
       <div class="matches-header">
         <div>
           <div class="matches-title" id="matchesTitle">Maçlar</div>
@@ -661,6 +691,7 @@ function toggleCanli(){
 
 async function loadMaclar(){
   document.getElementById('dateLabelEl').textContent=fmtTR(tarih);
+  const ml=document.getElementById('mobilTarihLabel');if(ml)ml.textContent=fmtTR(tarih);
   const c=document.getElementById('maclarContainer');
   c.innerHTML='<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';
   try{
@@ -1377,8 +1408,30 @@ document.addEventListener('visibilitychange',()=>{
   }
 });
 
+// Mobil tarih nav göster
+if(window.innerWidth<=1200){document.getElementById('mobilTarihNav').style.display='block';}
+window.addEventListener('resize',()=>{document.getElementById('mobilTarihNav').style.display=window.innerWidth<=1200?'block':'none';});
+
 loadMaclar();
 </script>
+
+<!-- Mobil Bottom Nav -->
+<div class="mobil-nav">
+  <div class="mobil-nav-items">
+    <button class="mobil-nav-btn active" onclick="showMainTab('maclar');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
+      <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Maclar
+    </button>
+    <button class="mobil-nav-btn" onclick="showMainTab('aialysis');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      aiALYSIS
+    </button>
+    <button class="mobil-nav-btn" onclick="showMainTab('dashboard');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
+      <svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Performans
+    </button>
+  </div>
+</div>
 
 <!-- SEO Footer -->
 <footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:11px;color:var(--muted);line-height:1.8">
