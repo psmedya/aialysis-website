@@ -250,6 +250,22 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .aia-lig img{width:14px;height:14px;object-fit:contain;}
 .aia-lig span{font-size:10px;color:var(--muted);}
 .aia-etiket{margin-left:auto;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,109,0,.15);color:var(--orange);border:1px solid rgba(255,109,0,.3);}
+.aia-share-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;margin-left:6px;line-height:1;}
+.aia-share-btn:hover{border-color:var(--gold);color:var(--gold);}
+.detail-share-btn{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);transition:all .2s;margin-top:8px;}
+.detail-share-btn:hover{border-color:var(--gold);color:var(--gold);}
+.user-tahmin-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:12px;}
+.user-tahmin-title{font-size:11px;font-weight:700;color:var(--gold-lt);letter-spacing:1px;margin-bottom:12px;}
+.user-tahmin-btns{display:flex;gap:8px;margin-bottom:12px;}
+.user-tahmin-btn{flex:1;padding:12px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;}
+.user-tahmin-btn:hover{border-color:var(--gold);background:rgba(200,151,26,.1);}
+.user-tahmin-btn.selected{border-color:var(--gold);background:rgba(200,151,26,.15);color:var(--gold-lt);}
+.user-tahmin-btn.ev-btn.selected{border-color:var(--blue-lt);background:rgba(21,101,192,.15);color:var(--blue-lt);}
+.user-tahmin-btn.ber-btn.selected{border-color:var(--muted);background:rgba(136,136,136,.15);color:var(--text);}
+.user-tahmin-btn.dep-btn.selected{border-color:var(--red);background:rgba(229,57,53,.15);color:var(--red);}
+.user-tahmin-dist{display:flex;gap:4px;height:24px;border-radius:6px;overflow:hidden;margin-top:8px;}
+.user-tahmin-dist-bar{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;min-width:20px;transition:width .3s;}
+.user-tahmin-dist-labels{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--muted);}
 .aia-maclar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .aia-takim{text-align:center;flex:1;}
 .aia-takim img{width:36px;height:36px;object-fit:contain;}
@@ -2239,27 +2255,43 @@ async function loadAialysis(){
 
 // Tahmin geçmişi
 let aktifFilter = 'hepsi';
+let tahminGun = 0;
 async function loadTahminler(filter='hepsi') {
   aktifFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  // Sonuc filtre butonlari
+  ['f-hepsi','f-tamamlandi','f-DOGRU','f-YANLIS','f-BEKLIYOR'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.remove('active');});
   const fb = document.getElementById(`f-${filter}`);
   if (fb) fb.classList.add('active');
+  // Zaman filtre butonlari
+  ['tf-hepsi','tf-7','tf-30'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.remove('active');});
+  const tfId = tahminGun===0?'tf-hepsi':tahminGun===7?'tf-7':'tf-30';
+  const tfb = document.getElementById(tfId);
+  if (tfb) tfb.classList.add('active');
 
   const c = document.getElementById('tahminlerContainer');
   c.innerHTML = '<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';
 
   try {
-    let url = `${SU}/rest/v1/tahmin_sonuclari?order=created_at.desc&limit=100`;
+    let url = `${SU}/rest/v1/tahmin_sonuclari?order=created_at.desc&limit=200`;
     if (filter === 'tamamlandi') url += `&sonuc=neq.BEKLIYOR`;
     else if (filter !== 'hepsi') url += `&sonuc=eq.${filter}`;
+    if (tahminGun > 0) {
+      const sinir = new Date(Date.now() - tahminGun * 86400000).toISOString();
+      url += `&created_at=gte.${sinir}`;
+    }
 
     const r = await fetch(url, {
       headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`, 'Content-Type': 'application/json'}
     });
     const data = await r.json();
 
-    // İstatistikler
-    const statsR = await fetch(`${SU}/rest/v1/tahmin_sonuclari?select=sonuc`, {
+    // Istatistikler — zaman filtresine gore
+    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?select=sonuc,kategori,created_at`;
+    if (tahminGun > 0) {
+      const sinir = new Date(Date.now() - tahminGun * 86400000).toISOString();
+      statsUrl += `&created_at=gte.${sinir}`;
+    }
+    const statsR = await fetch(statsUrl, {
       headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`}
     });
     const statsData = await statsR.json();
@@ -2272,6 +2304,69 @@ async function loadTahminler(filter='hepsi') {
     document.getElementById('stat-dogru').textContent = dogru;
     document.getElementById('stat-yanlis').textContent = yanlis;
     document.getElementById('stat-pct').textContent = toplam > 0 ? `${pct}%` : '--%';
+
+    // Kategori bazli basari oranlari
+    const katMap = {};
+    statsData.forEach(x => {
+      if (!x.kategori) return;
+      const k = x.kategori.toUpperCase();
+      if (!katMap[k]) katMap[k] = {dogru:0, yanlis:0, bekliyor:0};
+      if (x.sonuc === 'DOGRU') katMap[k].dogru++;
+      else if (x.sonuc === 'YANLIS') katMap[k].yanlis++;
+      else katMap[k].bekliyor++;
+    });
+    const katContainer = document.getElementById('kategoriStats');
+    const katKeys = Object.keys(katMap).sort();
+    if (katKeys.length > 0) {
+      const katColors = {'GOL':'var(--green)','KORNER':'var(--blue-lt)','FAUL':'var(--orange)','KART':'var(--red)','PENALTI':'var(--purple)','OFSAYT':'var(--yellow)','TOP KAZANMA':'var(--gold)','ATIS':'var(--blue)'};
+      katContainer.innerHTML = `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:12px">KATEGORI BAZLI BASARI</div>
+          ${katKeys.map(k => {
+            const d = katMap[k];
+            const tamamlanan = d.dogru + d.yanlis;
+            const oran = tamamlanan > 0 ? Math.round(d.dogru / tamamlanan * 100) : 0;
+            const renk = katColors[k] || 'var(--blue-lt)';
+            return `<div style="margin-bottom:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:700;color:var(--text)">${k}</span>
+                <span style="font-size:11px;color:var(--muted)">${d.dogru}/${tamamlanan} (%${oran})</span>
+              </div>
+              <div style="background:var(--bg);border-radius:6px;height:8px;overflow:hidden">
+                <div style="height:100%;width:${oran}%;background:${renk};border-radius:6px;transition:width .4s ease"></div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>`;
+    } else {
+      katContainer.innerHTML = '';
+    }
+
+    // Basari trendi
+    const trendContainer = document.getElementById('trendContainer');
+    const tamamlananAll = statsData.filter(x => x.sonuc !== 'BEKLIYOR');
+    if (tamamlananAll.length >= 5) {
+      const sorted = [...tamamlananAll].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+      const half = Math.floor(sorted.length / 2);
+      const ilkYari = sorted.slice(0, half);
+      const sonYari = sorted.slice(half);
+      const ilkOran = ilkYari.length > 0 ? Math.round(ilkYari.filter(x=>x.sonuc==='DOGRU').length / ilkYari.length * 100) : 0;
+      const sonOran = sonYari.length > 0 ? Math.round(sonYari.filter(x=>x.sonuc==='DOGRU').length / sonYari.length * 100) : 0;
+      const fark = sonOran - ilkOran;
+      const trendIcon = fark > 0 ? '\u2191' : fark < 0 ? '\u2193' : '\u2192';
+      const trendColor = fark > 0 ? 'var(--green)' : fark < 0 ? 'var(--red)' : 'var(--muted)';
+      const trendText = fark > 0 ? 'Basari artiyor' : fark < 0 ? 'Basari azaliyor' : 'Sabit';
+      trendContainer.innerHTML = `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:16px">
+          <div style="font-size:36px;color:${trendColor};font-weight:900;line-height:1">${trendIcon}</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:${trendColor}">${trendText}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Ilk yari: %${ilkOran} &rarr; Son yari: %${sonOran} (${fark>0?'+':''}${fark}%)</div>
+          </div>
+        </div>`;
+    } else {
+      trendContainer.innerHTML = '';
+    }
 
     if (!data.length) {
       c.innerHTML = '<div class="empty">Henüz tahmin kaydı yok.</div>';
