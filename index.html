@@ -267,6 +267,25 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .yildiz-rank.normal{background:var(--card);border:1px solid var(--border);color:var(--muted);}
 .tuttu-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(46,213,115,.15);color:var(--green);border:1px solid rgba(46,213,115,.3);}
 
+/* LIGHT THEME */
+body.light-theme{--bg:#F5F5F5;--surface:#FFFFFF;--card:#FAFAFA;--border:#E0E0E0;--text:#1a1a2e;--muted:#666;}
+body.light-theme .navbar{background:#4A3AFF;}
+body.light-theme .mac-satir:hover{background:rgba(0,0,0,.03);}
+body.light-theme .lig-header:hover{background:rgba(0,0,0,.02);}
+body.light-theme .sidebar-item:hover{background:rgba(0,0,0,.04);}
+body.light-theme .nav-search input{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);}
+body.light-theme .detail-skor{color:var(--green);}
+body.light-theme .takim-adi.kazanan{color:var(--text);}
+.theme-toggle-btn{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);padding:6px 10px;border-radius:8px;cursor:pointer;transition:all .2s;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;}
+.theme-toggle-btn:hover{background:rgba(255,255,255,.1);color:white;}
+
+/* LEADERBOARD */
+.leaderboard-card{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);transition:background .15s;}
+.leaderboard-card:last-child{border-bottom:none;}
+.leaderboard-card:hover{background:rgba(255,255,255,.02);}
+body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
+.leaderboard-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--blue-lt));color:white;}
+
 /* AIalysis tab */
 .aialysis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:20px 24px;}
 .aia-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;}
@@ -678,6 +697,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <button class="nav-chat-btn" onclick="toggleChatPanel()" title="Canlı Sohbet">
       <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Tema Değiştir" id="themeToggleBtn">🌙</button>
     <select id="langSelect" onchange="setLang(this.value)" style="background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:5px 8px;font-size:12px;cursor:pointer;margin-left:4px;font-family:'DM Sans',sans-serif;font-weight:600;outline:none;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg fill=&quot;white&quot; viewBox=&quot;0 0 24 24&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><path d=&quot;M7 10l5 5 5-5z&quot;/></svg>');background-repeat:no-repeat;background-position:right 4px center;background-size:14px;padding-right:20px;max-width:80px;">
       <option value="tr" style="background:#1A1A2E;color:white">🇹🇷 TR</option>
       <option value="en" style="background:#1A1A2E;color:white">🇬🇧 EN</option>
@@ -1265,6 +1285,22 @@ sbClient.auth.getUser().then(({data})=>{
     document.getElementById('authBtn').style.background='var(--green)';
   }
 });
+
+// === TEMA SİSTEMİ ===
+function toggleTheme(){
+  const light=document.body.classList.toggle('light-theme');
+  localStorage.setItem('theme',light?'light':'dark');
+  const btn=document.getElementById('themeToggleBtn');
+  if(btn)btn.textContent=light?'☀️':'🌙';
+}
+(function initTheme(){
+  const saved=localStorage.getItem('theme');
+  if(saved==='light'){
+    document.body.classList.add('light-theme');
+    const btn=document.getElementById('themeToggleBtn');
+    if(btn)btn.textContent='☀️';
+  }
+})();
 </script>
 
 <script>
@@ -3259,6 +3295,28 @@ function applyTranslations(){
     <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:10px;color:var(--text);word-break:break-all;line-height:1.5;cursor:pointer;" onclick="navigator.clipboard.writeText(this.textContent);this.style.borderColor='var(--green)';setTimeout(()=>this.style.borderColor='var(--border)',1500);">&lt;iframe src="https://aialysis.live/widget.html" width="320" height="400" frameborder="0" style="border-radius:12px;overflow:hidden;"&gt;&lt;/iframe&gt;</code>
     <p style="font-size:9px;color:var(--muted);margin-top:4px;">Kopyalamak icin koda tiklayin</p>
   </div>
+  <div id="emailBulten" style="margin-top:20px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:inline-block;max-width:420px;">
+    <p style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px;">📩 Haftalık Tahmin Bülteni</p>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;">Haftalık tahmin özeti e-postanıza gelecek</p>
+    <div style="display:flex;gap:8px;">
+      <input id="bultenEmail" type="email" placeholder="E-posta adresiniz" style="flex:1;padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;outline:none;">
+      <button onclick="aboneOl()" style="padding:8px 16px;border-radius:6px;border:none;background:linear-gradient(135deg,#C8971A,#F5C842);color:#000;font-weight:700;font-size:12px;cursor:pointer;">Abone Ol</button>
+    </div>
+    <p id="bultenMsg" style="font-size:10px;margin-top:6px;display:none;"></p>
+  </div>
+  <script>
+  function aboneOl(){
+    const email=document.getElementById('bultenEmail').value.trim();
+    const msg=document.getElementById('bultenMsg');
+    if(!email||!email.includes('@')){msg.style.display='block';msg.style.color='#E53935';msg.textContent='Geçerli bir e-posta girin.';return;}
+    let subs=JSON.parse(localStorage.getItem('bulten_aboneler')||'[]');
+    if(subs.includes(email)){msg.style.display='block';msg.style.color='var(--gold)';msg.textContent='Zaten abone oldunuz!';return;}
+    subs.push(email);localStorage.setItem('bulten_aboneler',JSON.stringify(subs));
+    fetch('https://fohmlwoewjupceznwmdr.supabase.co/rest/v1/forum_mesajlar',{method:'POST',headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4'},body:JSON.stringify({mac_id:-1,mesaj:email,kullanici_adi:'bulten'})}).catch(()=>{});
+    msg.style.display='block';msg.style.color='#43A047';msg.textContent='Başarıyla abone oldunuz! ✅';
+    document.getElementById('bultenEmail').value='';
+  }
+  </script>
   <p style="margin-top:12px;color:var(--muted);font-size:10px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
 </footer>
 </body>
