@@ -213,7 +213,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .tahmin-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:6px;}
 .tahmin-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
 .tahmin-kat{font-size:11px;font-weight:700;}
-.tahmin-cur{font-size:10px;color:var(--muted);margin-left:auto;}
+.tahmin-cur{font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap;flex-shrink:0;}
 .tahmin-line{display:flex;align-items:center;gap:6px;}
 .t-tag{padding:3px 8px;border-radius:5px;font-size:12px;font-weight:800;flex-shrink:0;}
 .t-tag.u{background:rgba(67,160,71,.2);color:var(--green);border:1px solid rgba(67,160,71,.4);}
@@ -347,6 +347,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .aia-tahminler{flex-wrap:wrap !important;}
   .aia-t{font-size:9px !important;padding:2px 6px !important;}
   .tahmin-card{padding:8px !important;}
+  .tahmin-header{flex-wrap:wrap;gap:2px 6px;}
+  .tahmin-cur{font-size:9px !important;}
   .tahmin-line{flex-wrap:wrap !important;gap:4px !important;}
   .tahmin-desc{font-size:9px !important;min-width:0;word-break:break-word;}
   .tahmin-guc{font-size:11px !important;}
