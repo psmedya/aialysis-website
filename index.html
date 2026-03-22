@@ -895,11 +895,9 @@ async function loadDetailAnaliz(m){
       c.innerHTML = `<div style="padding:24px;text-align:center">
         <div style="font-size:32px;margin-bottom:12px">⏳</div>
         <div style="color:var(--muted);font-size:13px;line-height:1.7">
-          ${farkDk > 70
-            ? `Maça <b style="color:white">${farkDk} dakika</b> kaldı.<br>Kickoff'a 1 saat kala Claude Haiku ön analiz yapacak.`
-            : farkDk > 0
-              ? `Maça <b style="color:var(--gold-lt)">${farkDk} dakika</b> kaldı.<br>Ön analiz birkaç dakika içinde hazırlanıyor...`
-              : 'Ön analiz hazırlanıyor...'}
+          ${farkDk > 0
+            ? `Maçın başlamasına <b style="color:var(--gold-lt)">${farkDk>=60?Math.floor(farkDk/60)+' saat '+(farkDk%60)+' dakika':farkDk+' dakika'}</b> kaldı.<br><span style="color:var(--blue-lt)">aiALYSIS Live</span> önerileri başlangıç vuruşu ile başlayacak.`
+            : 'Maç başlamak üzere.<br><span style="color:var(--blue-lt)">aiALYSIS Live</span> önerileri başlangıç vuruşu ile başlayacak.'}
         </div>
       </div>`;
     } catch(e) {
