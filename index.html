@@ -1293,7 +1293,7 @@ async function loadAialysis(){
         const etiketRenk=gb>=3.5?'#FF4757':gb>=2.5?'#FF7F50':gb>=1.5?'#FFD32A':'#4FC3F7';
         const dk=m.fixture.status.elapsed;
         const card=document.createElement('div');card.className='aia-card';card.id=`aia-${m.fixture.id}`;card.style.cursor='pointer';
-        card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);showMainTab('maclar');};
+        card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);};
         card.innerHTML=`<div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
           <div class="aia-maclar"><div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
           <div class="aia-skor">${dk?`<div class="aia-dk">${dk}'</div>`:''}<div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
@@ -1334,7 +1334,7 @@ async function loadAialysis(){
         const dk=m.fixture.status.elapsed;
         const el=document.getElementById(`aia-${m.fixture.id}`);
         if(el){
-          el.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);showMainTab('maclar');};
+          el.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);};
           el.style.cursor='pointer';
           el.innerHTML=`
             <div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
