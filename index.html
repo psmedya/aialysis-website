@@ -1687,11 +1687,14 @@ async function loadAialysis(){
       (bugun.response||[]).forEach(m=>{if(!canliMap[m.fixture.id])canliMap[m.fixture.id]=m;});
     }catch(_){}
 
-    // 3) Her tahmin grubunu kart olarak göster — sabit sıra, kaybolmaz
+    // 3) Her tahmin grubunu kart olarak göster — bitmiş maçları atla
     c.innerHTML='';
     for(const macId of macIds){
       const tahminler=hazir[macId];
       const m=canliMap[parseInt(macId)];
+      // Bitmiş maçları gösterme
+      const st=m?.fixture?.status?.short||'';
+      if(['FT','AET','PEN','AWD','WO'].includes(st)) continue;
       const evAdi=tahminler[0]?.ev_sahibi||'?';
       const depAdi=tahminler[0]?.deplasman||'?';
       const lig=tahminler[0]?.lig||'';
@@ -1700,15 +1703,15 @@ async function loadAialysis(){
       const etiket=gb>=3.5?'Maç Yanıyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Maç';
       const etiketRenk=gb>=3.5?'#FF4757':gb>=2.5?'#FF7F50':gb>=1.5?'#FFD32A':'#4FC3F7';
       const dk=m?.fixture?.status?.elapsed;
-      const evGol=m?.goals?.home??'?';
-      const depGol=m?.goals?.away??'?';
+      const evGol=m?.goals?.home??'-';
+      const depGol=m?.goals?.away??'-';
       const card=document.createElement('div');
       card.className='aia-card';card.id=`aia-${macId}`;card.style.cursor='pointer';
       card.innerHTML=`
         <div class="aia-lig"><span style="font-size:11px;color:var(--muted)">${lig}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
         <div class="aia-maclar">
           <div class="aia-takim">${m?`<img src="${m.teams.home.logo}" onerror="this.style.display='none'">`:''}<div class="aia-takim-adi">${evAdi}</div></div>
-          <div class="aia-skor">${dk?`<div class="aia-dk">${dk}'</div>`:''}<div class="aia-score">${evGol} - ${depGol}</div></div>
+          <div class="aia-skor">${dk?`<div class="aia-dk">${dk}'</div>`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:''}<div class="aia-score">${st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
           <div class="aia-takim">${m?`<img src="${m.teams.away.logo}" onerror="this.style.display='none'">`:''}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
         <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
