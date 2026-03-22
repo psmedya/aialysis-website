@@ -1371,7 +1371,8 @@ function macSatir(m){
   const bitti=['FT','AET','PEN'].includes(st);
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const dkTxt=formatDk(dk,st,ext);
-  const durumStr=live?`<span class="dk-badge" data-elapsed="${dk}" data-extra="${ext||0}" data-status="${st}">${dkTxt}</span>`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
+  const uzatmaStr=ext&&ext>0?`<span style="font-size:9px;color:var(--orange);margin-left:2px">(+${ext})</span>`:'';
+  const durumStr=live?`<span class="dk-badge" data-elapsed="${dk}" data-extra="${ext||0}" data-status="${st}">${dkTxt}</span>${uzatmaStr}`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
   const isFav=getFavMaclar().includes(m.fixture.id);
   return`<div class="mac-satir${isFav?' fav-mac':''}" data-macid="${m.fixture.id}" onclick="openMac(${m.fixture.id})">
     <div class="mac-zaman"><div class="saat">${localSaat}</div><div class="durum">${durumStr}</div></div>
@@ -1422,6 +1423,7 @@ async function openMac(id){
       </div>
       <div class="detail-skor-kutu">
         ${dk?`<div class="detail-dk" data-elapsed="${dk}" data-extra="${ext||0}" data-status="${m.fixture.status.short}">${formatDk(dk,m.fixture.status.short,ext)}</div>`:''}
+        ${ext&&ext>0?`<div style="font-size:9px;color:var(--orange);margin-top:1px">+${ext} dk uzatma</div>`:''}
         <div class="detail-skor">${evGol} - ${depGol}</div>
         <div class="detail-iy">IY ${iy?.home??'-'} - ${iy?.away??'-'}</div>
         ${bitti?`<div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px">MAÇ BİTTİ</div>`:''}
@@ -1474,6 +1476,65 @@ async function loadFormBars(evId, depId){
     renderBar(evR.response||[], evId, 'formBarEv');
     renderBar(depR.response||[], depId, 'formBarDep');
   }catch(_){}
+}
+
+// Odds helper — fetch bet365 odds and build a lookup map
+async function fetchOddsMap(fixtureId){
+  try{
+    const oddsR=await apiFetch(`/odds?fixture=${fixtureId}&bookmaker=8`);
+    const bets=(oddsR.response||[])[0]?.bookmakers?.[0]?.bets||[];
+    const map={};
+    bets.forEach(b=>{
+      const name=(b.name||'').toLowerCase();
+      (b.values||[]).forEach(v=>{
+        const val=(v.value||'').toString().toLowerCase();
+        const odd=parseFloat(v.odd)||0;
+        if(!odd)return;
+        // Over/Under X.5
+        if(name.includes('over/under')|| name.includes('goals over/under')){
+          const numMatch=val.match(/(over|under)\s+([\d.]+)/i);
+          if(numMatch){
+            const dir=numMatch[1].toLowerCase()==='over'?'ÜST':'ALT';
+            const line=parseFloat(numMatch[2]);
+            map[`gol_${line}_${dir}`]=odd;
+          }
+        }
+        // Asian Handicap corners etc — also try Match Goals
+        if(name==='match goals'||name==='goals over/under'||name==='over/under 2.5 goals'||name.includes('over/under')){
+          if(val.includes('over')){
+            const n=parseFloat(val.replace(/[^0-9.]/g,''));
+            if(n)map[`gol_${n}_ÜST`]=odd;
+          }
+          if(val.includes('under')){
+            const n=parseFloat(val.replace(/[^0-9.]/g,''));
+            if(n)map[`gol_${n}_ALT`]=odd;
+          }
+        }
+        // Corners over/under
+        if(name.includes('corner')){
+          if(val.includes('over')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)map[`korner_${n}_ÜST`]=odd;}
+          if(val.includes('under')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)map[`korner_${n}_ALT`]=odd;}
+        }
+        // Cards
+        if(name.includes('card')){
+          if(val.includes('over')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)map[`kart_${n}_ÜST`]=odd;}
+          if(val.includes('under')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)map[`kart_${n}_ALT`]=odd;}
+        }
+      });
+    });
+    return map;
+  }catch(_){return {};}
+}
+
+function findOddForTahmin(oddsMap, kategori, cizgi, ustAlt){
+  if(!oddsMap||!Object.keys(oddsMap).length)return null;
+  const kat=(kategori||'').toLowerCase();
+  let prefix='gol';
+  if(kat.includes('korner')||kat.includes('corner'))prefix='korner';
+  else if(kat.includes('kart')||kat.includes('card')||kat.includes('sari'))prefix='kart';
+  else if(kat.includes('faul'))prefix='faul';
+  const key=`${prefix}_${cizgi}_${ustAlt}`;
+  return oddsMap[key]||null;
 }
 
 async function loadDetailAnaliz(m){
@@ -1533,6 +1594,10 @@ async function loadDetailAnaliz(m){
       });
     }
   }catch(_){}
+
+  // Odds çek (arka planda, bloklamaz)
+  let oddsMap={};
+  try{oddsMap=await fetchOddsMap(m.fixture.id);}catch(_){}
 
   // 1) Önce Supabase'deki mevcut tahminleri göster (anında)
   try{
@@ -2073,7 +2138,7 @@ async function loadAialysis(){
         <div class="aia-lig"><span style="font-size:11px;color:var(--muted)">${lig}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
         <div class="aia-maclar">
           <div class="aia-takim">${m?`<img src="${m.teams.home.logo}" onerror="this.style.display='none'">`:''}<div class="aia-takim-adi">${evAdi}</div></div>
-          <div class="aia-skor">${dk?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:''}<div class="aia-score">${st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
+          <div class="aia-skor">${dk?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:''}<div class="aia-score">${st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
           <div class="aia-takim">${m?`<img src="${m.teams.away.logo}" onerror="this.style.display='none'">`:''}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
         <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
