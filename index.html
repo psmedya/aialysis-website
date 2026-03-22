@@ -555,6 +555,56 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 </head>
 <body>
 
+<!-- BAKIM MODU -->
+<div id="bakimModu" style="position:fixed;inset:0;z-index:99999;background:#0A0A12;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:'DM Sans',sans-serif;">
+  <div style="text-align:center;max-width:420px;padding:24px;">
+    <div style="margin-bottom:20px;">
+      <span style="font-style:italic;font-size:40px;font-weight:900;color:#FFD54F;">ai</span><span style="font-size:40px;font-weight:900;color:white;">ALYSIS</span>
+    </div>
+    <div style="background:#1A1A2E;border:1px solid #2A2A3E;border-radius:16px;padding:32px;margin-bottom:24px;">
+      <div style="font-size:48px;margin-bottom:16px;">🔧</div>
+      <h2 style="color:white;font-size:22px;margin:0 0 12px;font-weight:800;">Bakım Çalışması</h2>
+      <p style="color:#7A7A95;font-size:14px;line-height:1.6;margin:0 0 24px;">Sistemlerimizi güncelliyoruz. Kısa süre içinde daha iyi bir deneyimle geri döneceğiz.</p>
+      <div style="display:flex;justify-content:center;gap:12px;margin-bottom:16px;">
+        <div style="background:#0A0A12;border:1px solid #2A2A3E;border-radius:12px;padding:12px 16px;min-width:60px;">
+          <div id="bakimSaat" style="font-size:28px;font-weight:900;color:#7C6FFF;">00</div>
+          <div style="font-size:10px;color:#7A7A95;margin-top:4px;">SAAT</div>
+        </div>
+        <div style="background:#0A0A12;border:1px solid #2A2A3E;border-radius:12px;padding:12px 16px;min-width:60px;">
+          <div id="bakimDk" style="font-size:28px;font-weight:900;color:#7C6FFF;">00</div>
+          <div style="font-size:10px;color:#7A7A95;margin-top:4px;">DAKİKA</div>
+        </div>
+        <div style="background:#0A0A12;border:1px solid #2A2A3E;border-radius:12px;padding:12px 16px;min-width:60px;">
+          <div id="bakimSn" style="font-size:28px;font-weight:900;color:#7C6FFF;">00</div>
+          <div style="font-size:10px;color:#7A7A95;margin-top:4px;">SANİYE</div>
+        </div>
+      </div>
+      <div style="width:100%;background:#2A2A3E;border-radius:4px;height:4px;overflow:hidden;">
+        <div id="bakimBar" style="width:0%;height:100%;background:linear-gradient(90deg,#7C6FFF,#FFD54F);border-radius:4px;transition:width 1s;"></div>
+      </div>
+    </div>
+    <p style="color:#4a4a5a;font-size:11px;">Powered by aiALYSIS Technologies</p>
+  </div>
+</div>
+<script>
+(function(){
+  var bakimBitis=localStorage.getItem('bakim_bitis');
+  if(!bakimBitis){bakimBitis=(Date.now()+6*60*60*1000).toString();localStorage.setItem('bakim_bitis',bakimBitis);}
+  var bitis=parseInt(bakimBitis);
+  function guncelle(){
+    var kalan=Math.max(0,bitis-Date.now());
+    if(kalan<=0){document.getElementById('bakimModu').style.display='none';localStorage.removeItem('bakim_bitis');return;}
+    var s=Math.floor(kalan/3600000),d=Math.floor((kalan%3600000)/60000),sn=Math.floor((kalan%60000)/1000);
+    document.getElementById('bakimSaat').textContent=String(s).padStart(2,'0');
+    document.getElementById('bakimDk').textContent=String(d).padStart(2,'0');
+    document.getElementById('bakimSn').textContent=String(sn).padStart(2,'0');
+    document.getElementById('bakimBar').style.width=((6*3600000-kalan)/(6*3600000)*100)+'%';
+    setTimeout(guncelle,1000);
+  }
+  guncelle();
+})();
+</script>
+
 <!-- LANDING SAYFA -->
 <div id="landingPage" style="position:fixed;inset:0;z-index:9999;background:#0A0A12;display:flex;align-items:center;justify-content:center;flex-direction:column;">
   <style>
@@ -866,6 +916,20 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
               <span style="font-size:10px;color:var(--muted);margin-left:auto;">Son 7 gun</span>
             </div>
             <div id="yildizlarContainer">
+              <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Yukleniyor...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- En Aktif Kullanicilar (Liderlik Tablosu) -->
+        <div id="leaderboardSection" style="margin-top:24px;margin-bottom:20px;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+              <span style="font-size:18px;">&#127942;</span>
+              <span style="font-size:13px;font-weight:800;color:var(--gold-lt);letter-spacing:0.5px;">En Aktif Kullanicilar</span>
+              <span style="font-size:10px;color:var(--muted);margin-left:auto;">Top 10</span>
+            </div>
+            <div id="leaderboardContainer">
               <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Yukleniyor...</div>
             </div>
           </div>
@@ -2054,40 +2118,68 @@ function showToast(msg){
   t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2000);
 }
 
-// === KULLANICI TAHMİN SİSTEMİ ===
+// === KULLANICI TAHMİN SİSTEMİ (Supabase-backed) ===
+let communityCache={};
+let userVoteCache={};
+
 function getUserPredictions(){
   try{return JSON.parse(localStorage.getItem('userPredictions')||'{}');}catch(e){return {};}
 }
-function saveUserPrediction(macId,secim){
+function saveUserPredictionLocal(macId,secim){
   const preds=getUserPredictions();
   preds[macId]=secim;
   localStorage.setItem('userPredictions',JSON.stringify(preds));
 }
-function getCommunityPredictions(){
-  try{return JSON.parse(localStorage.getItem('communityPredictions')||'{}');}catch(e){return {};}
+
+async function loadCommunityPredictions(macId){
+  try{
+    const r=await fetch(`${SU}/rest/v1/forum_mesajlar?mac_id=eq.${macId}&mesaj=like.TAHMIN:*&select=mesaj,user_id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    if(!r.ok)return {ev:0,ber:0,dep:0,userVote:null};
+    const msgs=await r.json();
+    const votes={ev:0,ber:0,dep:0};
+    let userVote=null;
+    const curUser=await getForumUser();
+    const curId=curUser?curUser.id:null;
+    msgs.forEach(m=>{
+      const sec=m.mesaj.replace('TAHMIN:','');
+      if(votes.hasOwnProperty(sec))votes[sec]++;
+      if(curId&&m.user_id===curId)userVote=sec;
+    });
+    communityCache[macId]=votes;
+    if(userVote)userVoteCache[macId]=userVote;
+    return {ev:votes.ev,ber:votes.ber,dep:votes.dep,userVote};
+  }catch(e){
+    return {ev:0,ber:0,dep:0,userVote:null};
+  }
 }
-function saveCommunityPrediction(macId,secim){
-  const comm=getCommunityPredictions();
-  if(!comm[macId])comm[macId]={ev:0,ber:0,dep:0};
-  // Check if user already voted - if changing vote, decrement old
-  const preds=getUserPredictions();
-  const oldVote=preds[macId];
-  if(oldVote&&comm[macId][oldVote]>0)comm[macId][oldVote]--;
-  comm[macId][secim]++;
-  localStorage.setItem('communityPredictions',JSON.stringify(comm));
-  saveUserPrediction(macId,secim);
+
+async function saveUserPredictionSupabase(macId,secim){
+  const user=await getForumUser();
+  if(!user){
+    saveUserPredictionLocal(macId,secim);
+    return;
+  }
+  try{
+    await fetch(`${SU}/rest/v1/forum_mesajlar?mac_id=eq.${macId}&user_id=eq.${user.id}&mesaj=like.TAHMIN:*`,{
+      method:'DELETE',headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Content-Type':'application/json'}
+    });
+    await sbClient.from('forum_mesajlar').insert({user_id:user.id,kullanici_adi:user.name,mac_id:parseInt(macId),mesaj:`TAHMIN:${secim}`,icerik:`TAHMIN:${secim}`});
+  }catch(e){console.error('Tahmin kaydetme hatasi:',e);}
+  saveUserPredictionLocal(macId,secim);
+  userVoteCache[macId]=secim;
 }
+
 function renderUserTahmin(macId,m){
   const bitti=['FT','AET','PEN','AWD','WO'].includes(m.fixture.status.short);
   if(bitti)return '';
-  const preds=getUserPredictions();
-  const userVote=preds[macId]||null;
-  const comm=getCommunityPredictions();
-  const votes=comm[macId]||{ev:0,ber:0,dep:0};
+  const localPreds=getUserPredictions();
+  const userVote=userVoteCache[macId]||localPreds[macId]||null;
+  const votes=communityCache[macId]||{ev:0,ber:0,dep:0};
   const total=votes.ev+votes.ber+votes.dep;
   const evPct=total>0?Math.round(votes.ev/total*100):0;
   const berPct=total>0?Math.round(votes.ber/total*100):0;
   const depPct=total>0?Math.round(votes.dep/total*100):0;
+  const degistirNot=userVote?'<div style="font-size:9px;color:var(--gold);text-align:center;margin-top:6px;">Tahminini degistirmek icin tekrar tikla</div>':'';
   return `<div class="user-tahmin-box">
     <div class="user-tahmin-title">🗳️ ${t('tahminYap').toUpperCase()}</div>
     <div class="user-tahmin-btns">
@@ -2111,13 +2203,15 @@ function renderUserTahmin(macId,m){
       <span>${m.teams.home.name.substring(0,10)}</span>
       <span>${t('beraberlik')}</span>
       <span>${m.teams.away.name.substring(0,10)}</span>
-    </div>`:'<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px">İlk tahmini sen yap!</div>'}
+    </div>`:'<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px">Ilk tahmini sen yap!</div>'}
+    ${degistirNot}
   </div>`;
 }
-function kullaniciTahminYap(macId,secim,evAdi,depAdi){
-  saveCommunityPrediction(macId,secim);
-  showToast(secim==='ev'?`${evAdi} kazanır seçildi!`:secim==='dep'?`${depAdi} kazanır seçildi!`:'Beraberlik seçildi!');
-  // Re-render the user prediction section
+
+async function kullaniciTahminYap(macId,secim,evAdi,depAdi){
+  showToast(secim==='ev'?`${evAdi} kazanir secildi!`:secim==='dep'?`${depAdi} kazanir secildi!`:'Beraberlik secildi!');
+  await saveUserPredictionSupabase(macId,secim);
+  await loadCommunityPredictions(macId);
   if(currentMac&&currentMac.fixture.id==macId){
     const box=document.getElementById('userTahminContainer');
     if(box)box.innerHTML=renderUserTahmin(macId,currentMac);
@@ -2169,6 +2263,11 @@ function renderDetailAnaliz(a,m){
     ${live?`<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:10px;font-size:10px;color:var(--green);margin-top:8px"><div style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite"></div>Her 30 saniyede otomatik güncelleniyor</div>`:''}
     <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:6px">* AI tahminleri yalnızca bilgi amaçlıdır.</div>
     </div>`;
+  // Async load community predictions from Supabase and re-render
+  loadCommunityPredictions(m.fixture.id).then(()=>{
+    const box=document.getElementById('userTahminContainer');
+    if(box)box.innerHTML=renderUserTahmin(m.fixture.id,m);
+  });
 }
 
 const ISTAT_TR={
@@ -2465,7 +2564,7 @@ function showMainTab(name){
   const nb=document.getElementById(`nav-${name}`);
   if(nb)nb.classList.add('active');
   if(name==='aialysis')loadAialysis();
-  if(name==='dashboard'){loadTahminler(aktifFilter);loadYildizlar();}
+  if(name==='dashboard'){loadTahminler(aktifFilter);loadYildizlar();loadLeaderboard();}
   if(name==='favoriler')renderFavoriler();
 }
 
@@ -2749,6 +2848,48 @@ async function loadYildizlar(){
     }).join('');
   }catch(e){
     yc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Yuklenemedi.</div>';
+  }
+}
+
+// === EN AKTİF KULLANICILAR (Leaderboard) ===
+async function loadLeaderboard(){
+  const lc=document.getElementById('leaderboardContainer');
+  if(!lc)return;
+  try{
+    // forum_mesajlar tablosundan normal mesajlari say (TAHMIN: olanlar haric), kullanici_adi'na gore grupla
+    const r=await fetch(`${SU}/rest/v1/forum_mesajlar?select=kullanici_adi,user_id,mesaj&order=created_at.desc&limit=1000`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    if(!r.ok)throw new Error(r.status);
+    const msgs=await r.json();
+    // Count messages per user (exclude TAHMIN: messages)
+    const userMap={};
+    msgs.forEach(m=>{
+      if(m.mesaj&&m.mesaj.startsWith('TAHMIN:'))return;
+      const ad=m.kullanici_adi||'Anonim';
+      if(!userMap[ad])userMap[ad]={count:0,userId:m.user_id};
+      userMap[ad].count++;
+    });
+    const sorted=Object.entries(userMap).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
+    if(!sorted.length){
+      lc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Henuz aktif kullanici yok.</div>';
+      return;
+    }
+    const rankColors=['linear-gradient(135deg,var(--gold),var(--gold-lt))','linear-gradient(135deg,#8E8E93,#C7C7CC)','linear-gradient(135deg,#CD7F32,#E8A85C)'];
+    lc.innerHTML=sorted.map(([ad,info],i)=>{
+      const initial=ad.charAt(0).toUpperCase();
+      const avatarBg=i<3?rankColors[i]:'linear-gradient(135deg,var(--blue),var(--blue-lt))';
+      const textColor=i<3?'#1A1A2E':'white';
+      return `<div class="leaderboard-card">
+        <div style="font-size:12px;font-weight:900;color:${i<3?'var(--gold-lt)':'var(--muted)'};width:20px;text-align:center;flex-shrink:0;">${i+1}</div>
+        <div class="leaderboard-avatar" style="background:${avatarBg};color:${textColor};">${initial}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ad}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${info.count} mesaj</div>
+        </div>
+        ${i===0?'<span style="font-size:16px;">&#127942;</span>':i===1?'<span style="font-size:14px;">&#129352;</span>':i===2?'<span style="font-size:14px;">&#129353;</span>':''}
+      </div>`;
+    }).join('');
+  }catch(e){
+    lc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Yuklenemedi.</div>';
   }
 }
 
