@@ -738,7 +738,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div id="authStep2" style="display:none;">
       <p style="color:var(--muted);font-size:13px;text-align:center;margin-bottom:4px;">Doğrulama kodu gönderildi:</p>
       <p id="authEmailShow" style="color:var(--blue-lt);font-size:13px;text-align:center;font-weight:700;margin-bottom:16px;"></p>
-      <input id="authCode" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" style="width:100%;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:white;font-size:28px;font-weight:900;letter-spacing:8px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;margin-bottom:12px;">
+      <input id="authCode" type="text" inputmode="numeric" maxlength="8" placeholder="00000000" autocomplete="one-time-code" style="width:100%;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:white;font-size:28px;font-weight:900;letter-spacing:8px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;margin-bottom:12px;">
       <button id="authVerifyBtn" onclick="authVerifyOtp()" style="width:100%;padding:12px;background:var(--blue);border:none;border-radius:10px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Doğrula</button>
       <p id="authErr2" style="color:var(--red);font-size:12px;text-align:center;margin-top:8px;display:none;"></p>
     </div>
@@ -815,7 +815,7 @@ async function authSendOtp(){
 
 async function authVerifyOtp(){
   const code=document.getElementById('authCode').value.trim();
-  if(code.length!==6){document.getElementById('authErr2').textContent='6 haneli kodu girin.';document.getElementById('authErr2').style.display='block';return;}
+  if(code.length<6){document.getElementById('authErr2').textContent='Doğrulama kodunu girin.';document.getElementById('authErr2').style.display='block';return;}
   document.getElementById('authVerifyBtn').textContent='Doğrulanıyor...';
   document.getElementById('authErr2').style.display='none';
   try{
