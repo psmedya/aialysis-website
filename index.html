@@ -300,41 +300,39 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .odds-price{font-size:15px;font-weight:700;color:var(--gold-lt);}
 
 /* Responsive */
+/* Tablet */
 @media(max-width:1200px){
-  .layout{grid-template-columns:0 1fr 0 !important;}
+  .layout,.layout.sidebar-kapali,.layout.panel-acik,.layout.sidebar-kapali.panel-acik{grid-template-columns:1fr !important;}
   .sidebar{display:none !important;}
-  .right-panel{display:none;}
+  .right-panel{display:none !important;}
   .layout.panel-acik .right-panel{display:block !important;position:fixed;inset:0;top:60px;z-index:200;background:var(--bg);overflow-y:auto;}
-  .layout.panel-acik .main{display:none;}
+  .layout.panel-acik .main{display:none !important;}
 }
+/* Mobil */
 @media(max-width:768px){
   .navbar{padding:0 10px;gap:6px;height:50px;}
-  .nav-search{display:none;}
-  .nav-links .nav-btn span,.nav-btn svg{display:none;}
-  .nav-links{gap:2px;}
-  .nav-btn{padding:6px 10px;font-size:10px;}
-  .hamburger{display:none;}
-  .nav-logo .ai{font-size:16px;}
-  .nav-logo .alysis{font-size:16px;}
-  .layout{grid-template-rows:50px 1fr;}
-  .main{padding:0;}
+  .nav-search{display:none !important;}
+  .nav-links{display:none !important;}
+  .hamburger{display:none !important;}
+  .layout,.layout.sidebar-kapali{grid-template-columns:1fr !important;grid-template-rows:50px 1fr !important;}
+  .main{padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .matches-header{padding:10px 12px !important;}
-  .mac-satir{padding:8px 10px;font-size:12px;}
-  .takim-adi{font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .takim-logo{width:18px;height:18px;}
+  .mac-tablo-header{display:none !important;}
+  .mac-satir{display:grid !important;grid-template-columns:55px 1fr 50px !important;align-items:center;padding:10px 12px;gap:6px;}
+  .mac-durum-col{display:none !important;}
+  .mac-arrow{display:none !important;}
+  .takim-adi{font-size:12px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .takim-logo{width:20px;height:20px;}
   .skor-val{font-size:16px;}
-  .lig-header{padding:6px 12px;font-size:11px;}
-  .mac-durum-col{display:none;}
-  .mac-arrow{display:none;}
+  .lig-header{padding:8px 12px;font-size:11px;}
   .detail-header{padding:12px;}
   .detail-tabs{overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
   .detail-tab{padding:8px 10px;font-size:10px;flex-shrink:0;}
   .detail-content{padding:10px !important;}
   .layout.panel-acik .right-panel{top:50px;}
-}
-@media(max-width:400px){
-  .nav-links{display:none;}
-  .navbar{justify-content:space-between;}
+  .aialysis-grid{grid-template-columns:1fr !important;padding:12px !important;}
+  .ai-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .tahmin-row{grid-template-columns:1fr !important;gap:4px !important;}
 }
 
 /* Mobil bottom nav */
