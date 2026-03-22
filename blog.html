@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — aiALYSIS Live | Futbol Analiz ve Tahmin Yazıları</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="description" content="aiALYSIS Live blog: Yapay zeka ile futbol tahmini, Süper Lig analizi, maç istatistikleri nasıl okunur? Futbol analiz rehberleri ve uzman yazıları.">
+<meta name="keywords" content="futbol analiz blog, AI futbol tahmin, süper lig analiz, maç istatistikleri, iddaa rehberi, futbol tahmini nasıl yapılır, yapay zeka spor analizi">
+<meta name="robots" content="index, follow">
+<meta name="author" content="aiALYSIS Live">
+<link rel="canonical" href="https://aialysis.live/blog.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://aialysis.live/blog.html">
+<meta property="og:title" content="Blog — aiALYSIS Live | Futbol Analiz Yazıları">
+<meta property="og:description" content="Yapay zeka ile futbol tahmini nasıl yapılır? Süper Lig sezon analizi, maç istatistikleri rehberi ve daha fazlası.">
+<meta property="og:image" content="https://aialysis.live/og-image.png">
+<meta property="og:site_name" content="aiALYSIS Live">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Blog — aiALYSIS Live">
+<meta name="twitter:description" content="Yapay zeka destekli futbol analiz rehberleri ve tahmin yazıları.">
+<meta name="twitter:image" content="https://aialysis.live/og-image.png">
+<meta name="theme-color" content="#4A3AFF">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M9Y0T0648K"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-M9Y0T0648K');</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "aiALYSIS Live Blog",
+  "url": "https://aialysis.live/blog.html",
+  "description": "Yapay zeka destekli futbol analiz ve tahmin yazıları",
+  "inLanguage": "tr",
+  "publisher": {"@type": "Organization", "name": "aiALYSIS Live", "url": "https://aialysis.live"}
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A12;--surface:#12121E;--card:#1A1A2E;--border:#2A2A3E;
+  --blue:#4A3AFF;--blue-lt:#7C6FFF;--green:#2ED573;--orange:#FF7F50;
+  --red:#FF4757;--yellow:#FFD32A;--text:#F0F0F5;--muted:#7A7A95;
+  --gold:#D4A24C;--gold-lt:#FFD54F;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+a{color:var(--blue-lt);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+.navbar{
+  background:var(--blue);display:flex;align-items:center;gap:16px;
+  padding:0 24px;height:60px;position:sticky;top:0;z-index:500;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.nav-logo{display:flex;align-items:baseline;gap:0;}
+.nav-logo .ai{font-style:italic;font-size:20px;font-weight:300;color:var(--gold-lt);}
+.nav-logo .alysis{font-size:20px;font-weight:900;color:white;letter-spacing:-1px;}
+.nav-back{margin-left:16px;background:rgba(255,255,255,.1);border:none;color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s;}
+.nav-back:hover{background:rgba(255,255,255,.2);}
+
+.container{max-width:900px;margin:0 auto;padding:40px 20px;}
+h1{font-size:32px;font-weight:900;margin-bottom:8px;color:var(--gold-lt);}
+.subtitle{color:var(--muted);font-size:15px;margin-bottom:40px;}
+
+.article-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:28px 32px;margin-bottom:24px;transition:all .2s;cursor:default;
+}
+.article-card:hover{border-color:var(--blue);transform:translateY(-2px);}
+.article-meta{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
+.article-date{color:var(--muted);font-size:12px;}
+.article-tag{
+  display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+}
+.tag-ai{background:rgba(74,58,255,.15);color:var(--blue-lt);border:1px solid rgba(74,58,255,.3);}
+.tag-analiz{background:rgba(46,213,115,.15);color:var(--green);border:1px solid rgba(46,213,115,.3);}
+.tag-rehber{background:rgba(255,127,80,.15);color:var(--orange);border:1px solid rgba(255,127,80,.3);}
+.article-card h2{font-size:20px;font-weight:700;margin-bottom:10px;color:white;}
+.article-card p{color:var(--muted);font-size:14px;line-height:1.7;}
+.article-body{margin-top:16px;}
+.article-body h3{font-size:16px;font-weight:700;color:var(--gold);margin:20px 0 8px;}
+.article-body ul{padding-left:20px;margin:8px 0;}
+.article-body li{color:var(--muted);font-size:13px;line-height:1.8;}
+.article-body .highlight{
+  background:var(--surface);border-left:3px solid var(--blue);
+  padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;
+  font-size:13px;color:var(--text);line-height:1.6;
+}
+
+footer{background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:11px;color:var(--muted);line-height:1.8;margin-top:60px;}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-logo"><span class="ai">ai</span><span class="alysis">ALYSIS</span></a>
+  <a href="/" class="nav-back">Ana Sayfa</a>
+</nav>
+
+<div class="container">
+  <h1>Blog</h1>
+  <p class="subtitle">Futbol analizi, yapay zeka tahminleri ve istatistik rehberleri</p>
+
+  <!-- Article 1 -->
+  <article class="article-card">
+    <div class="article-meta">
+      <span class="article-tag tag-ai">Yapay Zeka</span>
+      <span class="article-date">20 Mart 2026</span>
+    </div>
+    <h2>AI ile Futbol Tahmin Nasil Yapilir?</h2>
+    <p>Yapay zeka destekli futbol tahmin sistemleri nasil calisir? aiALYSIS Live'in arkasindaki teknolojiye yakindan bakin.</p>
+    <div class="article-body">
+      <h3>Veri Toplama</h3>
+      <p>Her mac icin yuzlerce veri noktasi analiz edilir. Takim formu, kafa kafaya istatistikler, ev sahibi/deplasman performansi, oyuncu kadrolar ve sakatliklari hesaba katilir.</p>
+      <div class="highlight">aiALYSIS Live, her mac icin 7 katmanli istatistiksel analiz pipeline kullanir. Matematik hesaplamalari yapildiktan sonra AI modeli sadece yorum ve tahmin uretir.</div>
+      <h3>Analiz Katmanlari</h3>
+      <ul>
+        <li><strong>Gol Beklentisi (xG):</strong> Toplam sut, isabetli sut ve gol verilerinden hesaplanir</li>
+        <li><strong>Korner Analizi:</strong> Takim bazli korner ortalamasi ve mac temposu</li>
+        <li><strong>Kart Analizi:</strong> Hakem profili ve takim agresiflik endeksi</li>
+        <li><strong>Form Analizi:</strong> Son 5 mac performansi, ev/deplasman ayrimli</li>
+        <li><strong>H2H (Kafa Kafaya):</strong> Son 20 karsilasma istatistikleri</li>
+      </ul>
+      <h3>Tahmin Guveni</h3>
+      <p>Her tahmin icin %0-100 arasi bir guven skoru uretilir. aiALYSIS Live yalnizca %70 ve uzerindeki tahminleri gosterir. Bu esik, kullanicilara daha guvenilir tahminler sunmayi amaclar.</p>
+    </div>
+  </article>
+
+  <!-- Article 2 -->
+  <article class="article-card">
+    <div class="article-meta">
+      <span class="article-tag tag-analiz">Sezon Analizi</span>
+      <span class="article-date">15 Mart 2026</span>
+    </div>
+    <h2>Super Lig 2025-2026 Sezon Analizi</h2>
+    <p>Turkiye Super Lig'de sezon ortasi degerlendirmesi. Sampiyon adaylari, kuculme hatti ve surpriz takimlar.</p>
+    <div class="article-body">
+      <h3>Sampiyon Adaylari</h3>
+      <p>Sezonun ikinci yarisina girilirken lig tablosundaki yogunluk dikkat cekiyor. Ilk 5 takim arasindaki puan farki oldukca az ve her mac kritik onem tasiyor.</p>
+      <div class="highlight">AI analizlerimize gore, ev sahibi avantaji bu sezon Super Lig'de %58 oraninda sonuc uretirken, deplasman galibiyet orani %24'te kaliyor.</div>
+      <h3>Gol Ortalamalari</h3>
+      <ul>
+        <li>Lig genel gol ortalamasi: Mac basina 2.7</li>
+        <li>Ev sahibi gol ortalamasi: 1.6</li>
+        <li>Deplasman gol ortalamasi: 1.1</li>
+        <li>Ust 2.5 gol orani: %56</li>
+      </ul>
+      <h3>Surpriz Takimlar</h3>
+      <p>Beklentilerin uzerinde performans gosteren takimlar, ozellikle guclu defansif yapilariyla one cikiyor. Dusuk gol yeme ortalamasi ve etkili kontra atak stratejileri basari anahtari oluyor.</p>
+    </div>
+  </article>
+
+  <!-- Article 3 -->
+  <article class="article-card">
+    <div class="article-meta">
+      <span class="article-tag tag-rehber">Rehber</span>
+      <span class="article-date">10 Mart 2026</span>
+    </div>
+    <h2>Mac Istatistikleri Nasil Okunur?</h2>
+    <p>Futbol istatistiklerini anlamak ve dogru yorumlamak icin bilmeniz gereken temel kavramlar.</p>
+    <div class="article-body">
+      <h3>Topla Oynama (Possession)</h3>
+      <p>Top oraninin yuksek olmasi her zaman galibiyeti garanti etmez. Onemli olan topun nasil kullanildigidir. Etkili pas orani, son uc pas ve sut donusumu birlikte degerlendirilmelidir.</p>
+      <h3>Temel Istatistikler</h3>
+      <ul>
+        <li><strong>Toplam Sut / Isabetli Sut:</strong> Takim ofansif etkililiginin temel gostergesi</li>
+        <li><strong>Korner Sayisi:</strong> Takim baskisinin ve hucum yogunlugunun gostergesi</li>
+        <li><strong>Faul ve Kartlar:</strong> Mac sertligi ve hakem egilimini anlamak icin onemli</li>
+        <li><strong>Pas Isabeti (%):</strong> Takimin oyun kurma kalitesini gosterir</li>
+        <li><strong>Offsides:</strong> Hucum cizgisi ve pres yogunlugunun ipuclarini verir</li>
+      </ul>
+      <div class="highlight">Istatistikleri tek basina degil, birbirleriyle iliski icinde okumak gerekir. Ornegin, yuksek topla oynama + dusuk sut sayisi = etkisiz hucum anlamina gelebilir.</div>
+      <h3>Form Barlari</h3>
+      <p>aiALYSIS Live'da her takimin son 5 maclik form bari gosterilir. Yesil (Galibiyet), Sari (Beraberlik) ve Kirmizi (Maglubiyet) renkleri ile anlasilan bu barlar, takimin yakin gecmisini bir bakista ozetler.</p>
+    </div>
+  </article>
+
+</div>
+
+<footer>
+  <p style="margin-bottom:8px;"><a href="/" style="color:var(--gold);font-weight:700;">aiALYSIS Live</a> &mdash; Yapay Zeka Destekli Futbol Analizi</p>
+  <p><a href="/privacy.html">Gizlilik</a> &middot; <a href="/terms.html">Kullanim Sartlari</a> &middot; <a href="/blog.html" style="color:var(--gold);">Blog</a></p>
+  <p style="margin-top:8px;font-size:10px;">&copy; 2026 aiALYSIS Live. Tum haklari saklidir.</p>
+</footer>
+
+</body>
+</html>

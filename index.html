@@ -242,6 +242,31 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
 .error{text-align:center;padding:20px;color:var(--red);font-size:12px;}
 
+/* Premium */
+.premium-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:linear-gradient(135deg,rgba(212,162,76,.2),rgba(255,213,79,.15));border:1px solid rgba(212,162,76,.4);color:var(--gold-lt);}
+.premium-plan-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;}
+.premium-upgrade-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:10px;color:#1A1A2E;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.premium-upgrade-btn:hover{transform:scale(1.02);box-shadow:0 4px 20px rgba(212,162,76,.3);}
+.aia-blur-overlay{position:relative;overflow:hidden;}
+.aia-blur-overlay::after{content:'';position:absolute;bottom:0;left:0;right:0;height:100%;background:linear-gradient(to bottom,transparent 0%,rgba(10,10,18,.95) 70%);pointer-events:none;}
+.aia-blur-cta{position:absolute;bottom:0;left:0;right:0;z-index:2;text-align:center;padding:30px 20px;}
+.aia-blur-cta button{padding:12px 28px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:10px;color:#1A1A2E;font-size:14px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* Ad slots */
+.ad-slot{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;margin:12px 0;}
+.ad-slot span{color:var(--muted);font-size:10px;letter-spacing:1px;}
+
+/* Haftanin Yildizlari */
+.yildiz-card{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);transition:background .15s;}
+.yildiz-card:last-child{border-bottom:none;}
+.yildiz-card:hover{background:rgba(255,255,255,.02);}
+.yildiz-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;}
+.yildiz-rank.gold{background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1A1A2E;}
+.yildiz-rank.silver{background:linear-gradient(135deg,#8E8E93,#C7C7CC);color:#1A1A2E;}
+.yildiz-rank.bronze{background:linear-gradient(135deg,#CD7F32,#E8A85C);color:#1A1A2E;}
+.yildiz-rank.normal{background:var(--card);border:1px solid var(--border);color:var(--muted);}
+.tuttu-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(46,213,115,.15);color:var(--green);border:1px solid rgba(46,213,115,.3);}
+
 /* AIalysis tab */
 .aialysis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:20px 24px;}
 .aia-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;}
@@ -811,6 +836,20 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <div id="tahminlerContainer">
           <div class="loading"><div class="spinner"></div>Yükleniyor...</div>
         </div>
+
+        <!-- Haftanin Yildizlari -->
+        <div id="yildizlarSection" style="margin-top:24px;margin-bottom:20px;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+              <span style="font-size:18px;">&#127775;</span>
+              <span style="font-size:13px;font-weight:800;color:var(--gold-lt);letter-spacing:0.5px;">Haftanin Yildizlari</span>
+              <span style="font-size:10px;color:var(--muted);margin-left:auto;">Son 7 gun</span>
+            </div>
+            <div id="yildizlarContainer">
+              <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Yukleniyor...</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -821,6 +860,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     <div id="defaultPanel" class="panel-section">
       <div class="panel-title">MAÇ SEÇ</div>
       <div style="font-size:12px;color:var(--muted);line-height:1.6">Bir maça tıkla, AI analizi ve istatistikleri burada görün.</div>
+      <!-- Sidebar Ad Slot -->
+      <div class="ad-slot" style="margin-top:20px;">
+        <span>Reklam Alani</span>
+      </div>
     </div>
     <div id="matchDetail" class="match-detail">
       <div class="detail-header" id="detailHeader">
@@ -941,9 +984,60 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         </div>
       </div>
 
+      <!-- Premium Plan Section -->
+      <div id="premiumPlanSection" class="premium-plan-box">
+        <div id="premiumFreeView">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <span style="color:var(--muted);font-size:12px;font-weight:600;">Mevcut Plan</span>
+            <span style="color:var(--text);font-size:12px;font-weight:700;">Ucretsiz Plan</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">Gunde 3 tahmin goruntuleyebilirsiniz.</div>
+          <button onclick="premiumInfoModal()" class="premium-upgrade-btn">Premium'a Gec</button>
+        </div>
+        <div id="premiumActiveView" style="display:none;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span class="premium-badge">&#11088; Premium</span>
+            <span style="color:var(--gold-lt);font-size:12px;font-weight:700;">Aktif</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);">Sinirsiz tahmin ve tum ozel ozelliklere erisim.</div>
+        </div>
+      </div>
+
       <!-- Logout Button -->
       <button onclick="authLogout()" style="width:100%;padding:12px;background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.3);border-radius:10px;color:var(--red);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;" onmouseover="this.style.background='var(--red)';this.style.color='white'" onmouseout="this.style.background='rgba(255,71,87,.1)';this.style.color='var(--red)'">Çıkış Yap</button>
     </div>
+  </div>
+</div>
+
+<!-- PREMIUM INFO MODAL -->
+<div id="premiumOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9500;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--gold);border-radius:16px;width:90%;max-width:420px;padding:28px;position:relative;overflow-y:auto;max-height:90vh;">
+    <button onclick="document.getElementById('premiumOverlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">&times;</button>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:48px;margin-bottom:8px;">&#11088;</div>
+      <h3 style="color:var(--gold-lt);font-size:20px;font-weight:900;margin-bottom:4px;">aiALYSIS Premium</h3>
+      <p style="color:var(--muted);font-size:12px;">Tum ozelliklerin kilidini ac</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
+        <span style="font-size:20px;">&#9854;</span>
+        <div><div style="font-size:13px;font-weight:700;color:var(--text);">Sinirsiz Tahmin</div><div style="font-size:11px;color:var(--muted);">Gun limiti olmadan tum tahminlere eris</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
+        <span style="font-size:20px;">&#9200;</span>
+        <div><div style="font-size:13px;font-weight:700;color:var(--text);">Erken Erisim</div><div style="font-size:11px;color:var(--muted);">Mac oncesi AI analiz raporlari</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
+        <span style="font-size:20px;">&#128683;</span>
+        <div><div style="font-size:13px;font-weight:700;color:var(--text);">Reklamsiz Deneyim</div><div style="font-size:11px;color:var(--muted);">Reklam olmadan kesintisiz kullanim</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
+        <span style="font-size:20px;">&#127942;</span>
+        <div><div style="font-size:13px;font-weight:700;color:var(--text);">Ozel Rozet</div><div style="font-size:11px;color:var(--muted);">Profilinde premium rozeti goster</div></div>
+      </div>
+    </div>
+    <button onclick="activatePremiumDemo()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:12px;color:#1A1A2E;font-size:15px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px;">Yakinda</button>
+    <p style="text-align:center;font-size:10px;color:var(--muted);">Odeme entegrasyonu yakinda aktif olacak.</p>
   </div>
 </div>
 
@@ -1933,19 +2027,19 @@ function renderUserTahmin(macId,m){
   const berPct=total>0?Math.round(votes.ber/total*100):0;
   const depPct=total>0?Math.round(votes.dep/total*100):0;
   return `<div class="user-tahmin-box">
-    <div class="user-tahmin-title">🗳️ TAHMİNİNİ YAP</div>
+    <div class="user-tahmin-title">🗳️ ${t('tahminYap').toUpperCase()}</div>
     <div class="user-tahmin-btns">
       <button class="user-tahmin-btn ev-btn${userVote==='ev'?' selected':''}" onclick="kullaniciTahminYap('${macId}','ev','${m.teams.home.name.replace(/'/g,"\\'")}','${m.teams.away.name.replace(/'/g,"\\'")}')">
         ${m.teams.home.name.substring(0,12)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">KAZANIR</span>
       </button>
       <button class="user-tahmin-btn ber-btn${userVote==='ber'?' selected':''}" onclick="kullaniciTahminYap('${macId}','ber','${m.teams.home.name.replace(/'/g,"\\'")}','${m.teams.away.name.replace(/'/g,"\\'")}')">
-        BERABERLİK<br><span style="font-size:10px;font-weight:400;color:var(--muted)">X</span>
+        ${t('beraberlik').toUpperCase()}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">X</span>
       </button>
       <button class="user-tahmin-btn dep-btn${userVote==='dep'?' selected':''}" onclick="kullaniciTahminYap('${macId}','dep','${m.teams.home.name.replace(/'/g,"\\'")}','${m.teams.away.name.replace(/'/g,"\\'")}')">
         ${m.teams.away.name.substring(0,12)}<br><span style="font-size:10px;font-weight:400;color:var(--muted)">KAZANIR</span>
       </button>
     </div>
-    ${total>0?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">Topluluk Tahmini (${total} oy)</div>
+    ${total>0?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${t('topluluk')} (${total})</div>
     <div class="user-tahmin-dist">
       ${evPct>0?`<div class="user-tahmin-dist-bar" style="width:${evPct}%;background:var(--blue)">${evPct}%</div>`:''}
       ${berPct>0?`<div class="user-tahmin-dist-bar" style="width:${berPct}%;background:#555">${berPct}%</div>`:''}
@@ -1953,7 +2047,7 @@ function renderUserTahmin(macId,m){
     </div>
     <div class="user-tahmin-dist-labels">
       <span>${m.teams.home.name.substring(0,10)}</span>
-      <span>Beraberlik</span>
+      <span>${t('beraberlik')}</span>
       <span>${m.teams.away.name.substring(0,10)}</span>
     </div>`:'<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px">İlk tahmini sen yap!</div>'}
   </div>`;
@@ -1969,8 +2063,8 @@ function kullaniciTahminYap(macId,secim,evAdi,depAdi){
 }
 
 function renderDetailAnaliz(a,m){
-  const t=a.tahminler||[],o=a.olasiliklar||{};
-  currentDetailTahminler=t;
+  const tah=a.tahminler||[],o=a.olasiliklar||{};
+  currentDetailTahminler=tah;
   const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
   const skor=a.skor_tahmini||{};
   const guven=a.tahmin_guveni||0;
@@ -1987,28 +2081,28 @@ function renderDetailAnaliz(a,m){
   document.getElementById('dc-analiz').innerHTML=`
     <div style="padding:16px">
     <div class="ai-card">
-      <div class="ai-title">${a.on_analiz?'🔮 MAÇ ÖNCESİ ANALİZ':'✦ AI ANALİZİ'} — %${guven} GÜVEN</div>
+      <div class="ai-title">${a.on_analiz?'🔮 MAÇ ÖNCESİ ANALİZ':'✦ AI ANALİZİ'} — %${guven} ${t('guven')}</div>
       <div class="ai-grid">
-        <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${skor.ev??'-'}</div><div class="ai-lbl">EV SKORU</div></div>
-        <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${skor.dep??'-'}</div><div class="ai-lbl">DEP SKORU</div></div>
-        <div class="ai-stat"><div class="ai-val" style="color:var(--yellow)">${a.gol_beklentisi!=null?Math.round(Math.min(parseFloat(a.gol_beklentisi)||0,6)/6*100)+'%':'-'}</div><div class="ai-lbl">GOL BEK.</div></div>
-        <div class="ai-stat"><div class="ai-val" style="color:var(--green);font-size:11px">${a.mac_temposu||'-'}</div><div class="ai-lbl">TEMPO</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${skor.ev??'-'}</div><div class="ai-lbl">${t('evSkoru')}</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${skor.dep??'-'}</div><div class="ai-lbl">${t('depSkoru')}</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--yellow)">${a.gol_beklentisi!=null?Math.round(Math.min(parseFloat(a.gol_beklentisi)||0,6)/6*100)+'%':'-'}</div><div class="ai-lbl">${t('golBek')}</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--green);font-size:11px">${a.mac_temposu||'-'}</div><div class="ai-lbl">${t('tempo')}</div></div>
       </div>
       ${(skor.ev!=null&&skor.dep!=null)?`<div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)"><span style="font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px">TAHMİNİ SKOR </span><span style="font-size:20px;font-weight:900;color:white;letter-spacing:4px">${skor.ev} - ${skor.dep}</span></div>`:''}
     </div>
     <div class="olas-card">
-      <div class="olas-title">SONUÇ OLASILIĞI</div>
+      <div class="olas-title">${t('sonucOlas')}</div>
       <div class="olas-vals">
         <div><div class="olas-val" style="color:var(--blue-lt)">${o.ev_kazanir||0}%</div><div class="olas-lbl">${m.teams.home.name.substring(0,10)}</div></div>
-        <div><div class="olas-val" style="color:var(--muted)">${o.beraberlik||0}%</div><div class="olas-lbl">Beraberlik</div></div>
+        <div><div class="olas-val" style="color:var(--muted)">${o.beraberlik||0}%</div><div class="olas-lbl">${t('beraberlik')}</div></div>
         <div><div class="olas-val" style="color:var(--red)">${o.dep_kazanir||0}%</div><div class="olas-lbl">${m.teams.away.name.substring(0,10)}</div></div>
       </div>
       <div class="olas-bar"><div style="height:100%;background:linear-gradient(90deg,var(--blue-lt) ${o.ev_kazanir||0}%,#444 ${o.ev_kazanir||0}% ${100-(o.dep_kazanir||0)}%,var(--red) ${100-(o.dep_kazanir||0)}%)"></div></div>
     </div>
-    ${t.length?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:10px 0 6px">TAHMİNLER</div>${t.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">Şu an: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin||''}</span>${p.piyasa?`<span style="font-size:10px;color:var(--gold-lt);font-weight:600;white-space:nowrap">Ort Oran: ${parseFloat(p.piyasa).toFixed(2)}</span>`:''}<span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}`:'<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 12px;text-align:center"><div style="font-size:20px;margin-bottom:8px">🔍</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">Yeterli güvenilirlikte tahmin üretilemedi</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Bu maç için yüksek olasılıklı öneri bulunamadı.<br><span style="color:var(--blue-lt)">aiALYSIS Live</span> sadece yüksek olasılıklı öneriler sunar.</div></div>'}
-    ${a.genel_yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">GENEL DEĞERLENDİRME</div><div style="font-size:11px;color:var(--muted);line-height:1.6">${a.genel_yorum}</div>${t.filter(p=>p.aciklama&&p.aciklama!='0').length?`<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px"><div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:1px;margin-bottom:8px">TAHMİN GEREKÇELERİ</div>${t.filter(p=>p.aciklama&&p.aciklama!='0').map(p=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:${p.ust_alt==='ÜST'?'rgba(67,160,71,.2)':'rgba(229,57,53,.2)'};border:1px solid ${p.ust_alt==='ÜST'?'rgba(67,160,71,.5)':'rgba(229,57,53,.5)'};color:${p.ust_alt==='ÜST'?'var(--green)':'var(--red)'};font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px">${p.cizgi} ${p.ust_alt}</span><span style="font-size:11px;color:rgba(255,255,255,.5);flex:1">${p.kategori}</span><span style="font-size:11px;font-weight:700;color:${p.guc>=70?'var(--green)':p.guc>=50?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div>${p.piyasa?`<div style="font-size:10px;color:var(--gold-lt);margin-bottom:4px">Ort Oran: ${parseFloat(p.piyasa).toFixed(2)}</div>`:''}<div style="font-size:11px;color:var(--muted);line-height:1.5">${p.aciklama}</div></div>`).join('')}</div>`:''}
+    ${tah.length?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:10px 0 6px">${t('tahminler')}</div>${tah.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">${t('suAn')}: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin||''}</span>${p.piyasa?`<span style="font-size:10px;color:var(--gold-lt);font-weight:600;white-space:nowrap">Ort Oran: ${parseFloat(p.piyasa).toFixed(2)}</span>`:''}<span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}`:'<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 12px;text-align:center"><div style="font-size:20px;margin-bottom:8px">🔍</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">Yeterli güvenilirlikte tahmin üretilemedi</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Bu maç için yüksek olasılıklı öneri bulunamadı.<br><span style="color:var(--blue-lt)">aiALYSIS Live</span> sadece yüksek olasılıklı öneriler sunar.</div></div>'}
+    ${a.genel_yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">${t('genelDeg')}</div><div style="font-size:11px;color:var(--muted);line-height:1.6">${a.genel_yorum}</div>${tah.filter(p=>p.aciklama&&p.aciklama!='0').length?`<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px"><div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:1px;margin-bottom:8px">TAHMİN GEREKÇELERİ</div>${tah.filter(p=>p.aciklama&&p.aciklama!='0').map(p=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:${p.ust_alt==='ÜST'?'rgba(67,160,71,.2)':'rgba(229,57,53,.2)'};border:1px solid ${p.ust_alt==='ÜST'?'rgba(67,160,71,.5)':'rgba(229,57,53,.5)'};color:${p.ust_alt==='ÜST'?'var(--green)':'var(--red)'};font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px">${p.cizgi} ${p.ust_alt}</span><span style="font-size:11px;color:rgba(255,255,255,.5);flex:1">${p.kategori}</span><span style="font-size:11px;font-weight:700;color:${p.guc>=70?'var(--green)':p.guc>=50?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div>${p.piyasa?`<div style="font-size:10px;color:var(--gold-lt);margin-bottom:4px">Ort Oran: ${parseFloat(p.piyasa).toFixed(2)}</div>`:''}<div style="font-size:11px;color:var(--muted);line-height:1.5">${p.aciklama}</div></div>`).join('')}</div>`:''}
     </div>`:''}
-    ${t.length?`<div style="text-align:center;margin-top:12px"><button class="detail-share-btn" onclick="shareDetailCurrentTahmin()">🔗 Tahminleri Paylaş</button></div>`:''}
+    ${tah.length?`<div style="text-align:center;margin-top:12px"><button class="detail-share-btn" onclick="shareDetailCurrentTahmin()">🔗 ${t('paylas')}</button></div>`:''}
     <div id="userTahminContainer">${renderUserTahmin(m.fixture.id,m)}</div>
     ${live?`<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:10px;font-size:10px;color:var(--green);margin-top:8px"><div style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite"></div>Her 30 saniyede otomatik güncelleniyor</div>`:''}
     <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:6px">* AI tahminleri yalnızca bilgi amaçlıdır.</div>
@@ -2315,7 +2409,7 @@ function showMainTab(name){
 
 async function loadAialysis(){
   const c=document.getElementById('aialysisContainer');
-  c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Tahminler yükleniyor...</div>';
+  c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>'+t('yukleniyor')+'</div>';
   try{
     // 1) Supabase'den BEKLIYOR tahminleri çek (cron'un ürettiği — sabit kalır)
     const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman,lig&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
@@ -2325,7 +2419,7 @@ async function loadAialysis(){
 
     const macIds=Object.keys(hazir);
     if(!macIds.length){
-      c.innerHTML='<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.5">🔍</div><div style="color:var(--text);font-weight:700;margin-bottom:8px">Şu an aktif tahmin yok</div><div style="color:var(--muted);font-size:12px">Canlı maçlar başladığında tahminler burada görünecek.</div></div>';
+      c.innerHTML='<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.5">🔍</div><div style="color:var(--text);font-weight:700;margin-bottom:8px">'+t('aktifTahminYok')+'</div><div style="color:var(--muted);font-size:12px">'+t('canliBasla')+'</div></div>';
       return;
     }
 
@@ -2365,11 +2459,11 @@ async function loadAialysis(){
       const hasFaul=kats.some(k=>k.includes('faul')||k.includes('kart'));
       const altVar=tahminler.some(t=>t.ust_alt==='ALT'&&(t.kategori||'').toLowerCase().includes('gol'));
       let etiket,etiketRenkO;
-      if(altVar){etiket='Buz Gibi Maç';etiketRenkO='#4FC3F7';}
-      else if(hasGol){etiket='Gol Geldi Geliyor';etiketRenkO='#FF7F50';}
-      else if(hasKorner){etiket='Köşe Vuruşu Düellosu';etiketRenkO='#FFD32A';}
-      else if(hasFaul){etiket='Ortalık Karışık';etiketRenkO='#FF4757';}
-      else{etiket='Takipte Kal';etiketRenkO='#7C6FFF';}
+      if(altVar){etiket=t('buzGibiMac');etiketRenkO='#4FC3F7';}
+      else if(hasGol){etiket=t('golGeldi');etiketRenkO='#FF7F50';}
+      else if(hasKorner){etiket=t('koseVurusu');etiketRenkO='#FFD32A';}
+      else if(hasFaul){etiket=t('ortalikKarisik');etiketRenkO='#FF4757';}
+      else{etiket=t('takipteKal');etiketRenkO='#7C6FFF';}
       const etiketRenk=etiketRenkO||'#7C6FFF';
       const dk=m?.fixture?.status?.elapsed,aiaExt=m?.fixture?.status?.extra;
       const evGol=m?.goals?.home??'-';
@@ -2740,7 +2834,15 @@ const I18N={
     ozet:'Özet',istatistik:'İstatistik',kadro:'Kadro',karsilastirma:'Karşılaştırma',oranlar:'Oranlar',forum:'Forum',
     seoBaslik:'aiALYSIS Live — Yapay Zeka Destekli Maç Tahmini',
     seoAciklama:'Canlı maç analizi, maç tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini.',
-    haklar:'© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.'
+    haklar:'© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.',
+    golBek:'GOL BEK.', evSkoru:'EV SKORU', depSkoru:'DEP SKORU', tempo:'TEMPO', guven:'GÜVEN',
+    tahminler:'TAHMİNLER', genelDeg:'GENEL DEĞERLENDİRME', sonucOlas:'SONUÇ OLASILIĞI',
+    beraberlik:'Beraberlik', tahminYap:'Tahminini Yap', evKazanir:'Ev Kazanır', depKazanir:'Dep Kazanır',
+    topluluk:'Topluluk', paylas:'Paylaş', aktifTahminYok:'Şu an aktif tahmin yok',
+    canliBasla:'Canlı maçlar başladığında tahminler burada görünecek.', suAn:'Şu an',
+    buzGibiMac:'Buz Gibi Maç', golGeldi:'Gol Geldi Geliyor', takipteKal:'Takipte Kal',
+    koseVurusu:'Köşe Vuruşu Düellosu', ortalikKarisik:'Ortalık Karışık', macYaniyor:'Maç Yanıyor',
+    macSec:'MAÇ SEÇ', macSecDesc:'Bir maça tıkla, AI analizi ve istatistikleri burada görün.'
   },
   en:{
     maclar:'Matches',aialysis:'aiALYSIS',favoriler:'Favorites',performans:'Performance',
@@ -2760,7 +2862,15 @@ const I18N={
     ozet:'Summary',istatistik:'Statistics',kadro:'Lineup',karsilastirma:'Comparison',oranlar:'Odds',forum:'Forum',
     seoBaslik:'aiALYSIS Live — AI-Powered Match Predictions',
     seoAciklama:'Live match analysis, match predictions, goal predictions, corner predictions, card predictions.',
-    haklar:'© 2026 aiALYSIS Live. All rights reserved. This site is for informational purposes only.'
+    haklar:'© 2026 aiALYSIS Live. All rights reserved. This site is for informational purposes only.',
+    golBek:'GOAL EXP.', evSkoru:'HOME', depSkoru:'AWAY', tempo:'TEMPO', guven:'CONF.',
+    tahminler:'PREDICTIONS', genelDeg:'OVERVIEW', sonucOlas:'RESULT PROBABILITY',
+    beraberlik:'Draw', tahminYap:'Make Your Prediction', evKazanir:'Home Win', depKazanir:'Away Win',
+    topluluk:'Community', paylas:'Share', aktifTahminYok:'No active predictions',
+    canliBasla:'Predictions will appear when live matches start.', suAn:'Current',
+    buzGibiMac:'Ice Cold', golGeldi:'Goals Coming', takipteKal:'Watch Closely',
+    koseVurusu:'Corner Battle', ortalikKarisik:'Getting Heated', macYaniyor:'On Fire',
+    macSec:'SELECT MATCH', macSecDesc:'Click a match to see AI analysis and statistics here.'
   },
   ar:{
     maclar:'المباريات',aialysis:'aiALYSIS',favoriler:'المفضلة',performans:'الأداء',
@@ -2780,7 +2890,15 @@ const I18N={
     ozet:'ملخص',istatistik:'إحصائيات',kadro:'التشكيلة',karsilastirma:'مقارنة',oranlar:'الاحتمالات',forum:'منتدى',
     seoBaslik:'aiALYSIS Live — توقعات المباريات بالذكاء الاصطناعي',
     seoAciklama:'تحليل مباشر للمباريات، توقعات الأهداف، توقعات الركنيات، توقعات البطاقات.',
-    haklar:'© 2026 aiALYSIS Live. جميع الحقوق محفوظة. هذا الموقع لأغراض إعلامية فقط.'
+    haklar:'© 2026 aiALYSIS Live. جميع الحقوق محفوظة. هذا الموقع لأغراض إعلامية فقط.',
+    golBek:'توقع الأهداف', evSkoru:'المضيف', depSkoru:'الضيف', tempo:'الإيقاع', guven:'الثقة',
+    tahminler:'التوقعات', genelDeg:'التقييم العام', sonucOlas:'احتمالية النتيجة',
+    beraberlik:'تعادل', tahminYap:'قدم توقعك', evKazanir:'فوز المضيف', depKazanir:'فوز الضيف',
+    topluluk:'المجتمع', paylas:'مشاركة', aktifTahminYok:'لا توجد توقعات نشطة',
+    canliBasla:'ستظهر التوقعات عند بدء المباريات', suAn:'حالياً',
+    buzGibiMac:'مباراة باردة', golGeldi:'أهداف قادمة', takipteKal:'تابع',
+    koseVurusu:'معركة الركنيات', ortalikKarisik:'الأجواء ساخنة', macYaniyor:'مباراة ملتهبة',
+    macSec:'اختر مباراة', macSecDesc:'انقر على مباراة لرؤية تحليل الذكاء الاصطناعي.'
   },
   zh:{
     maclar:'比赛',aialysis:'aiALYSIS',favoriler:'收藏',performans:'表现',
@@ -2800,7 +2918,15 @@ const I18N={
     ozet:'摘要',istatistik:'统计',kadro:'阵容',karsilastirma:'对比',oranlar:'赔率',forum:'论坛',
     seoBaslik:'aiALYSIS Live — AI驱动的比赛预测',
     seoAciklama:'实时比赛分析、比赛预测、进球预测、角球预测、卡牌预测。',
-    haklar:'© 2026 aiALYSIS Live. 保留所有权利。本网站仅供参考。'
+    haklar:'© 2026 aiALYSIS Live. 保留所有权利。本网站仅供参考。',
+    golBek:'进球预期', evSkoru:'主队', depSkoru:'客队', tempo:'节奏', guven:'信心',
+    tahminler:'预测', genelDeg:'综合评估', sonucOlas:'结果概率',
+    beraberlik:'平局', tahminYap:'做出你的预测', evKazanir:'主胜', depKazanir:'客胜',
+    topluluk:'社区', paylas:'分享', aktifTahminYok:'暂无预测',
+    canliBasla:'直播比赛开始后将显示预测', suAn:'当前',
+    buzGibiMac:'冰冷', golGeldi:'进球来了', takipteKal:'持续关注',
+    koseVurusu:'角球大战', ortalikKarisik:'局势紧张', macYaniyor:'火热',
+    macSec:'选择比赛', macSecDesc:'点击比赛查看AI分析和统计数据。'
   },
   es:{
     maclar:'Partidos',aialysis:'aiALYSIS',favoriler:'Favoritos',performans:'Rendimiento',
@@ -2820,7 +2946,15 @@ const I18N={
     ozet:'Resumen',istatistik:'Estadísticas',kadro:'Alineación',karsilastirma:'Comparación',oranlar:'Cuotas',forum:'Foro',
     seoBaslik:'aiALYSIS Live — Predicciones de Partidos con IA',
     seoAciklama:'Análisis en vivo, predicciones de goles, corners y tarjetas.',
-    haklar:'© 2026 aiALYSIS Live. Todos los derechos reservados. Este sitio es solo informativo.'
+    haklar:'© 2026 aiALYSIS Live. Todos los derechos reservados. Este sitio es solo informativo.',
+    golBek:'GOL ESP.', evSkoru:'LOCAL', depSkoru:'VISIT.', tempo:'RITMO', guven:'CONF.',
+    tahminler:'PREDICCIONES', genelDeg:'EVALUACIÓN', sonucOlas:'PROBABILIDAD',
+    beraberlik:'Empate', tahminYap:'Haz tu Predicción', evKazanir:'Local Gana', depKazanir:'Visitante Gana',
+    topluluk:'Comunidad', paylas:'Compartir', aktifTahminYok:'Sin predicciones activas',
+    canliBasla:'Las predicciones aparecerán cuando comiencen los partidos.', suAn:'Actual',
+    buzGibiMac:'Partido Frío', golGeldi:'Goles en Camino', takipteKal:'Mantente Atento',
+    koseVurusu:'Batalla de Córners', ortalikKarisik:'Se Calienta', macYaniyor:'En Llamas',
+    macSec:'SELECCIONAR PARTIDO', macSecDesc:'Haz clic en un partido para ver el análisis de IA.'
   },
   fr:{
     maclar:'Matchs',aialysis:'aiALYSIS',favoriler:'Favoris',performans:'Performance',
@@ -2840,7 +2974,15 @@ const I18N={
     ozet:'Résumé',istatistik:'Statistiques',kadro:'Composition',karsilastirma:'Comparaison',oranlar:'Cotes',forum:'Forum',
     seoBaslik:'aiALYSIS Live — Prédictions de Matchs par IA',
     seoAciklama:'Analyse en direct, prédictions de buts, corners et cartons.',
-    haklar:'© 2026 aiALYSIS Live. Tous droits réservés. Ce site est uniquement à titre informatif.'
+    haklar:'© 2026 aiALYSIS Live. Tous droits réservés. Ce site est uniquement à titre informatif.',
+    golBek:'BUTS ATT.', evSkoru:'DOM.', depSkoru:'EXT.', tempo:'TEMPO', guven:'CONF.',
+    tahminler:'PRÉDICTIONS', genelDeg:'ÉVALUATION', sonucOlas:'PROBABILITÉ',
+    beraberlik:'Nul', tahminYap:'Faites votre Pronostic', evKazanir:'Domicile Gagne', depKazanir:'Extérieur Gagne',
+    topluluk:'Communauté', paylas:'Partager', aktifTahminYok:'Aucune prédiction active',
+    canliBasla:'Les prédictions apparaîtront au début des matchs.', suAn:'Actuel',
+    buzGibiMac:'Match Glacial', golGeldi:'Buts en Vue', takipteKal:'À Surveiller',
+    koseVurusu:'Duel de Corners', ortalikKarisik:'Ça Chauffe', macYaniyor:'Match en Feu',
+    macSec:'SÉLECTIONNER UN MATCH', macSecDesc:'Cliquez sur un match pour voir l\'analyse IA.'
   },
   pt:{
     maclar:'Jogos',aialysis:'aiALYSIS',favoriler:'Favoritos',performans:'Desempenho',
@@ -2860,11 +3002,21 @@ const I18N={
     ozet:'Resumo',istatistik:'Estatísticas',kadro:'Escalação',karsilastirma:'Comparação',oranlar:'Odds',forum:'Fórum',
     seoBaslik:'aiALYSIS Live — Previsões de Jogos com IA',
     seoAciklama:'Análise ao vivo, previsões de gols, escanteios e cartões.',
-    haklar:'© 2026 aiALYSIS Live. Todos os direitos reservados. Este site é apenas informativo.'
+    haklar:'© 2026 aiALYSIS Live. Todos os direitos reservados. Este site é apenas informativo.',
+    golBek:'GOL ESP.', evSkoru:'CASA', depSkoru:'FORA', tempo:'RITMO', guven:'CONF.',
+    tahminler:'PREVISÕES', genelDeg:'AVALIAÇÃO', sonucOlas:'PROBABILIDADE',
+    beraberlik:'Empate', tahminYap:'Faça sua Previsão', evKazanir:'Casa Vence', depKazanir:'Fora Vence',
+    topluluk:'Comunidade', paylas:'Compartilhar', aktifTahminYok:'Sem previsões ativas',
+    canliBasla:'Previsões aparecerão quando os jogos começarem.', suAn:'Atual',
+    buzGibiMac:'Jogo Gelado', golGeldi:'Gols Vindo', takipteKal:'Fique Atento',
+    koseVurusu:'Batalha de Escanteios', ortalikKarisik:'Esquentando', macYaniyor:'Jogo Quente',
+    macSec:'SELECIONAR JOGO', macSecDesc:'Clique em um jogo para ver a análise de IA.'
   }
 };
 
-let currentLang=localStorage.getItem('aialysis_lang')||'tr';
+let currentLang=localStorage.getItem('aialysis_lang')||(navigator.language?navigator.language.substring(0,2):null)||'tr';
+if(!I18N[currentLang])currentLang='en';
+if(!I18N[currentLang])currentLang='tr';
 
 function t(key){return (I18N[currentLang]&&I18N[currentLang][key])||I18N.tr[key]||key;}
 
@@ -2950,6 +3102,31 @@ function applyTranslations(){
   if(footerP[0])footerP[0].textContent=t('seoAciklama');
   if(footerP[2])footerP[2].textContent=t('haklar');
 
+  // Detail tabs
+  const detailTabs=document.querySelectorAll('#detailTabsEl .detail-tab');
+  if(detailTabs.length>=6){
+    detailTabs[0].innerHTML='✦ '+t('aialysis');
+    detailTabs[1].textContent=t('ozet');
+    detailTabs[2].textContent=t('istatistik');
+    detailTabs[3].textContent=t('kadro');
+    detailTabs[4].textContent=t('karsilastirma');
+    detailTabs[5].textContent=t('forum');
+  }
+
+  // Right panel default
+  const panelTitle=document.querySelector('#defaultPanel .panel-title');
+  if(panelTitle)panelTitle.textContent=t('macSec');
+  const panelDescEl=document.querySelector('#defaultPanel div[style]');
+  if(panelDescEl)panelDescEl.textContent=t('macSecDesc');
+
+  // Download button in navbar
+  const indirBtn=document.querySelector('.navbar a[href*="app-release.apk"]');
+  if(indirBtn)indirBtn.innerHTML='📱 '+t('indir');
+
+  // Mobile CANLI button
+  const mobilCanli=document.getElementById('mobilCanliBtn');
+  if(mobilCanli)mobilCanli.textContent=t('canli');
+
   // Select element sync
   const sel=document.getElementById('langSelect');
   if(sel)sel.value=currentLang;
@@ -2991,11 +3168,17 @@ function applyTranslations(){
   </div>
 </div>
 
+<!-- Bottom Ad Slot -->
+<div class="ad-slot" style="max-width:728px;margin:20px auto;">
+  <span>Reklam Alani</span>
+</div>
+
 <!-- SEO Footer -->
 <footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:11px;color:var(--muted);line-height:1.8">
   <h2 style="font-size:13px;color:var(--text);margin-bottom:8px;font-weight:700">aiALYSIS Live — Yapay Zeka Destekli Mac Tahmini</h2>
   <p>Canlı maç analizi, maç tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Şampiyonlar Ligi canlı skor ve istatistikler.</p>
   <p style="margin-top:8px">Futbol istatistikleri, canlı maç sonuçları, maç öncesi analiz, bahis analizi, banko maçlar. AI destekli akıllı tahmin platformu.</p>
+  <p style="margin-top:8px"><a href="/blog.html" style="color:#D4A24C;font-size:12px;font-weight:600;text-decoration:none;">Blog</a> · <a href="/privacy.html" style="color:#7A7A95;text-decoration:none;">Gizlilik</a> · <a href="/terms.html" style="color:#7A7A95;text-decoration:none;">Kullanım Şartları</a></p>
   <p style="margin-top:12px;color:var(--muted);font-size:10px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
 </footer>
 </body>
