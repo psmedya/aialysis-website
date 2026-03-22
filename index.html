@@ -453,13 +453,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     </button>
     <div class="nav-logo" onclick="showMainTab('maclar');loadMaclar();" style="cursor:pointer"><span class="ai" style="font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--gold-lt),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 20px rgba(255,213,79,.3);">ai</span><span class="alysis">ALYSIS</span></div>
     <div style="flex:1"></div>
-    <div class="nav-live" id="liveBtnEl" onclick="toggleCanli()" style="margin-left:auto">
-      <div class="dot"></div>
-      <span>CANLI</span>
-    </div>
     <div class="nav-search">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="text" placeholder="Takım veya lig ara..." oninput="aramaYap(this.value)">
+    </div>
+    <div class="nav-live" id="liveBtnEl" onclick="toggleCanli()">
+      <div class="dot"></div>
+      <span>CANLI</span>
     </div>
     <div class="nav-links">
       <button class="nav-btn active" onclick="showMainTab('maclar')" id="nav-maclar">
