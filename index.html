@@ -1707,7 +1707,7 @@ function renderDetailAnaliz(a,m){
       <div class="ai-grid">
         <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${skor.ev??'-'}</div><div class="ai-lbl">EV SKORU</div></div>
         <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${skor.dep??'-'}</div><div class="ai-lbl">DEP SKORU</div></div>
-        <div class="ai-stat"><div class="ai-val" style="color:var(--yellow)">${a.gol_beklentisi??0}</div><div class="ai-lbl">GOL BEK.</div></div>
+        <div class="ai-stat"><div class="ai-val" style="color:var(--yellow)">${a.gol_beklentisi!=null?Math.round(Math.min(parseFloat(a.gol_beklentisi)||0,6)/6*100)+'%':'-'}</div><div class="ai-lbl">GOL BEK.</div></div>
         <div class="ai-stat"><div class="ai-val" style="color:var(--green);font-size:11px">${a.mac_temposu||'-'}</div><div class="ai-lbl">TEMPO</div></div>
       </div>
       ${(skor.ev!=null&&skor.dep!=null)?`<div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)"><span style="font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px">TAHMİNİ SKOR </span><span style="font-size:20px;font-weight:900;color:white;letter-spacing:4px">${skor.ev} - ${skor.dep}</span></div>`:''}
@@ -2031,8 +2031,19 @@ async function loadAialysis(){
       const lig=tahminler[0]?.lig||'';
       const ortGuc=tahminler.reduce((s,t)=>s+(t.guc||0),0)/tahminler.length;
       const gb=(ortGuc-50)/10;
-      const etiket=gb>=3.5?'Maç Yanıyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Maç';
-      const etiketRenk=gb>=3.5?'#FF4757':gb>=2.5?'#FF7F50':gb>=1.5?'#FFD32A':'#4FC3F7';
+      // Etiket: tahmin kategorilerine göre belirle
+      const kats=tahminler.map(t=>(t.kategori||'').toLowerCase());
+      const hasGol=kats.some(k=>k.includes('gol'));
+      const hasKorner=kats.some(k=>k.includes('korner'));
+      const hasFaul=kats.some(k=>k.includes('faul')||k.includes('kart'));
+      const altVar=tahminler.some(t=>t.ust_alt==='ALT'&&(t.kategori||'').toLowerCase().includes('gol'));
+      let etiket,etiketRenkO;
+      if(altVar){etiket='Buz Gibi Maç';etiketRenkO='#4FC3F7';}
+      else if(hasGol){etiket='Gol Geldi Geliyor';etiketRenkO='#FF7F50';}
+      else if(hasKorner){etiket='Köşe Vuruşu Düellosu';etiketRenkO='#FFD32A';}
+      else if(hasFaul){etiket='Ortalık Karışık';etiketRenkO='#FF4757';}
+      else{etiket='Takipte Kal';etiketRenkO='#7C6FFF';}
+      const etiketRenk=etiketRenkO||'#7C6FFF';
       const dk=m?.fixture?.status?.elapsed;
       const evGol=m?.goals?.home??'-';
       const depGol=m?.goals?.away??'-';
