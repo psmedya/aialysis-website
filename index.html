@@ -1674,11 +1674,17 @@ async function loadAialysis(){
       return;
     }
 
-    // 2) Canlı maçları çek — sadece skor güncellemesi için
+    // 2) Bugünkü tüm maçları çek (logo + skor için)
     let canliMap={};
     try{
-      const d=await apiFetch('/fixtures?live=all');
-      (d.response||[]).forEach(m=>{canliMap[m.fixture.id]=m;});
+      const istFmt=(d)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Istanbul'}).format(d);
+      const bugunStr=istFmt(new Date());
+      const [live,bugun]=await Promise.all([
+        apiFetch('/fixtures?live=all'),
+        apiFetch(`/fixtures?date=${bugunStr}&timezone=Europe/Istanbul`)
+      ]);
+      (live.response||[]).forEach(m=>{canliMap[m.fixture.id]=m;});
+      (bugun.response||[]).forEach(m=>{if(!canliMap[m.fixture.id])canliMap[m.fixture.id]=m;});
     }catch(_){}
 
     // 3) Her tahmin grubunu kart olarak göster — sabit sıra, kaybolmaz
