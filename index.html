@@ -333,7 +333,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .layout.panel-acik .right-panel{top:50px;}
   .aialysis-grid{grid-template-columns:1fr !important;padding:12px !important;}
   .ai-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .tahmin-row{grid-template-columns:1fr !important;gap:4px !important;}
+  .tahmin-row{grid-template-columns:1fr 1fr !important;gap:4px 8px !important;padding:10px 0 !important;font-size:11px !important;}
+  .tahmin-header-grid{display:none !important;}
+  .genel-istat-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px !important;}
+  .genel-istat-kart{padding:12px !important;}
+  .genel-basari{font-size:36px !important;}
 }
 
 /* Mobil bottom nav */
@@ -526,10 +530,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
     <!-- AIalysis -->
     <div class="page" id="page-aialysis">
-      <div class="matches-header">
+      <div class="matches-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div>
           <div class="matches-title">✦ aiALYSIS</div>
-          <div class="matches-count">AI analiz edilmiş canlı maçlar</div>
+          <div class="matches-count">AI analiz edilmis canli maclar</div>
+        </div>
+        <div id="aiaSortBtns" style="display:flex;gap:4px;">
+          <button class="filter-btn active" onclick="aiaSort='lig';loadAialysis();this.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Lig</button>
+          <button class="filter-btn" onclick="aiaSort='ihtimal';loadAialysis();this.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Ihtimal</button>
         </div>
       </div>
       <div class="aialysis-grid" id="aialysisContainer">
@@ -542,24 +550,24 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="matches-header">
         <div class="matches-title">📈 Tahmin Performansı</div>
       </div>
-      <div style="padding:0 24px">
+      <div style="padding:0 16px">
         <!-- İstatistik kartları -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center">
-            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">TOPLAM</div>
-            <div id="stat-toplam" style="font-size:40px;font-weight:900;color:var(--text)">--</div>
+        <div class="genel-istat-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">TOPLAM</div>
+            <div id="stat-toplam" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--text)">--</div>
           </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center">
-            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">DOĞRU</div>
-            <div id="stat-dogru" style="font-size:40px;font-weight:900;color:var(--green)">--</div>
+          <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOGRU</div>
+            <div id="stat-dogru" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--green)">--</div>
           </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center">
-            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">YANLIŞ</div>
-            <div id="stat-yanlis" style="font-size:40px;font-weight:900;color:var(--red)">--</div>
+          <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">YANLIS</div>
+            <div id="stat-yanlis" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--red)">--</div>
           </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center">
-            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">DOĞRULUK</div>
-            <div id="stat-pct" style="font-size:40px;font-weight:900;color:var(--gold-lt)">--%</div>
+          <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOGRULUK</div>
+            <div id="stat-pct" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--gold-lt)">--%</div>
           </div>
         </div>
 
@@ -616,7 +624,7 @@ const AB='https://v3.football.api-sports.io';
 const SU='https://fohmlwoewjupceznwmdr.supabase.co';
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4';
 
-let tarih=new Date(), canliMod=false, maclar=[], currentMac=null, detailTimer=null;
+let tarih=new Date(), canliMod=false, maclar=[], currentMac=null, detailTimer=null, aiaSort='lig';
 
 function toggleSidebar(){
   const layout=document.querySelector('.layout');
@@ -1259,17 +1267,50 @@ async function loadAialysis(){
   const c=document.getElementById('aialysisContainer');
   c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Canli maclar yukleniyor...</div>';
   try{
+    // Önce Supabase'den hazır tahminleri çek (cron'un ürettiği)
+    let hazirTahminler={};
+    try{
+      const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+      const td=await tr.json();
+      if(Array.isArray(td))td.forEach(t=>{if(t.mac_id&&t.kategori)(hazirTahminler[t.mac_id]||(hazirTahminler[t.mac_id]=[])).push(t);});
+    }catch(_){}
+
     const d=await apiFetch('/fixtures?live=all');
-    const canlilar=(d.response||[]).sort((a,b)=>ligOncelik(`${b.league.country} | ${b.league.name}`)-ligOncelik(`${a.league.country} | ${a.league.name}`)).slice(0,12);
+    let canlilar=(d.response||[]).sort((a,b)=>ligOncelik(`${b.league.country} | ${b.league.name}`)-ligOncelik(`${a.league.country} | ${a.league.name}`)).slice(0,12);
     if(!canlilar.length){c.innerHTML='<div class="empty" style="grid-column:1/-1">Su an canli mac yok.</div>';return;}
-    // Önce kartları skeleton olarak göster
-    c.innerHTML=canlilar.map(m=>`<div class="aia-card" id="aia-${m.fixture.id}">
-      <div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket">Analiz ediliyor...</span></div>
-      <div class="aia-maclar">
-        <div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
+
+    // Hazır tahminleri olan maçları önce göster
+    c.innerHTML='';
+    const gosterilenIds=new Set();
+    for(const m of canlilar){
+      const tahminler=hazirTahminler[m.fixture.id];
+      if(tahminler&&tahminler.length>0){
+        const ortGuc=tahminler.reduce((s,t)=>s+(t.guc||0),0)/tahminler.length;
+        const gb=(ortGuc-50)/10;
+        const etiket=gb>=3.5?'Maç Yanıyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Maç';
+        const etiketRenk=gb>=3.5?'#FF4757':gb>=2.5?'#FF7F50':gb>=1.5?'#FFD32A':'#4FC3F7';
+        const dk=m.fixture.status.elapsed;
+        const card=document.createElement('div');card.className='aia-card';card.id=`aia-${m.fixture.id}`;card.style.cursor='pointer';
+        card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);showMainTab('maclar');};
+        card.innerHTML=`<div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
+          <div class="aia-maclar"><div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
+          <div class="aia-skor">${dk?`<div class="aia-dk">${dk}'</div>`:''}<div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
+          <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div></div>
+          <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
+        c.appendChild(card);
+        gosterilenIds.add(m.fixture.id);
+      }
+    }
+    // Gösterilenlerin dışındaki maçları skeleton olarak ekle
+    const kalanlar=canlilar.filter(m=>!gosterilenIds.has(m.fixture.id));
+    kalanlar.forEach(m=>{
+      const el=document.createElement('div');el.className='aia-card';el.id=`aia-${m.fixture.id}`;
+      el.innerHTML=`<div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket">Analiz ediliyor...</span></div>
+        <div class="aia-maclar"><div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
         <div class="aia-skor"><div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
-        <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div>
-      </div></div>`).join('');
+        <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div></div>`;
+      c.appendChild(el);
+    });
     // Paralel analiz yap (max 4 aynı anda)
     const batch=canlilar.slice(0,8);
     const promises=batch.map(async m=>{
@@ -1351,8 +1392,8 @@ async function loadTahminler(filter='hepsi') {
 
     c.innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
-        <div style="display:grid;grid-template-columns:140px 1fr 120px 80px 60px;padding:10px 16px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);gap:12px">
-          <span>MAÇ</span><span>TAHMİN → GERÇEK</span><span>KATEGORİ</span><span>GÜVEN</span><span>SONUÇ</span>
+        <div class="tahmin-header-grid" style="display:grid;grid-template-columns:140px 1fr 120px 80px 60px;padding:10px 16px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);gap:12px">
+          <span>MAC</span><span>TAHMIN</span><span>KATEGORI</span><span>GUVEN</span><span>SONUC</span>
         </div>
         <div style="padding:0 16px">
           ${data.map(t => {
