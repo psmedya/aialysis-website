@@ -1697,7 +1697,7 @@ async function loadAialysis(){
         const pf2=(v)=>parseFloat(v)||0;
         const eI={topSahip:parseInt(flat['ev_Ball Possession'])||0,toplamSut:pf2(flat['ev_Total Shots']),isabetliSut:pf2(flat['ev_Shots on Goal']),korner:pf2(flat['ev_Corner Kicks']),faul:pf2(flat['ev_Fouls']),sariKart:pf2(flat['ev_Yellow Cards']),kirmziKart:pf2(flat['ev_Red Cards'])};
         const dI={topSahip:parseInt(flat['dep_Ball Possession'])||0,toplamSut:pf2(flat['dep_Total Shots']),isabetliSut:pf2(flat['dep_Shots on Goal']),korner:pf2(flat['dep_Corner Kicks']),faul:pf2(flat['dep_Fouls']),sariKart:pf2(flat['dep_Yellow Cards']),kirmziKart:pf2(flat['dep_Red Cards'])};
-        if(eI.faul+dI.faul+eI.korner+dI.korner+eI.toplamSut+dI.toplamSut+eI.topSahip+dI.topSahip===0) continue;
+        if(eI.faul+dI.faul+eI.korner+dI.korner+eI.toplamSut+dI.toplamSut+eI.topSahip+dI.topSahip===0) return;
         const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
           body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score?.halftime?.home??0,depGolIY:m.score?.halftime?.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:eI,dep:dI},h2h:[]})});
         const an=await r.json();
