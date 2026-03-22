@@ -437,7 +437,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <p>Yapay zeka destekli futbol maç tahmini platformu. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Şampiyonlar Ligi maç tahminleri ve canlı analizler.</p>
     </noscript>
 
-    <button class="web-btn" onclick="document.getElementById('landingPage').style.display='none';loadMaclar();">
+    <button class="web-btn" onclick="document.getElementById('landingPage').style.display='none';localStorage.setItem('landing_goruldu','1');loadMaclar();">
       <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       Web Versiyonuna Gir
     </button>
@@ -1798,6 +1798,9 @@ document.addEventListener('visibilitychange',()=>{
     fetchedAt=Date.now();
   }
 });
+
+// Landing sayfa: daha önce görüldüyse gösterme
+if(localStorage.getItem('landing_goruldu'))document.getElementById('landingPage').style.display='none';
 
 // Mobil tarih nav göster
 if(window.innerWidth<=1200){document.getElementById('mobilTarihNav').style.display='block';}
