@@ -6,6 +6,7 @@
 <title>Maç Tahmini ve Canlı Maç Analizi — aiALYSIS Live | AI Futbol Tahmin</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="manifest" href="/manifest.json">
 <meta name="description" content="Yapay zeka destekli maç tahmini ve canlı maç analizi. Süper Lig, Premier League, La Liga, Bundesliga, Serie A maç tahminleri. İddaa tahminleri, canlı skor, maç istatistikleri, korner tahmini, gol tahmini, kart tahmini. Ücretsiz futbol analiz platformu.">
 <meta name="keywords" content="maç tahmini, iddaa tahminleri, canlı maç analizi, futbol tahmin, süper lig tahmin, canlı skor, maç istatistikleri, korner tahmini, gol tahmini, AI futbol analiz, yapay zeka tahmin, iddaa kuponları, banko maç, günün maçları, canlı maç sonuçları, premier league tahmin, şampiyonlar ligi tahmin, futbol istatistik, bahis analizi, maç skoru tahmini">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
@@ -318,8 +319,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .chat-kapat{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .2s;}
 .chat-kapat:hover{background:rgba(255,255,255,.1);color:var(--text);}
 .chat-mesajlar{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px;}
-.chat-msg{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;max-width:92%;}
+.chat-msg{background:var(--card);border:1px solid var(--border);border-radius:14px 14px 14px 4px;padding:8px 12px;max-width:80%;align-self:flex-start;}
+.chat-msg.own{background:rgba(21,101,192,.25);border-color:rgba(21,101,192,.4);border-radius:14px 14px 4px 14px;align-self:flex-end;}
 .chat-msg-user{font-size:11px;font-weight:700;color:var(--blue-lt);margin-bottom:2px;}
+.chat-msg.own .chat-msg-user{color:var(--gold-lt);}
 .chat-msg-text{font-size:13px;color:var(--text);line-height:1.4;word-break:break-word;}
 .chat-msg-time{font-size:10px;color:var(--muted);margin-top:3px;text-align:right;}
 .chat-input-wrap{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);background:var(--card);}
@@ -338,8 +341,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 /* FORUM (Mac Detay) */
 .forum-container{padding:12px;}
 .forum-mesajlar{display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto;margin-bottom:12px;}
-.forum-msg{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;}
+.forum-msg{background:var(--card);border:1px solid var(--border);border-radius:14px 14px 14px 4px;padding:8px 12px;max-width:80%;align-self:flex-start;}
+.forum-msg.own{background:rgba(21,101,192,.25);border-color:rgba(21,101,192,.4);border-radius:14px 14px 4px 14px;align-self:flex-end;}
 .forum-msg-user{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:2px;}
+.forum-msg.own .forum-msg-user{color:var(--blue-lt);}
 .forum-msg-text{font-size:13px;color:var(--text);line-height:1.4;word-break:break-word;}
 .forum-msg-time{font-size:10px;color:var(--muted);margin-top:3px;text-align:right;}
 .forum-input-wrap{display:flex;gap:8px;}
@@ -383,11 +388,23 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .layout.panel-acik .right-panel{top:50px;}
   .aialysis-grid{grid-template-columns:1fr !important;padding:12px !important;}
   .ai-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .tahmin-row{grid-template-columns:1fr 1fr !important;gap:4px 8px !important;padding:10px 0 !important;font-size:11px !important;}
+  .tahmin-row{grid-template-columns:1fr !important;gap:6px !important;padding:10px 0 !important;font-size:11px !important;}
+  .tahmin-row>div{overflow:hidden;text-overflow:ellipsis;}
   .tahmin-header-grid{display:none !important;}
   .genel-istat-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px !important;}
   .genel-istat-kart{padding:12px !important;}
-  .genel-basari{font-size:36px !important;}
+  .genel-basari{font-size:28px !important;}
+  /* Dashboard filters mobile */
+  #page-dashboard>div{padding:0 10px !important;}
+  #page-dashboard .filter-btn{padding:5px 10px !important;font-size:11px !important;}
+  /* Karsilastirma mobile */
+  .karsi-mac{flex-wrap:wrap !important;gap:4px !important;padding:6px 0 !important;}
+  .karsi-takim{max-width:70px !important;font-size:10px !important;}
+  .karsi-skor{font-size:11px !important;min-width:30px !important;}
+  /* Odds mobile */
+  .odds-val{padding:6px 2px !important;}
+  .odds-price{font-size:13px !important;}
+  .odds-lbl{font-size:8px !important;}
   .aia-tahminler{flex-wrap:wrap !important;}
   .aia-t{font-size:9px !important;padding:2px 6px !important;}
   .tahmin-card{padding:8px !important;}
@@ -708,6 +725,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
             <div id="stat-pct" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--gold-lt)">--%</div>
           </div>
         </div>
+
+        <!-- Zaman Filtresi -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <button onclick="tahminGun=0;loadTahminler(aktifFilter)" class="filter-btn active" id="tf-hepsi">Tüm Zamanlar</button>
+          <button onclick="tahminGun=7;loadTahminler(aktifFilter)" class="filter-btn" id="tf-7">Son 7 Gün</button>
+          <button onclick="tahminGun=30;loadTahminler(aktifFilter)" class="filter-btn" id="tf-30">Son 30 Gün</button>
+        </div>
+
+        <!-- Kategori Bazlı Başarı -->
+        <div id="kategoriStats" style="margin-bottom:20px"></div>
+
+        <!-- Başarı Trendi -->
+        <div id="trendContainer" style="margin-bottom:20px"></div>
 
         <!-- Filtreler -->
         <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
@@ -2354,18 +2384,22 @@ async function getForumUser(){
   }catch(e){return null;}
 }
 
-function renderForumMesajlar(msgs,containerId){
+async function renderForumMesajlar(msgs,containerId){
   const el=document.getElementById(containerId);
   if(!msgs||!msgs.length){
     el.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px 16px;font-size:13px;">Henuz mesaj yok. Ilk mesaji siz yazin!</div>';
     return;
   }
+  const curUser=await getForumUser();
+  const curId=curUser?curUser.id:null;
   el.innerHTML=msgs.reverse().map(m=>{
     const ad=m.kullanici_adi||m.user_name||'Anonim';
-    return `<div class="${containerId==='chatMesajlar'?'chat-msg':'forum-msg'}">
-      <div class="${containerId==='chatMesajlar'?'chat-msg-user':'forum-msg-user'}">${ad}</div>
-      <div class="${containerId==='chatMesajlar'?'chat-msg-text':'forum-msg-text'}">${escapeHtml(m.mesaj)}</div>
-      <div class="${containerId==='chatMesajlar'?'chat-msg-time':'forum-msg-time'}">${zamanOnce(m.created_at)}</div>
+    const isOwn=curId&&m.user_id===curId;
+    const prefix=containerId==='chatMesajlar'?'chat':'forum';
+    return `<div class="${prefix}-msg${isOwn?' own':''}">
+      <div class="${prefix}-msg-user">${ad}</div>
+      <div class="${prefix}-msg-text">${escapeHtml(m.mesaj)}</div>
+      <div class="${prefix}-msg-time">${zamanOnce(m.created_at)}</div>
     </div>`;
   }).join('');
   el.scrollTop=el.scrollHeight;
