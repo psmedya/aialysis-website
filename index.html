@@ -1220,6 +1220,23 @@ async function loadDetailAnaliz(m){
   const c=document.getElementById('dc-analiz');
   c.innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
 
+  // Canlı istatistikleri çek (mevcut korner/faul/kart/gol için)
+  let mevcutIstat={gol:(m.goals.home??0)+(m.goals.away??0),korner:0,faul:0,sari:0};
+  try{
+    const ir=await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
+    const ss=ir.response||[];
+    if(ss.length>=2){
+      const pf=v=>parseFloat(v)||0;
+      const ev=ss[0].statistics||[],dp=ss[1].statistics||[];
+      ev.forEach((s,i)=>{
+        const t=s.type?.toLowerCase()||'';
+        if(t.includes('corner'))mevcutIstat.korner=pf(s.value)+pf(dp[i]?.value);
+        if(t.includes('foul'))mevcutIstat.faul=pf(s.value)+pf(dp[i]?.value);
+        if(t.includes('yellow'))mevcutIstat.sari=pf(s.value)+pf(dp[i]?.value);
+      });
+    }
+  }catch(_){}
+
   // 1) Önce Supabase'deki mevcut tahminleri göster (anında)
   try{
     const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,guc&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
@@ -1237,9 +1254,23 @@ async function loadDetailAnaliz(m){
         genel_yorum:`${eg>dg?m.teams.home.name:dg>eg?m.teams.away.name:'Takımlar'} ${eg===dg?'berabere':'önde'}. Canlı analiz devam ediyor...`,
         skor_tahmini:{ev:eg,dep:dg,aciklama:'Canlı skor'},
         olasiliklar:{ev_kazanir:Math.round(evO),beraberlik:Math.round(berO),dep_kazanir:Math.round(depO)},
-        tahminler:tahminler.map(t=>({kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:0,tahmin:'',aciklama:'Canlı istatistiklerden üretildi'})),
-        riskler:[],mac_temposu:'-',
-        gol_beklentisi:2.5,
+        tahminler:(()=>{
+          // Her kategoriden sadece en güçlü tahmini al
+          const best={};
+          tahminler.forEach(t=>{const k=t.kategori;if(!best[k]||t.guc>best[k].guc)best[k]=t;});
+          return Object.values(best).map(t=>{
+            const k=t.kategori.toLowerCase();
+            let cur=0;
+            if(k.includes('gol'))cur=mevcutIstat.gol;
+            else if(k.includes('korner'))cur=mevcutIstat.korner;
+            else if(k.includes('faul'))cur=mevcutIstat.faul;
+            else if(k.includes('kart'))cur=mevcutIstat.sari;
+            const tuttu=t.ust_alt==='ÜST'?cur>t.cizgi:cur<t.cizgi;
+            return{kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:cur,tahmin:tuttu?'Şu an tutmuş durumda':'Henüz gerçekleşmedi',aciklama:`Mevcut: ${cur} | Çizgi: ${t.cizgi} ${t.ust_alt}`};
+          });
+        })(),
+        riskler:[],mac_temposu:dk>60?'Yüksek':dk>30?'Orta':'Düşük',
+        gol_beklentisi:eg+dg+(90-dk)/90*1.5,
         tahmin_guveni:Math.round(tahminler.reduce((s,t)=>s+(t.guc||0),0)/tahminler.length)
       };
       renderDetailAnaliz(fakeAnaliz,m);
