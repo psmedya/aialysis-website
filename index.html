@@ -1217,6 +1217,29 @@ async function loadDetailAnaliz(m){
     return;
   }
 
+  const c=document.getElementById('dc-analiz');
+  c.innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
+
+  // 1) Önce Supabase'deki mevcut tahminleri göster (anında)
+  try{
+    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,guc&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const tahminler=await tr.json();
+    if(Array.isArray(tahminler)&&tahminler.length>0){
+      // Mevcut tahminlerden sahte analiz objesi oluştur
+      const fakeAnaliz={
+        genel_yorum:'Canlı analiz devam ediyor...',
+        skor_tahmini:{ev:m.goals.home??0,dep:m.goals.away??0,aciklama:'Canlı'},
+        olasiliklar:{ev_kazanir:33,beraberlik:34,dep_kazanir:33},
+        tahminler:tahminler.map(t=>({kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:0,tahmin:'',aciklama:'Canlı istatistiklerden üretildi'})),
+        riskler:[],mac_temposu:'-',
+        gol_beklentisi:2.5,
+        tahmin_guveni:Math.round(tahminler.reduce((s,t)=>s+(t.guc||0),0)/tahminler.length)
+      };
+      renderDetailAnaliz(fakeAnaliz,m);
+    }
+  }catch(_){}
+
+  // 2) Arka planda taze analiz yap (varsa üzerine yazar)
   try{
     const ir=await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
     const flat={};
@@ -1224,13 +1247,12 @@ async function loadDetailAnaliz(m){
     const pf=(v)=>parseFloat(v)||0;
     const evIst={topSahip:parseInt(flat['ev_Ball Possession'])||0,toplamSut:pf(flat['ev_Total Shots']),isabetliSut:pf(flat['ev_Shots on Goal']),korner:pf(flat['ev_Corner Kicks']),faul:pf(flat['ev_Fouls']),sariKart:pf(flat['ev_Yellow Cards']),kirmziKart:pf(flat['ev_Red Cards'])};
     const depIst={topSahip:parseInt(flat['dep_Ball Possession'])||0,toplamSut:pf(flat['dep_Total Shots']),isabetliSut:pf(flat['dep_Shots on Goal']),korner:pf(flat['dep_Corner Kicks']),faul:pf(flat['dep_Fouls']),sariKart:pf(flat['dep_Yellow Cards']),kirmziKart:pf(flat['dep_Red Cards'])};
-    if(evIst.faul+depIst.faul+evIst.korner+depIst.korner+evIst.toplamSut+depIst.toplamSut+evIst.topSahip+depIst.topSahip===0){document.getElementById('dc-analiz').innerHTML='<div class="empty">Bu maç için canlı istatistik desteği yok.</div>';return;}
+    if(evIst.faul+depIst.faul+evIst.korner+depIst.korner+evIst.toplamSut+depIst.toplamSut+evIst.topSahip+depIst.topSahip===0) return;
     const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
       body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score?.halftime?.home??0,depGolIY:m.score?.halftime?.away??0,durum:st,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:evIst,dep:depIst},h2h:[]})});
     const d=await r.json();
-    if(d.basarili)renderDetailAnaliz(d.analiz,m);
-    else throw new Error(d.hata);
-  }catch(e){document.getElementById('dc-analiz').innerHTML=`<div class="error">Analiz hatası: ${e.message}</div>`;}
+    if(d.basarili&&(d.analiz?.tahmin_guveni||0)>0) renderDetailAnaliz(d.analiz,m);
+  }catch(_){}
 }
 
 async function loadBitmisMacTahminleri(m) {
