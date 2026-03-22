@@ -1088,10 +1088,13 @@ function authModal(){
 
       // Display name
       const displayName=meta.aialysis_username||meta.full_name||meta.name||(u.email?u.email.split('@')[0]:'Kullanıcı');
-      document.getElementById('profileDisplayName').textContent=displayName;
+      document.getElementById('profileDisplayName').innerHTML=displayName+(isPremium()?' <span class="premium-badge">&#11088; Premium</span>':'');
 
       // Email
       document.getElementById('profileEmail').textContent=u.email||'';
+
+      // Update premium section
+      updatePremiumUI();
 
       // Provider
       const provider=u.app_metadata?.provider||'email';
@@ -1184,6 +1187,25 @@ async function authLogout(){
   document.getElementById('authBtn').textContent='Giriş Yap';
   document.getElementById('authBtn').style.background='var(--blue-lt)';
 }
+
+// Premium system
+function isPremium(){return localStorage.getItem('is_premium')==='true';}
+function premiumInfoModal(){document.getElementById('premiumOverlay').style.display='flex';}
+function activatePremiumDemo(){
+  localStorage.setItem('is_premium','true');
+  document.getElementById('premiumOverlay').style.display='none';
+  updatePremiumUI();
+  authModal();
+}
+function updatePremiumUI(){
+  const prem=isPremium();
+  const freeView=document.getElementById('premiumFreeView');
+  const activeView=document.getElementById('premiumActiveView');
+  if(freeView)freeView.style.display=prem?'none':'block';
+  if(activeView)activeView.style.display=prem?'block':'none';
+  document.querySelectorAll('.ad-slot').forEach(el=>{el.style.display=prem?'none':'';});
+}
+updatePremiumUI();
 
 async function saveAialysisUsername(){
   const input=document.getElementById('profileUsernameInput');
@@ -1524,9 +1546,10 @@ function renderMaclar(liste){
     if(aFav!==bFav)return bFav-aFav;
     return ligOncelik(b[0])-ligOncelik(a[0]);
   });
-  c.innerHTML=sorted.map(([k,{l,ms}])=>{
+  const adSlotHtml=isPremium()?'':'<div class="ad-slot"><span>Reklam Alani</span></div>';
+  c.innerHTML=sorted.map(([k,{l,ms}],idx)=>{
     const isFavLig=favLigKeys.includes(k);
-    return`<div class="lig-grup${isFavLig?' fav-lig':''}" data-ligkey="${k}">
+    const ligHtml=`<div class="lig-grup${isFavLig?' fav-lig':''}" data-ligkey="${k}">
       <div class="lig-header" onclick="this.classList.toggle('kapali')">
         <button class="fav-star fav-star-lig${isFavLig?' aktif':''}" data-lig="${k}" onclick="toggleFavLig('${k.replace(/'/g,"\\'")}',event)">${isFavLig?'\u2605':'\u2606'}</button>
         <img class="lig-logo" src="${l.logo||''}" onerror="this.style.display='none'">
@@ -1536,6 +1559,9 @@ function renderMaclar(liste){
       </div>
       <div class="lig-maclar">${ms.map(m=>macSatir(m)).join('')}</div>
     </div>`;
+    // Insert ad slot every 5 leagues
+    if((idx+1)%5===0 && idx<sorted.length-1) return ligHtml+adSlotHtml;
+    return ligHtml;
   }).join('');
 }
 
@@ -2403,7 +2429,7 @@ function showMainTab(name){
   const nb=document.getElementById(`nav-${name}`);
   if(nb)nb.classList.add('active');
   if(name==='aialysis')loadAialysis();
-  if(name==='dashboard')loadTahminler(aktifFilter);
+  if(name==='dashboard'){loadTahminler(aktifFilter);loadYildizlar();}
   if(name==='favoriler')renderFavoriler();
 }
 
@@ -2441,6 +2467,8 @@ async function loadAialysis(){
 
     // 3) Her tahmin grubunu kart olarak göster — bitmiş maçları atla
     c.innerHTML='';
+    let aiaCardCount=0;
+    const prem=isPremium();
     for(const macId of macIds){
       const tahminler=hazir[macId];
       const m=canliMap[parseInt(macId)];
@@ -2482,7 +2510,21 @@ async function loadAialysis(){
       const mid=parseInt(macId);
       if(m){card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==mid),m];openMac(mid);};}
       else if(maclar.find(x=>x.fixture.id===mid)){card.onclick=()=>openMac(mid);}
+      aiaCardCount++;
+      // Premium blur: free users see only 3 predictions
+      if(!prem && aiaCardCount>3){
+        card.style.filter='blur(6px)';card.style.pointerEvents='none';card.style.userSelect='none';
+      }
       c.appendChild(card);
+    }
+    // Add premium CTA overlay if not premium and more than 3 cards
+    if(!prem && aiaCardCount>3){
+      const overlay=document.createElement('div');
+      overlay.style.cssText='grid-column:1/-1;text-align:center;padding:30px 20px;background:linear-gradient(to bottom,transparent,var(--bg));margin-top:-60px;position:relative;z-index:2;';
+      overlay.innerHTML=`<div style="font-size:15px;font-weight:800;color:var(--gold-lt);margin-bottom:8px;">&#11088; Premium ile tum tahminleri gor</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Ucretsiz planda gunde 3 tahmin goruntuleyebilirsiniz.</div>
+        <button onclick="premiumInfoModal()" style="padding:10px 24px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:10px;color:#1A1A2E;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;">Premium'a Gec</button>`;
+      c.appendChild(overlay);
     }
   }catch(e){c.innerHTML=`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;}
 }
@@ -2639,6 +2681,38 @@ async function loadTahminler(filter='hepsi') {
       </div>`;
   } catch(e) {
     c.innerHTML = `<div class="error">Yüklenemedi: ${e.message}</div>`;
+  }
+}
+
+// Haftanin Yildizlari — top 5 correct predictions from last 7 days
+async function loadYildizlar(){
+  const yc=document.getElementById('yildizlarContainer');
+  if(!yc)return;
+  try{
+    const sinir=new Date(Date.now()-7*86400000).toISOString();
+    const url=`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.DOGRU&created_at=gte.${sinir}&order=guc.desc&limit=5`;
+    const r=await fetch(url,{headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}});
+    const data=await r.json();
+    if(!data.length){
+      yc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Bu hafta henuz dogru tahmin yok.</div>';
+      return;
+    }
+    yc.innerHTML=data.map((t,i)=>{
+      const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
+      return`<div class="yildiz-card">
+        <div class="yildiz-rank ${rankClass}">${i+1}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.ev_sahibi} - ${t.deplasman}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${t.kategori} &middot; ${t.cizgi} ${t.ust_alt}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;font-weight:800;color:var(--green);">%${t.guc}</span>
+          <span class="tuttu-badge">TUTTU &#9989;</span>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    yc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Yuklenemedi.</div>';
   }
 }
 
@@ -3179,6 +3253,12 @@ function applyTranslations(){
   <p>Canlı maç analizi, maç tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Şampiyonlar Ligi canlı skor ve istatistikler.</p>
   <p style="margin-top:8px">Futbol istatistikleri, canlı maç sonuçları, maç öncesi analiz, bahis analizi, banko maçlar. AI destekli akıllı tahmin platformu.</p>
   <p style="margin-top:8px"><a href="/blog.html" style="color:#D4A24C;font-size:12px;font-weight:600;text-decoration:none;">Blog</a> · <a href="/privacy.html" style="color:#7A7A95;text-decoration:none;">Gizlilik</a> · <a href="/terms.html" style="color:#7A7A95;text-decoration:none;">Kullanım Şartları</a></p>
+  <div style="margin-top:16px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:inline-block;max-width:420px;text-align:left;">
+    <p style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px;">Widget Ekle</p>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:8px;">Canlı skor widget'ını sitenize ekleyin:</p>
+    <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:10px;color:var(--text);word-break:break-all;line-height:1.5;cursor:pointer;" onclick="navigator.clipboard.writeText(this.textContent);this.style.borderColor='var(--green)';setTimeout(()=>this.style.borderColor='var(--border)',1500);">&lt;iframe src="https://aialysis.live/widget.html" width="320" height="400" frameborder="0" style="border-radius:12px;overflow:hidden;"&gt;&lt;/iframe&gt;</code>
+    <p style="font-size:9px;color:var(--muted);margin-top:4px;">Kopyalamak icin koda tiklayin</p>
+  </div>
   <p style="margin-top:12px;color:var(--muted);font-size:10px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
 </footer>
 </body>
