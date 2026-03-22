@@ -1226,10 +1226,17 @@ async function loadDetailAnaliz(m){
     const tahminler=await tr.json();
     if(Array.isArray(tahminler)&&tahminler.length>0){
       // Mevcut tahminlerden sahte analiz objesi oluştur
+      const eg=m.goals.home??0,dg=m.goals.away??0,dk=m.fixture.status.elapsed||45;
+      // Skor farkı + kalan dk'ya göre olasılık hesapla
+      const fark=eg-dg;const kalanOran=Math.max(0,(90-dk)/90);
+      let evO,berO,depO;
+      if(fark>0){evO=Math.min(95,70+fark*10-kalanOran*20);depO=Math.max(2,15-fark*5+kalanOran*10);berO=100-evO-depO;}
+      else if(fark<0){depO=Math.min(95,70+Math.abs(fark)*10-kalanOran*20);evO=Math.max(2,15-Math.abs(fark)*5+kalanOran*10);berO=100-evO-depO;}
+      else{berO=Math.min(50,30+dk*0.3);evO=Math.round((100-berO)/2);depO=100-evO-berO;}
       const fakeAnaliz={
-        genel_yorum:'Canlı analiz devam ediyor...',
-        skor_tahmini:{ev:m.goals.home??0,dep:m.goals.away??0,aciklama:'Canlı'},
-        olasiliklar:{ev_kazanir:33,beraberlik:34,dep_kazanir:33},
+        genel_yorum:`${eg>dg?m.teams.home.name:dg>eg?m.teams.away.name:'Takımlar'} ${eg===dg?'berabere':'önde'}. Canlı analiz devam ediyor...`,
+        skor_tahmini:{ev:eg,dep:dg,aciklama:'Canlı skor'},
+        olasiliklar:{ev_kazanir:Math.round(evO),beraberlik:Math.round(berO),dep_kazanir:Math.round(depO)},
         tahminler:tahminler.map(t=>({kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:0,tahmin:'',aciklama:'Canlı istatistiklerden üretildi'})),
         riskler:[],mac_temposu:'-',
         gol_beklentisi:2.5,
@@ -1679,12 +1686,15 @@ async function loadAialysis(){
     try{
       const istFmt=(d)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Istanbul'}).format(d);
       const bugunStr=istFmt(new Date());
-      const [live,bugun]=await Promise.all([
+      const dunStr=istFmt(new Date(Date.now()-86400000));
+      const [live,bugun,dun]=await Promise.all([
         apiFetch('/fixtures?live=all'),
-        apiFetch(`/fixtures?date=${bugunStr}&timezone=Europe/Istanbul`)
+        apiFetch(`/fixtures?date=${bugunStr}&timezone=Europe/Istanbul`),
+        apiFetch(`/fixtures?date=${dunStr}&timezone=Europe/Istanbul`)
       ]);
       (live.response||[]).forEach(m=>{canliMap[m.fixture.id]=m;});
       (bugun.response||[]).forEach(m=>{if(!canliMap[m.fixture.id])canliMap[m.fixture.id]=m;});
+      (dun.response||[]).forEach(m=>{if(!canliMap[m.fixture.id])canliMap[m.fixture.id]=m;});
     }catch(_){}
 
     // 3) Her tahmin grubunu kart olarak göster — bitmiş maçları atla
