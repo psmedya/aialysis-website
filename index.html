@@ -338,6 +338,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .genel-istat-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px !important;}
   .genel-istat-kart{padding:12px !important;}
   .genel-basari{font-size:36px !important;}
+  .aia-tahminler{flex-wrap:wrap !important;}
+  .aia-t{font-size:9px !important;padding:2px 6px !important;}
+  .tahmin-card{padding:8px !important;}
+  .tahmin-line{flex-wrap:wrap !important;gap:4px !important;}
+  .tahmin-desc{font-size:9px !important;min-width:0;word-break:break-word;}
+  .tahmin-guc{font-size:11px !important;}
+  .t-tag{font-size:10px !important;padding:2px 6px !important;}
 }
 
 /* Mobil bottom nav */
@@ -1135,6 +1142,7 @@ async function openMac(id){
       </div>
     </div>`;
   document.querySelectorAll('.detail-content').forEach(c=>{c.innerHTML='<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';c.classList.remove('active');});
+  document.getElementById('dc-analiz').innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
   document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
   document.getElementById('dc-analiz').classList.add('active');
   if(detailTimer)clearInterval(detailTimer);
@@ -1359,7 +1367,7 @@ function renderDetailAnaliz(a,m){
       </div>
       <div class="olas-bar"><div style="height:100%;background:linear-gradient(90deg,var(--blue-lt) ${o.ev_kazanir||0}%,#444 ${o.ev_kazanir||0}% ${100-(o.dep_kazanir||0)}%,var(--red) ${100-(o.dep_kazanir||0)}%)"></div></div>
     </div>
-    ${t.length?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:10px 0 6px">TAHMİNLER</div>${t.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">Şu an: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin||''}</span><span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}`:'<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;font-size:12px;color:var(--muted)">Yüksek güvenli tahmin bulunamadı.</div>'}
+    ${t.length?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:10px 0 6px">TAHMİNLER</div>${t.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">Şu an: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin||''}</span><span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}`:'<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 12px;text-align:center"><div style="font-size:20px;margin-bottom:8px">🔍</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">Yeterli güvenilirlikte tahmin üretilemedi</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Bu maç için yüksek olasılıklı öneri bulunamadı.<br><span style="color:var(--blue-lt)">aiALYSIS Live</span> sadece yüksek olasılıklı öneriler sunar.</div></div>'}
     ${a.genel_yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">GENEL DEĞERLENDİRME</div><div style="font-size:11px;color:var(--muted);line-height:1.6">${a.genel_yorum}</div>${t.filter(p=>p.aciklama&&p.aciklama!='0').length?`<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px"><div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:1px;margin-bottom:8px">TAHMİN GEREKÇELERİ</div>${t.filter(p=>p.aciklama&&p.aciklama!='0').map(p=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:${p.ust_alt==='ÜST'?'rgba(67,160,71,.2)':'rgba(229,57,53,.2)'};border:1px solid ${p.ust_alt==='ÜST'?'rgba(67,160,71,.5)':'rgba(229,57,53,.5)'};color:${p.ust_alt==='ÜST'?'var(--green)':'var(--red)'};font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px">${p.cizgi} ${p.ust_alt}</span><span style="font-size:11px;color:rgba(255,255,255,.5);flex:1">${p.kategori}</span><span style="font-size:11px;font-weight:700;color:${p.guc>=70?'var(--green)':p.guc>=50?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div><div style="font-size:11px;color:var(--muted);line-height:1.5">${p.aciklama}</div></div>`).join('')}</div>`:''}
     </div>`:''}
     ${live?`<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:10px;font-size:10px;color:var(--green);margin-top:8px"><div style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite"></div>Her 30 saniyede otomatik güncelleniyor</div>`:''}
@@ -1680,7 +1688,7 @@ async function loadAialysis(){
               <div class="aia-skor">${dk?`<div class="aia-dk" data-elapsed="${dk}">${dk>90?`90+${dk-90}'`:dk>45&&m.fixture.status.short==='1H'?`45+${dk-45}'`:`${dk}'`}</div>`:''}<div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
               <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div>
             </div>
-            <div class="aia-tahminler">${(a.tahminler||[]).slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
+            <div class="aia-tahminler">${(a.tahminler||[]).length?((a.tahminler||[]).slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')):'<span style="font-size:10px;color:var(--muted)">Yeterli güvenilirlikte tahmin yok</span>'}</div>`;
         }
       }catch(e){document.getElementById(`aia-${m.fixture.id}`)?.remove();}
     });
