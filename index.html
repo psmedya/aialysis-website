@@ -1638,94 +1638,56 @@ function showMainTab(name){
 
 async function loadAialysis(){
   const c=document.getElementById('aialysisContainer');
-  c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Canlı maçlar yükleniyor...</div>';
+  c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Tahminler yükleniyor...</div>';
   try{
-    // Önce Supabase'den hazır tahminleri çek (cron'un ürettiği)
-    let hazirTahminler={};
+    // 1) Supabase'den BEKLIYOR tahminleri çek (cron'un ürettiği — sabit kalır)
+    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman,lig&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const td=await tr.json();
+    const hazir={};
+    if(Array.isArray(td))td.forEach(t=>{if(t.mac_id&&t.kategori)(hazir[t.mac_id]||(hazir[t.mac_id]=[])).push(t);});
+
+    const macIds=Object.keys(hazir);
+    if(!macIds.length){
+      c.innerHTML='<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.5">🔍</div><div style="color:var(--text);font-weight:700;margin-bottom:8px">Şu an aktif tahmin yok</div><div style="color:var(--muted);font-size:12px">Canlı maçlar başladığında tahminler burada görünecek.</div></div>';
+      return;
+    }
+
+    // 2) Canlı maçları çek — sadece skor güncellemesi için
+    let canliMap={};
     try{
-      const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
-      const td=await tr.json();
-      if(Array.isArray(td))td.forEach(t=>{if(t.mac_id&&t.kategori)(hazirTahminler[t.mac_id]||(hazirTahminler[t.mac_id]=[])).push(t);});
+      const d=await apiFetch('/fixtures?live=all');
+      (d.response||[]).forEach(m=>{canliMap[m.fixture.id]=m;});
     }catch(_){}
 
-    const d=await apiFetch('/fixtures?live=all');
-    let canlilar=(d.response||[]).sort((a,b)=>ligOncelik(`${b.league.country} | ${b.league.name}`)-ligOncelik(`${a.league.country} | ${a.league.name}`)).slice(0,12);
-    if(!canlilar.length){c.innerHTML='<div class="empty" style="grid-column:1/-1">Şu an canlı maç yok.</div>';return;}
-
-    // Hazır tahminleri olan maçları göster — mevcut kartları koru
-    const mevcutKartlar=new Set();
-    c.querySelectorAll('[id^="aia-"]').forEach(el=>mevcutKartlar.add(el.id));
-    if(!mevcutKartlar.size) c.innerHTML='';
-    const gosterilenIds=new Set();
-    for(const m of canlilar){
-      const tahminler=hazirTahminler[m.fixture.id];
-      if(tahminler&&tahminler.length>0){
-        const ortGuc=tahminler.reduce((s,t)=>s+(t.guc||0),0)/tahminler.length;
-        const gb=(ortGuc-50)/10;
-        const etiket=gb>=3.5?'Maç Yanıyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Maç';
-        const etiketRenk=gb>=3.5?'#FF4757':gb>=2.5?'#FF7F50':gb>=1.5?'#FFD32A':'#4FC3F7';
-        const dk=m.fixture.status.elapsed;
-        const html=`<div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
-          <div class="aia-maclar"><div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
-          <div class="aia-skor">${dk?`<div class="aia-dk">${dk}'</div>`:''}<div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
-          <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div></div>
-          <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
-        let card=document.getElementById(`aia-${m.fixture.id}`);
-        if(card){card.innerHTML=html;}
-        else{card=document.createElement('div');card.className='aia-card';card.id=`aia-${m.fixture.id}`;card.style.cursor='pointer';card.innerHTML=html;c.appendChild(card);}
-        card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);};
-        gosterilenIds.add(m.fixture.id);
-      }
-    }
-    // Gösterilenlerin dışındaki maçları skeleton olarak ekle
-    const kalanlar=canlilar.filter(m=>!gosterilenIds.has(m.fixture.id));
-    kalanlar.forEach(m=>{
-      if(document.getElementById(`aia-${m.fixture.id}`)) return; // zaten var
-      const el=document.createElement('div');el.className='aia-card';el.id=`aia-${m.fixture.id}`;
-      el.innerHTML=`<div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket">Analiz ediliyor...</span></div>
-        <div class="aia-maclar"><div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
-        <div class="aia-skor"><div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
-        <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div></div>`;
-      c.appendChild(el);
-    });
-    // Paralel analiz yap (max 4 aynı anda)
-    const batch=canlilar.slice(0,8);
-    const promises=batch.map(async m=>{
-      try{
-        const ir=await apiFetch(`/fixtures/statistics?fixture=${m.fixture.id}`);
-        const flat={};(ir.response||[]).forEach((t,i)=>{const p=i===0?'ev':'dep';(t.statistics||[]).forEach(s=>{flat[p+'_'+s.type]=s.value;});});
-        const pf2=(v)=>parseFloat(v)||0;
-        const eI={topSahip:parseInt(flat['ev_Ball Possession'])||0,toplamSut:pf2(flat['ev_Total Shots']),isabetliSut:pf2(flat['ev_Shots on Goal']),korner:pf2(flat['ev_Corner Kicks']),faul:pf2(flat['ev_Fouls']),sariKart:pf2(flat['ev_Yellow Cards']),kirmziKart:pf2(flat['ev_Red Cards'])};
-        const dI={topSahip:parseInt(flat['dep_Ball Possession'])||0,toplamSut:pf2(flat['dep_Total Shots']),isabetliSut:pf2(flat['dep_Shots on Goal']),korner:pf2(flat['dep_Corner Kicks']),faul:pf2(flat['dep_Fouls']),sariKart:pf2(flat['dep_Yellow Cards']),kirmziKart:pf2(flat['dep_Red Cards'])};
-        if(eI.faul+dI.faul+eI.korner+dI.korner+eI.toplamSut+dI.toplamSut+eI.topSahip+dI.topSahip===0) return;
-        const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
-          body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score?.halftime?.home??0,depGolIY:m.score?.halftime?.away??0,durum:m.fixture.status.short,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:eI,dep:dI},h2h:[]})});
-        const an=await r.json();
-        const a=an.analiz||{};
-        if(a.tarihsel_veri_yok||(a.tahmin_guveni||0)===0||!(a.tahminler||[]).length){document.getElementById(`aia-${m.fixture.id}`)?.remove();return;}
-        const gb=parseFloat(a.gol_beklentisi)||0;
-        const etiket=gb>=3.5?'Maç Yanıyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Maç';
-        const etiketRenk=gb>=3.5?'#FF4757':gb>=2.5?'#FF7F50':gb>=1.5?'#FFD32A':'#4FC3F7';
-        const dk=m.fixture.status.elapsed;
-        const el=document.getElementById(`aia-${m.fixture.id}`);
-        if(el){
-          el.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==m.fixture.id),m];openMac(m.fixture.id);};
-          el.style.cursor='pointer';
-          el.innerHTML=`
-            <div class="aia-lig"><img src="${m.league.logo||''}" onerror="this.style.display='none'"><span>${m.league.country} | ${m.league.name}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
-            <div class="aia-maclar">
-              <div class="aia-takim"><img src="${m.teams.home.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.home.name}</div></div>
-              <div class="aia-skor">${dk?`<div class="aia-dk" data-elapsed="${dk}">${dk>90?`90+${dk-90}'`:dk>45&&m.fixture.status.short==='1H'?`45+${dk-45}'`:`${dk}'`}</div>`:''}<div class="aia-score">${m.goals.home??0} - ${m.goals.away??0}</div></div>
-              <div class="aia-takim"><img src="${m.teams.away.logo}" onerror="this.style.display='none'"><div class="aia-takim-adi">${m.teams.away.name}</div></div>
-            </div>
-            <div class="aia-tahminler">${(a.tahminler||[]).length?((a.tahminler||[]).slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')):'<span style="font-size:10px;color:var(--muted)">Yeterli güvenilirlikte tahmin yok</span>'}</div>`;
-        }
-      }catch(e){document.getElementById(`aia-${m.fixture.id}`)?.remove();}
-    });
-    await Promise.allSettled(promises);
-    // Tüm kartlar kaldırıldıysa mesaj göster
-    if(!c.querySelector('.aia-card')){
-      c.innerHTML='<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.5">🔍</div><div style="color:var(--text);font-weight:700;margin-bottom:8px">Şu an yeterli güvenilirlikte tahmin yok</div><div style="color:var(--muted);font-size:12px">Canlı maçlar analiz ediliyor. Yeterli veri toplandığında tahminler burada görünecek.</div></div>';
+    // 3) Her tahmin grubunu kart olarak göster — sabit sıra, kaybolmaz
+    c.innerHTML='';
+    for(const macId of macIds){
+      const tahminler=hazir[macId];
+      const m=canliMap[parseInt(macId)];
+      const evAdi=tahminler[0]?.ev_sahibi||'?';
+      const depAdi=tahminler[0]?.deplasman||'?';
+      const lig=tahminler[0]?.lig||'';
+      const ortGuc=tahminler.reduce((s,t)=>s+(t.guc||0),0)/tahminler.length;
+      const gb=(ortGuc-50)/10;
+      const etiket=gb>=3.5?'Maç Yanıyor':gb>=2.5?'Gol Geldi Geliyor':gb>=1.5?'Takipte Kal':'Buz Gibi Maç';
+      const etiketRenk=gb>=3.5?'#FF4757':gb>=2.5?'#FF7F50':gb>=1.5?'#FFD32A':'#4FC3F7';
+      const dk=m?.fixture?.status?.elapsed;
+      const evGol=m?.goals?.home??'?';
+      const depGol=m?.goals?.away??'?';
+      const card=document.createElement('div');
+      card.className='aia-card';card.id=`aia-${macId}`;card.style.cursor='pointer';
+      card.innerHTML=`
+        <div class="aia-lig"><span style="font-size:11px;color:var(--muted)">${lig}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span></div>
+        <div class="aia-maclar">
+          <div class="aia-takim">${m?`<img src="${m.teams.home.logo}" onerror="this.style.display='none'">`:''}<div class="aia-takim-adi">${evAdi}</div></div>
+          <div class="aia-skor">${dk?`<div class="aia-dk">${dk}'</div>`:''}<div class="aia-score">${evGol} - ${depGol}</div></div>
+          <div class="aia-takim">${m?`<img src="${m.teams.away.logo}" onerror="this.style.display='none'">`:''}<div class="aia-takim-adi">${depAdi}</div></div>
+        </div>
+        <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
+      const mid=parseInt(macId);
+      if(m){card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==mid),m];openMac(mid);};}
+      else if(maclar.find(x=>x.fixture.id===mid)){card.onclick=()=>openMac(mid);}
+      c.appendChild(card);
     }
   }catch(e){c.innerHTML=`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;}
 }
