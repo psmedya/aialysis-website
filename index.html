@@ -1022,20 +1022,8 @@ async function loadMaclar(){
       // Seçili tarihi Istanbul timezone'da formatla
       const istFmt=(d)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Istanbul'}).format(d);
       const tarihStr=istFmt(tarih);
-      const dunStr=istFmt(new Date(tarih.getTime()-86400000));
-      const yarinStr=istFmt(new Date(tarih.getTime()+86400000));
-      const [bugun,dun,yarin]=await Promise.all([
-        apiFetch(`/fixtures?date=${tarihStr}&timezone=Europe/Istanbul`),
-        apiFetch(`/fixtures?date=${dunStr}&timezone=Europe/Istanbul`),
-        apiFetch(`/fixtures?date=${yarinStr}&timezone=Europe/Istanbul`)
-      ]);
-      // API timezone=Istanbul ile döndüğünde maç tarihleri zaten Istanbul'da
-      // Sadece seçili güne ait olanları filtrele
-      const tumMaclar=[...(bugun.response||[]),...(dun.response||[]),...(yarin.response||[])];
-      liste=tumMaclar.filter(m=>{
-        const macTarih=istFmt(new Date(m.fixture.date));
-        return macTarih===tarihStr;
-      });
+      const bugun=await apiFetch(`/fixtures?date=${tarihStr}&timezone=Europe/Istanbul`);
+      liste=bugun.response||[];
       document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
     }
     maclar=liste;
