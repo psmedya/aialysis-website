@@ -365,6 +365,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   #authSocialBtns button{padding:11px !important;font-size:13px !important;}
   #authOverlay>div>div:first-child+div+div+div button,
   #authSocialBtns button{width:100% !important;box-sizing:border-box !important;}
+  /* Profile panel mobile */
+  #profileHeader{gap:10px !important;}
+  #profileAvatar{width:48px !important;height:48px !important;max-width:60px !important;max-height:60px !important;}
+  #profileAvatar svg{width:22px !important;height:22px !important;}
+  #profileDisplayName{font-size:14px !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;max-width:100% !important;}
+  #profileEmail{font-size:11px !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;max-width:100% !important;}
+  #profileUsernameSection{padding:12px !important;}
+  #profileUsernameCreate>div{flex-direction:column !important;gap:8px !important;}
+  #profileUsernameCreate input{width:100% !important;box-sizing:border-box !important;}
+  #profileUsernameCreate button{width:100% !important;box-sizing:border-box !important;padding:12px 16px !important;}
+  #authLoggedIn>button:last-child{padding:14px !important;font-size:14px !important;font-weight:800 !important;}
 }
 
 /* Mobil bottom nav */
@@ -742,11 +753,45 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <button id="authVerifyBtn" onclick="authVerifyOtp()" style="width:100%;padding:12px;background:var(--blue);border:none;border-radius:10px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Doğrula</button>
       <p id="authErr2" style="color:var(--red);font-size:12px;text-align:center;margin-top:8px;display:none;"></p>
     </div>
-    <div id="authLoggedIn" style="display:none;text-align:center;">
-      <div style="font-size:40px;margin-bottom:8px;">✅</div>
-      <p style="color:white;font-size:16px;font-weight:700;">Giriş Başarılı!</p>
-      <p id="authUserEmail" style="color:var(--muted);font-size:12px;margin-top:4px;"></p>
-      <button onclick="authLogout()" style="margin-top:16px;padding:10px 24px;background:var(--red);border:none;border-radius:8px;color:white;font-size:13px;font-weight:700;cursor:pointer;">Çıkış Yap</button>
+    <div id="authLoggedIn" style="display:none;">
+      <!-- Profile Header -->
+      <div id="profileHeader" style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <div id="profileAvatar" style="width:56px;height:56px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:2px solid var(--blue-lt);">
+          <img id="profileAvatarImg" src="" style="width:100%;height:100%;object-fit:cover;display:none;">
+          <svg id="profileAvatarIcon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p id="profileDisplayName" style="color:white;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
+          <p id="profileEmail" style="color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
+          <div id="profileProvider" style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:2px 8px;border-radius:12px;background:rgba(74,58,255,.15);border:1px solid rgba(74,58,255,.3);">
+            <span id="profileProviderIcon" style="font-size:12px;"></span>
+            <span id="profileProviderText" style="font-size:11px;font-weight:600;color:var(--blue-lt);"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- aiALYSIS Username Section -->
+      <div id="profileUsernameSection" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;">
+        <div id="profileUsernameDisplay" style="display:none;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z"/></svg>
+            <span style="color:var(--gold);font-size:12px;font-weight:700;">aiALYSIS Kullanıcı Adı</span>
+          </div>
+          <p id="profileUsernameValue" style="color:white;font-size:15px;font-weight:700;margin-left:22px;"></p>
+        </div>
+        <div id="profileUsernameCreate">
+          <p style="color:var(--muted);font-size:12px;margin-bottom:10px;">Kendinize özel bir aiALYSIS kullanıcı adı belirleyin.</p>
+          <div style="display:flex;gap:8px;">
+            <input id="profileUsernameInput" type="text" placeholder="Kullanıcı adınız" maxlength="20" style="flex:1;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:white;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;">
+            <button id="profileUsernameSaveBtn" onclick="saveAialysisUsername()" style="padding:10px 16px;background:var(--gold);border:none;border-radius:8px;color:white;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Kaydet</button>
+          </div>
+          <p id="profileUsernameErr" style="color:var(--red);font-size:11px;margin-top:6px;display:none;"></p>
+          <p id="profileUsernameSuccess" style="color:var(--green);font-size:11px;margin-top:6px;display:none;"></p>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <button onclick="authLogout()" style="width:100%;padding:12px;background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.3);border-radius:10px;color:var(--red);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;" onmouseover="this.style.background='var(--red)';this.style.color='white'" onmouseout="this.style.background='rgba(255,71,87,.1)';this.style.color='var(--red)'">Çıkış Yap</button>
     </div>
   </div>
 </div>
@@ -773,15 +818,65 @@ async function authSocialLogin(provider){
 
 function authModal(){
   const ov=document.getElementById('authOverlay');
-  // Giriş yapılmış mı kontrol et
   sbClient.auth.getUser().then(({data})=>{
     if(data?.user){
+      const u=data.user;
+      const meta=u.user_metadata||{};
       document.getElementById('authSocialBtns').style.display='none';
       document.getElementById('authDivider').style.display='none';
       document.getElementById('authStep1').style.display='none';
       document.getElementById('authStep2').style.display='none';
       document.getElementById('authLoggedIn').style.display='block';
-      document.getElementById('authUserEmail').textContent=data.user.email||data.user.user_metadata?.full_name||'Kullanıcı';
+
+      // Avatar
+      const avatarUrl=meta.avatar_url||meta.picture||'';
+      const avatarImg=document.getElementById('profileAvatarImg');
+      const avatarIcon=document.getElementById('profileAvatarIcon');
+      if(avatarUrl){
+        avatarImg.src=avatarUrl;
+        avatarImg.style.display='block';
+        avatarIcon.style.display='none';
+      } else {
+        avatarImg.style.display='none';
+        avatarIcon.style.display='block';
+      }
+
+      // Display name
+      const displayName=meta.aialysis_username||meta.full_name||meta.name||(u.email?u.email.split('@')[0]:'Kullanıcı');
+      document.getElementById('profileDisplayName').textContent=displayName;
+
+      // Email
+      document.getElementById('profileEmail').textContent=u.email||'';
+
+      // Provider
+      const provider=u.app_metadata?.provider||'email';
+      const providerMap={
+        'google':{icon:'G',text:'Google',color:'#4285F4'},
+        'facebook':{icon:'f',text:'Facebook',color:'#1877F2'},
+        'twitter':{icon:'X',text:'Twitter',color:'#1DA1F2'},
+        'email':{icon:'@',text:'E-posta',color:'var(--blue-lt)'},
+        'apple':{icon:'',text:'Apple',color:'#999'}
+      };
+      const pInfo=providerMap[provider]||{icon:'?',text:provider,color:'var(--muted)'};
+      document.getElementById('profileProviderIcon').textContent=pInfo.icon;
+      document.getElementById('profileProviderText').textContent=pInfo.text;
+      document.getElementById('profileProvider').style.borderColor=pInfo.color+'4D';
+      document.getElementById('profileProvider').style.background=pInfo.color+'1A';
+      document.getElementById('profileProviderText').style.color=pInfo.color;
+
+      // Username section
+      const existingUsername=meta.aialysis_username||'';
+      if(existingUsername){
+        document.getElementById('profileUsernameDisplay').style.display='block';
+        document.getElementById('profileUsernameCreate').style.display='none';
+        document.getElementById('profileUsernameValue').textContent=existingUsername;
+      } else {
+        document.getElementById('profileUsernameDisplay').style.display='none';
+        document.getElementById('profileUsernameCreate').style.display='block';
+        document.getElementById('profileUsernameInput').value='';
+        document.getElementById('profileUsernameErr').style.display='none';
+        document.getElementById('profileUsernameSuccess').style.display='none';
+      }
     } else {
       document.getElementById('authSocialBtns').style.display='flex';
       document.getElementById('authDivider').style.display='flex';
@@ -824,10 +919,10 @@ async function authVerifyOtp(){
     document.getElementById('authSocialBtns').style.display='none';
     document.getElementById('authDivider').style.display='none';
     document.getElementById('authStep2').style.display='none';
-    document.getElementById('authLoggedIn').style.display='block';
-    document.getElementById('authUserEmail').textContent=authEmail;
     document.getElementById('authBtn').textContent=authEmail.split('@')[0];
     document.getElementById('authBtn').style.background='var(--green)';
+    // Re-open modal to show profile panel with fresh user data
+    setTimeout(()=>authModal(),300);
   }catch(e){
     let msg=e.message||'Hata';
     if(msg.includes('expired'))msg='Kod süresi doldu.';
@@ -843,6 +938,55 @@ async function authLogout(){
   document.getElementById('authOverlay').style.display='none';
   document.getElementById('authBtn').textContent='Giriş Yap';
   document.getElementById('authBtn').style.background='var(--blue-lt)';
+}
+
+async function saveAialysisUsername(){
+  const input=document.getElementById('profileUsernameInput');
+  const errEl=document.getElementById('profileUsernameErr');
+  const successEl=document.getElementById('profileUsernameSuccess');
+  const btn=document.getElementById('profileUsernameSaveBtn');
+  const username=input.value.trim();
+
+  errEl.style.display='none';
+  successEl.style.display='none';
+
+  if(!username||username.length<3){
+    errEl.textContent='Kullanıcı adı en az 3 karakter olmalı.';
+    errEl.style.display='block';
+    return;
+  }
+  if(username.length>20){
+    errEl.textContent='Kullanıcı adı en fazla 20 karakter olabilir.';
+    errEl.style.display='block';
+    return;
+  }
+  if(!/^[a-zA-Z0-9_]+$/.test(username)){
+    errEl.textContent='Sadece harf, rakam ve alt çizgi kullanılabilir.';
+    errEl.style.display='block';
+    return;
+  }
+
+  btn.textContent='Kaydediliyor...';
+  btn.disabled=true;
+  try{
+    const {error}=await sbClient.auth.updateUser({data:{aialysis_username:username}});
+    if(error) throw error;
+    successEl.textContent='Kullanıcı adınız kaydedildi!';
+    successEl.style.display='block';
+    document.getElementById('profileDisplayName').textContent=username;
+    document.getElementById('authBtn').textContent=username;
+    // Switch to display mode after short delay
+    setTimeout(()=>{
+      document.getElementById('profileUsernameDisplay').style.display='block';
+      document.getElementById('profileUsernameCreate').style.display='none';
+      document.getElementById('profileUsernameValue').textContent=username;
+    },1000);
+  }catch(e){
+    errEl.textContent=e.message||'Bir hata oluştu.';
+    errEl.style.display='block';
+  }
+  btn.textContent='Kaydet';
+  btn.disabled=false;
 }
 
 // Sayfa yüklendiğinde oturum kontrol
