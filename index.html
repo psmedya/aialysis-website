@@ -353,6 +353,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .tahmin-desc{font-size:9px !important;min-width:0;word-break:break-word;}
   .tahmin-guc{font-size:11px !important;}
   .t-tag{font-size:10px !important;padding:2px 6px !important;}
+  /* Favoriler mobile */
+  #page-favoriler .matches-header{padding:10px 12px !important;gap:6px !important;}
+  #page-favoriler .matches-title{font-size:16px !important;}
+  #page-favoriler .matches-count{font-size:11px !important;}
+  #page-favoriler .matches-header button{padding:5px 10px !important;font-size:11px !important;white-space:nowrap;}
+  .fav-bos{padding:40px 16px !important;font-size:13px;}
+  .fav-bos svg{width:36px !important;height:36px !important;}
 }
 
 /* Mobil bottom nav */
@@ -563,11 +570,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
     <!-- Favoriler -->
     <div class="page" id="page-favoriler">
-      <div class="matches-header">
+      <div class="matches-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div>
           <div class="matches-title">&#9733; Favoriler</div>
           <div class="matches-count" id="favCount">Favori maclariniz</div>
         </div>
+        <button onclick="tumFavTemizle()" style="padding:4px 12px;font-size:12px;background:#E53935;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Tümünü Temizle</button>
       </div>
       <div id="favContainer">
         <div class="fav-bos"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><div>Henuz favori eklemediniz.<br><span style="font-size:12px;">Mac veya lig satirlarindaki yildiz ikonuna tiklayarak favori ekleyebilirsiniz.</span></div></div>
@@ -805,6 +813,7 @@ function getFavMaclar(){try{return JSON.parse(localStorage.getItem('fav_maclar')
 function getFavLigler(){try{return JSON.parse(localStorage.getItem('fav_ligler')||'[]');}catch(e){return[];}}
 function setFavMaclar(arr){localStorage.setItem('fav_maclar',JSON.stringify(arr));}
 function setFavLigler(arr){localStorage.setItem('fav_ligler',JSON.stringify(arr));}
+function tumFavTemizle(){if(!confirm('Tüm favorileriniz silinecek. Emin misiniz?'))return;localStorage.removeItem('fav_maclar');localStorage.removeItem('fav_ligler');document.querySelectorAll('.fav-mac,.fav-lig').forEach(el=>{el.classList.remove('fav-mac','fav-lig');});document.querySelectorAll('.fav-star.aktif').forEach(el=>{el.classList.remove('aktif');el.textContent='\u2606';});renderFavoriler();}
 
 function toggleFavMac(id,e){
   if(e){e.stopPropagation();e.preventDefault();}
