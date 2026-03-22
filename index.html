@@ -1526,7 +1526,7 @@ async function loadDetailAnaliz(m){
 
   // 1) Önce Supabase'deki mevcut tahminleri göster (anında)
   try{
-    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,guc&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,guc,mevcut_deger,mevcut_dk&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
     const tahminler=await tr.json();
     if(Array.isArray(tahminler)&&tahminler.length>0){
       // Mevcut tahminlerden sahte analiz objesi oluştur
@@ -1555,7 +1555,9 @@ async function loadDetailAnaliz(m){
             // Zaten gerçekleşmiş tahmini atla (ÜST: mevcut > çizgi, ALT: mevcut < çizgi ve mantıksız)
             const zatenTuttu=t.ust_alt==='ÜST'&&cur>t.cizgi;
             if(zatenTuttu) return null; // Zaten olmuş, göstermeye gerek yok
-            return{kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:cur,tahmin:`Şu an: ${cur}`,aciklama:`Mevcut: ${cur} | Tahmin: ${t.cizgi} ${t.ust_alt}`};
+            const tzi=t.mevcut_deger!=null?t.mevcut_deger:'-';
+            const tziDk=t.mevcut_dk||'?';
+            return{kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:cur,tahmin:`TZİ(${tziDk}'): ${tzi} → Güncel: ${cur}`,aciklama:`Tahmin: ${t.cizgi} ${t.ust_alt} | TZİ(${tziDk}dk): ${tzi} | Güncel: ${cur}`};
           }).filter(Boolean);
         })(),
         riskler:[],mac_temposu:dk>60?'Yüksek':dk>30?'Orta':'Düşük',
