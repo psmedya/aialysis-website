@@ -462,10 +462,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Performans
       </button>
     </div>
-    <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk" 
+    <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk"
        style="background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1a1a2e;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;margin-left:8px;white-space:nowrap;">
       📱 İndir
     </a>
+    <button id="authBtn" onclick="authModal()" style="background:var(--blue-lt);border:none;color:white;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">
+      Giriş Yap
+    </button>
   </nav>
 
   <!-- SIDEBAR -->
@@ -618,6 +621,118 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </aside>
 
 </div><!-- /layout -->
+
+<!-- AUTH MODAL -->
+<div id="authOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:none;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;width:90%;max-width:400px;padding:28px;position:relative;">
+    <button onclick="document.getElementById('authOverlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">✕</button>
+    <div style="text-align:center;margin-bottom:20px;">
+      <span style="font-style:italic;font-size:24px;color:var(--gold-lt);font-weight:900;">ai</span><span style="font-size:24px;font-weight:900;color:white;">ALYSIS</span>
+      <span style="color:var(--green);font-size:10px;font-weight:700;letter-spacing:2px;"> LIVE</span>
+    </div>
+    <div id="authStep1">
+      <p style="color:var(--muted);font-size:13px;text-align:center;margin-bottom:16px;">E-posta adresinizi girin, doğrulama kodu göndereceğiz.</p>
+      <input id="authEmail" type="email" placeholder="E-posta adresiniz" style="width:100%;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:white;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;margin-bottom:12px;">
+      <button id="authSendBtn" onclick="authSendOtp()" style="width:100%;padding:12px;background:var(--blue);border:none;border-radius:10px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Kod Gönder</button>
+      <p id="authErr1" style="color:var(--red);font-size:12px;text-align:center;margin-top:8px;display:none;"></p>
+    </div>
+    <div id="authStep2" style="display:none;">
+      <p style="color:var(--muted);font-size:13px;text-align:center;margin-bottom:4px;">Doğrulama kodu gönderildi:</p>
+      <p id="authEmailShow" style="color:var(--blue-lt);font-size:13px;text-align:center;font-weight:700;margin-bottom:16px;"></p>
+      <input id="authCode" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" style="width:100%;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:white;font-size:28px;font-weight:900;letter-spacing:8px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;margin-bottom:12px;">
+      <button id="authVerifyBtn" onclick="authVerifyOtp()" style="width:100%;padding:12px;background:var(--blue);border:none;border-radius:10px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Doğrula</button>
+      <p id="authErr2" style="color:var(--red);font-size:12px;text-align:center;margin-top:8px;display:none;"></p>
+    </div>
+    <div id="authLoggedIn" style="display:none;text-align:center;">
+      <div style="font-size:40px;margin-bottom:8px;">✅</div>
+      <p style="color:white;font-size:16px;font-weight:700;">Giriş Başarılı!</p>
+      <p id="authUserEmail" style="color:var(--muted);font-size:12px;margin-top:4px;"></p>
+      <button onclick="authLogout()" style="margin-top:16px;padding:10px 24px;background:var(--red);border:none;border-radius:8px;color:white;font-size:13px;font-weight:700;cursor:pointer;">Çıkış Yap</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const sbClient=window.supabase.createClient('https://fohmlwoewjupceznwmdr.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4');
+let authEmail='';
+
+function authModal(){
+  const ov=document.getElementById('authOverlay');
+  // Giriş yapılmış mı kontrol et
+  sbClient.auth.getUser().then(({data})=>{
+    if(data?.user){
+      document.getElementById('authStep1').style.display='none';
+      document.getElementById('authStep2').style.display='none';
+      document.getElementById('authLoggedIn').style.display='block';
+      document.getElementById('authUserEmail').textContent=data.user.email;
+    } else {
+      document.getElementById('authStep1').style.display='block';
+      document.getElementById('authStep2').style.display='none';
+      document.getElementById('authLoggedIn').style.display='none';
+    }
+  });
+  ov.style.display='flex';
+}
+
+async function authSendOtp(){
+  const email=document.getElementById('authEmail').value.trim();
+  if(!email||!email.includes('@')){document.getElementById('authErr1').textContent='Geçerli e-posta girin.';document.getElementById('authErr1').style.display='block';return;}
+  document.getElementById('authSendBtn').textContent='Gönderiliyor...';
+  document.getElementById('authErr1').style.display='none';
+  try{
+    const {error}=await sbClient.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+    if(error)throw error;
+    authEmail=email;
+    document.getElementById('authStep1').style.display='none';
+    document.getElementById('authStep2').style.display='block';
+    document.getElementById('authEmailShow').textContent=email;
+    document.getElementById('authCode').focus();
+  }catch(e){
+    document.getElementById('authErr1').textContent=e.message||'Hata oluştu.';
+    document.getElementById('authErr1').style.display='block';
+  }
+  document.getElementById('authSendBtn').textContent='Kod Gönder';
+}
+
+async function authVerifyOtp(){
+  const code=document.getElementById('authCode').value.trim();
+  if(code.length!==6){document.getElementById('authErr2').textContent='6 haneli kodu girin.';document.getElementById('authErr2').style.display='block';return;}
+  document.getElementById('authVerifyBtn').textContent='Doğrulanıyor...';
+  document.getElementById('authErr2').style.display='none';
+  try{
+    const {error}=await sbClient.auth.verifyOtp({email:authEmail,token:code,type:'email'});
+    if(error)throw error;
+    document.getElementById('authStep2').style.display='none';
+    document.getElementById('authLoggedIn').style.display='block';
+    document.getElementById('authUserEmail').textContent=authEmail;
+    document.getElementById('authBtn').textContent=authEmail.split('@')[0];
+    document.getElementById('authBtn').style.background='var(--green)';
+  }catch(e){
+    let msg=e.message||'Hata';
+    if(msg.includes('expired'))msg='Kod süresi doldu.';
+    if(msg.includes('Invalid'))msg='Kod hatalı.';
+    document.getElementById('authErr2').textContent=msg;
+    document.getElementById('authErr2').style.display='block';
+  }
+  document.getElementById('authVerifyBtn').textContent='Doğrula';
+}
+
+async function authLogout(){
+  await sbClient.auth.signOut();
+  document.getElementById('authOverlay').style.display='none';
+  document.getElementById('authBtn').textContent='Giriş Yap';
+  document.getElementById('authBtn').style.background='var(--blue-lt)';
+}
+
+// Sayfa yüklendiğinde oturum kontrol
+sbClient.auth.getUser().then(({data})=>{
+  if(data?.user){
+    document.getElementById('authBtn').textContent=data.user.email.split('@')[0];
+    document.getElementById('authBtn').style.background='var(--green)';
+  }
+});
+</script>
 
 <script>
 const AK='6c9c09e4ce575757e5e725aa07c977b0';
