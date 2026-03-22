@@ -172,7 +172,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   position:sticky;top:60px;
   min-width:0;
 }
-.panel-kapat{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.4);border:none;color:rgba(255,255,255,.7);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:10;}
+.panel-kapat{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);border:none;color:white;width:auto;height:36px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;padding:0 14px;z-index:210;-webkit-tap-highlight-color:transparent;}
 .panel-kapat:hover{background:rgba(229,57,53,.6);color:white;}
 .detail-header{position:relative;}
 .panel-section{padding:16px;border-bottom:1px solid var(--border);}
@@ -597,7 +597,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
     </div>
     <div id="matchDetail" class="match-detail">
       <div class="detail-header" id="detailHeader">
-        <button class="panel-kapat" onclick="panelKapat()">✕</button>
+        <button class="panel-kapat" onclick="panelKapat()" style="position:absolute;top:8px;left:8px;right:auto;width:40px;height:40px;font-size:20px;z-index:210;">← Geri</button>
       </div>
       <div class="detail-tabs" id="detailTabsEl">
         <div class="detail-tab active" onclick="switchDetailTab('analiz')">✦ AIalysis</div>
