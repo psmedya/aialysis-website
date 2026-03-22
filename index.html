@@ -2302,21 +2302,110 @@ async function loadDetailIstat(fixId){
 
 async function loadDetailKadro(fixId){
   try{
-    const kadroRows=await sbQuery('mac_kadrolar',`fixture_id=eq.${fixId}`);
+    const [kadroRows,olayRows]=await Promise.all([
+      sbQuery('mac_kadrolar',`fixture_id=eq.${fixId}`),
+      sbQuery('mac_olaylari',`fixture_id=eq.${fixId}&order=dakika`)
+    ]);
     const l=(kadroRows&&kadroRows.length)?kadroRows[0].veri||[]:[];
     if(!l.length){document.getElementById('dc-kadro').innerHTML='<div class="empty">Kadro henüz açıklanmadı.</div>';return;}
-    const playerRow=(p,isSub)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(46,46,46,.5)${isSub?';opacity:.7':''}"><span style="width:20px;text-align:center;font-size:11px;font-weight:700;color:${isSub?'var(--muted)':'var(--blue-lt)'}">${p.player?.number||''}</span><span style="font-size:12px">${p.player?.name||''}</span><span style="margin-left:auto;font-size:10px;color:var(--muted)">${p.player?.pos||''}</span></div>`;
-    document.getElementById('dc-kadro').innerHTML=`<div style="padding:16px">${l.map(t=>`
-      <div style="margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface);border-radius:8px;margin-bottom:6px">
-          <img src="${t.team?.logo||''}" style="width:20px;height:20px;object-fit:contain" onerror="this.style.display='none'">
-          <span style="font-size:12px;font-weight:700;flex:1">${t.team?.name||''}</span>
-          <span style="background:var(--blue);color:white;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700">${t.formation||''}</span>
-        </div>
-        <div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:6px 8px;border-bottom:1px solid var(--border)">İLK 11</div>
-        ${(t.startXI||[]).map(p=>playerRow(p,false)).join('')}
-        ${(t.substitutes&&t.substitutes.length)?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:6px 8px;margin-top:8px;border-bottom:1px solid var(--border)">YEDEKLER</div>${t.substitutes.map(p=>playerRow(p,true)).join('')}`:''}
-      </div>`).join('')}</div>`;
+    const olaylar=olayRows||[];
+    // Oyuncu olaylarını map'le
+    const oyuncuOlay=(name,teamId)=>{
+      let html='';
+      olaylar.forEach(o=>{
+        if(o.oyuncu_adi===name||o.asist_adi===name){
+          if(o.olay_tipi==='Goal'&&o.oyuncu_adi===name&&!o.olay_detay?.includes('Missed'))html+=`<span style="font-size:10px">⚽</span>`;
+          if(o.olay_tipi==='Card'&&o.oyuncu_adi===name){
+            if(o.olay_detay?.includes('Red'))html+=`<span style="font-size:9px">🟥</span>`;
+            else html+=`<span style="font-size:9px">🟨</span>`;
+          }
+          if(o.olay_tipi==='subst'){
+            if(o.asist_adi===name)html+=`<span style="color:#FF4757;font-size:10px">▼${o.dakika}'</span>`;
+            if(o.oyuncu_adi===name)html+=`<span style="color:#2ED573;font-size:10px">▲${o.dakika}'</span>`;
+          }
+        }
+      });
+      return html;
+    };
+    const ev=l[0]||{},dep=l[1]||{};
+    const evXI=ev.startXI||[],depXI=dep.startXI||[];
+    const evSub=ev.substitutes||[],depSub=dep.substitutes||[];
+    const evTeam=ev.team||{},depTeam=dep.team||{};
+    // Kadro listesi HTML
+    const kadroListe=(xi,subs,team,align)=>{
+      const hdr=`<div style="display:flex;align-items:center;gap:6px;padding:8px;background:var(--surface);border-radius:6px;margin-bottom:4px">
+        <img src="${team.logo||''}" style="width:16px;height:16px;object-fit:contain" onerror="this.style.display='none'">
+        <span style="font-size:11px;font-weight:800;flex:1">${team.name||''}</span></div>`;
+      const satir=(p,isSub)=>{
+        const pl=p.player||{};
+        const icons=oyuncuOlay(pl.name,team.id);
+        return`<div style="display:flex;align-items:center;gap:6px;padding:4px 6px;border-bottom:1px solid rgba(46,46,62,.4);font-size:11px${isSub?';opacity:.65':''}">
+          <span style="width:18px;text-align:center;font-weight:800;color:var(--blue-lt);font-size:10px">${pl.number||''}</span>
+          <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${pl.name||''}</span>
+          <span style="display:flex;gap:2px;align-items:center">${icons}</span></div>`;
+      };
+      return`<div style="flex:1;min-width:0">${hdr}
+        <div style="font-size:9px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:4px 6px;border-bottom:1px solid var(--border)">İLK 11</div>
+        ${xi.map(p=>satir(p,false)).join('')}
+        <div style="font-size:9px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:4px 6px;margin-top:6px;border-bottom:1px solid var(--border)">YEDEKLER</div>
+        ${subs.map(p=>satir(p,true)).join('')}</div>`;
+    };
+    // Saha grafiği
+    const sahaOyuncu=(num,name,x,y)=>`<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);text-align:center">
+      <div style="width:26px;height:26px;border-radius:50%;border:2px solid #1565C0;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#1565C0;margin:0 auto">${num}</div>
+      <div style="font-size:8px;color:white;text-shadow:0 1px 3px rgba(0,0,0,.8);margin-top:1px;white-space:nowrap;max-width:60px;overflow:hidden;text-overflow:ellipsis">${(name||'').split(' ').pop()}</div></div>`;
+    const parseFormation=(f)=>(f||'4-4-2').split('-').map(Number);
+    const buildSaha=(xi,formation,isHome)=>{
+      const lines=parseFormation(formation);
+      const totalLines=lines.length+1;// +1 kaleci
+      let html='';
+      // Kaleci
+      const gk=xi.find(p=>(p.player?.pos||'').toUpperCase()==='G');
+      const gkY=isHome?92:8;
+      if(gk)html+=sahaOyuncu(gk.player.number,gk.player.name,50,gkY);
+      // Diğer hatlar
+      const field=xi.filter(p=>(p.player?.pos||'').toUpperCase()!=='G');
+      let idx=0;
+      lines.forEach((count,lineIdx)=>{
+        const yBase=isHome?(78-lineIdx*(70/totalLines)):(22+lineIdx*(70/totalLines));
+        for(let i=0;i<count&&idx<field.length;i++){
+          const xPos=((i+1)/(count+1))*100;
+          const pl=field[idx];
+          html+=sahaOyuncu(pl.player?.number||'',pl.player?.name||'',xPos,yBase);
+          idx++;
+        }
+      });
+      return html;
+    };
+    const sahaHtml=`<div style="position:relative;width:100%;padding-top:140%;background:linear-gradient(180deg,#1B5E20 0%,#2E7D32 50%,#1B5E20 100%);border-radius:8px;overflow:hidden">
+      <div style="position:absolute;inset:4%;border:2px solid rgba(255,255,255,.4);border-radius:4px"></div>
+      <div style="position:absolute;left:4%;right:4%;top:50%;height:0;border-top:2px solid rgba(255,255,255,.4)"></div>
+      <div style="position:absolute;left:50%;top:50%;width:60px;height:60px;border:2px solid rgba(255,255,255,.3);border-radius:50%;transform:translate(-50%,-50%)"></div>
+      <div style="position:absolute;left:25%;right:25%;top:4%;height:14%;border:2px solid rgba(255,255,255,.3);border-top:none;border-radius:0 0 4px 4px"></div>
+      <div style="position:absolute;left:25%;right:25%;bottom:4%;height:14%;border:2px solid rgba(255,255,255,.3);border-bottom:none;border-radius:4px 4px 0 0"></div>
+      <div style="position:absolute;left:35%;right:35%;top:4%;height:6%;border:2px solid rgba(255,255,255,.2);border-top:none"></div>
+      <div style="position:absolute;left:35%;right:35%;bottom:4%;height:6%;border:2px solid rgba(255,255,255,.2);border-bottom:none"></div>
+      ${buildSaha(depXI,dep.formation,false)}
+      ${buildSaha(evXI,ev.formation,true)}
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;gap:12px;align-items:center">
+        <img src="${evTeam.logo||''}" style="width:28px;height:28px;opacity:.5" onerror="this.style.display='none'">
+        <span style="color:rgba(255,255,255,.3);font-size:10px;font-weight:700">vs</span>
+        <img src="${depTeam.logo||''}" style="width:28px;height:28px;opacity:.5" onerror="this.style.display='none'">
+      </div>
+    </div>`;
+    // 3 sütunlu layout
+    document.getElementById('dc-kadro').innerHTML=`<div style="padding:8px">
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <div style="flex:1;text-align:center;background:var(--surface);padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700"><span style="color:var(--blue-lt)">${ev.formation||''}</span></div>
+        <div style="font-size:10px;color:var(--muted);display:flex;align-items:center">FORMASYON</div>
+        <div style="flex:1;text-align:center;background:var(--surface);padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700"><span style="color:var(--red)">${dep.formation||''}</span></div>
+      </div>
+      ${sahaHtml}
+      <div style="display:flex;gap:6px;margin-top:8px">
+        ${kadroListe(evXI,evSub,evTeam,'left')}
+        ${kadroListe(depXI,depSub,depTeam,'right')}
+      </div>
+    </div>`;
   }catch(e){document.getElementById('dc-kadro').innerHTML='<div class="error">Yüklenemedi.</div>';}
 }
 
