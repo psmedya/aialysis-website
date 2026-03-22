@@ -650,7 +650,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </div><!-- /layout -->
 
 <!-- AUTH MODAL -->
-<div id="authOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:none;align-items:center;justify-content:center;">
+<div id="authOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;align-items:center;justify-content:center;">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;width:90%;max-width:400px;padding:28px;position:relative;">
     <button onclick="document.getElementById('authOverlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">✕</button>
     <div style="text-align:center;margin-bottom:20px;">
@@ -778,6 +778,7 @@ function toggleSidebar(){
 
 function panelKapat(){
   document.querySelector('.layout').classList.remove('panel-acik');
+  const mn=document.querySelector('.mobil-nav');if(mn&&window.innerWidth<=768)mn.style.display='block';
   document.getElementById('matchDetail').classList.remove('active');
   document.getElementById('defaultPanel').style.display='';
   if(detailTimer){clearInterval(detailTimer);detailTimer=null;}
@@ -1106,6 +1107,7 @@ async function openMac(id){
   if(currentMac?.fixture.id===id){panelKapat();return;}
   currentMac=m;
   layout.classList.add('panel-acik');
+  const mn=document.querySelector('.mobil-nav');if(mn)mn.style.display='none';
   document.getElementById('defaultPanel').style.display='none';
   document.getElementById('matchDetail').classList.add('active');
   const evGol=m.goals.home??0,depGol=m.goals.away??0,dk=m.fixture.status.elapsed;
