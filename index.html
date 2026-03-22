@@ -875,30 +875,46 @@ function fmtTR(d){
 
 function ligOncelik(s){
   s=s.toLowerCase();
-  if(s.includes('women')||s.includes('ladies')||s.includes('female')) return 500;
-  if(s.match(/\bu(16|17|18|19|20|21|23)\b/)) return 400;
-  if(s.includes('youth')) return 450;
+  // Önce düşük öncelikli kategorileri ele
+  if(s.includes('women')||s.includes('ladies')||s.includes('female')||s.includes('frauen')) return 500;
+  if(s.match(/\bu(16|17|18|19|20|21|23)\b/)||s.includes('division one')||s.includes('division two')||s.includes('development')||s.includes('premier league 2')) return 400;
+  if(s.includes('youth')||s.includes('junior')||s.includes('academy')) return 450;
   if(s.includes('reserve')||s.includes('amateur')) return 300;
-  if(s.includes('turkey')&&(s.includes('süper')||s.includes('super'))) return 20000;
+  if(s.includes('friendl')) return 600;
+  // Türkiye
+  if(s.includes('turkey')&&(s.includes('süper')||s.includes('super lig'))) return 20000;
   if(s.includes('turkey')&&s.includes('tff')) return 19800;
   if(s.includes('turkey')&&s.includes('cup')) return 19700;
   if(s.includes('turkey')&&s.includes('1. lig')) return 9300;
   if(s.includes('turkey')&&s.includes('2. lig')) return 9200;
   if(s.includes('turkey')&&s.includes('3. lig')) return 9100;
   if(s.includes('turkey')) return 9000;
+  // Avrupa büyük ligler
   if(s.includes('champions league')&&!s.includes('concacaf')&&!s.includes('caf')) return 18000;
   if(s.includes('europa league')&&!s.includes('conference')) return 17900;
   if(s.includes('conference league')) return 17800;
-  if(s.includes('premier league')&&s.includes('england')) return 16000;
-  if(s.includes('la liga')) return 15900;
-  if(s.includes('bundesliga')&&s.includes('germany')) return 15800;
-  if(s.includes('serie a')&&s.includes('italy')) return 15700;
-  if(s.includes('ligue 1')) return 15600;
+  if(s.includes('england')&&s.includes('premier league')&&!s.includes('2')&&!s.includes('division')) return 16000;
+  if(s.includes('england')&&s.includes('championship')) return 14500;
+  if(s.includes('spain')&&s.includes('la liga')) return 15900;
+  if(s.includes('germany')&&s.includes('bundesliga')&&!s.includes('2.')&&!s.includes('frauen')) return 15800;
+  if(s.includes('germany')&&s.includes('2. bundesliga')) return 14400;
+  if(s.includes('italy')&&s.includes('serie a')) return 15700;
+  if(s.includes('italy')&&s.includes('serie b')) return 14300;
+  if(s.includes('france')&&s.includes('ligue 1')) return 15600;
+  if(s.includes('france')&&s.includes('ligue 2')) return 14200;
   if(s.includes('eredivisie')) return 15500;
-  if(s.includes('mls')) return 14800;
+  if(s.includes('portugal')&&s.includes('primeira')) return 15400;
+  if(s.includes('scotland')&&s.includes('premiership')) return 14600;
+  if(s.includes('belgium')&&s.includes('jupiler')) return 14500;
+  // Amerika
+  if(s.includes('mls')&&!s.includes('next')) return 14800;
+  if(s.includes('liga mx')&&!s.includes('expansion')) return 14700;
+  if(s.includes('argentina')&&s.includes('profesional')) return 14100;
+  if(s.includes('brazil')&&s.includes('serie a')) return 14000;
+  // Düşük
+  if(s.includes('copa')&&!s.includes('champions')&&!s.includes('europa')) return 3000;
   if(s.includes('concacaf')) return 1500;
   if(s.includes('caf')) return 1400;
-  if(s.includes('friendl')) return 600;
   return 5000;
 }
 
