@@ -1555,7 +1555,7 @@ async function loadDetailAnaliz(m){
             // Zaten gerçekleşmiş tahmini atla (ÜST: mevcut > çizgi, ALT: mevcut < çizgi ve mantıksız)
             const zatenTuttu=t.ust_alt==='ÜST'&&cur>t.cizgi;
             if(zatenTuttu) return null; // Zaten olmuş, göstermeye gerek yok
-            return{kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:cur,tahmin:`Şu an: ${cur}`,aciklama:`Mevcut: ${cur} | Çizgi: ${t.cizgi} ${t.ust_alt}`};
+            return{kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:cur,tahmin:`Şu an: ${cur}`,aciklama:`Mevcut: ${cur} | Tahmin: ${t.cizgi} ${t.ust_alt}`};
           }).filter(Boolean);
         })(),
         riskler:[],mac_temposu:dk>60?'Yüksek':dk>30?'Orta':'Düşük',
@@ -2206,7 +2206,7 @@ function renderForumMesajlar(msgs,containerId){
     return;
   }
   el.innerHTML=msgs.reverse().map(m=>{
-    const ad=m.user_name||'Anonim';
+    const ad=m.kullanici_adi||m.user_name||'Anonim';
     return `<div class="${containerId==='chatMesajlar'?'chat-msg':'forum-msg'}">
       <div class="${containerId==='chatMesajlar'?'chat-msg-user':'forum-msg-user'}">${ad}</div>
       <div class="${containerId==='chatMesajlar'?'chat-msg-text':'forum-msg-text'}">${escapeHtml(m.mesaj)}</div>
@@ -2246,7 +2246,8 @@ async function sendChatMsg(){
   if(!user)return;
   inp.value='';inp.disabled=true;
   try{
-    await fetch(`${SU}/rest/v1/forum_mesajlar`,{method:'POST',headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({user_id:user.id,user_name:user.name,mac_id:0,mesaj:text})});
+    const {error}=await sbClient.from('forum_mesajlar').insert({user_id:user.id,kullanici_adi:user.name,mac_id:0,mesaj:text,icerik:text});
+    if(error)console.error('Insert:',error);
     await loadChatMesajlar();
   }catch(e){
     console.error('Chat gonderme hatasi:',e);
@@ -2284,7 +2285,8 @@ async function sendForumMsg(macId){
   if(!user)return;
   inp.value='';inp.disabled=true;
   try{
-    await fetch(`${SU}/rest/v1/forum_mesajlar`,{method:'POST',headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({user_id:user.id,user_name:user.name,mac_id:macId,mesaj:text})});
+    const {error}=await sbClient.from('forum_mesajlar').insert({user_id:user.id,kullanici_adi:user.name,mac_id:macId,mesaj:text,icerik:text});
+    if(error)console.error('Insert:',error);
     await loadDetailForum(macId);
   }catch(e){
     console.error('Forum gonderme hatasi:',e);
