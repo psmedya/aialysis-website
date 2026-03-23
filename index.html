@@ -86,7 +86,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   transition:transform .3s ease;
 }
 .navbar.nav-hidden{transform:translateY(-100%);}
-.nav-logo{display:flex;align-items:baseline;gap:0;margin-right:8px;}
+.nav-logo{display:flex;align-items:center;gap:6px;margin-right:8px;}
 .nav-logo .ai{font-style:italic;font-size:20px;font-weight:300;color:var(--gold-lt);}
 .nav-logo .alysis{font-size:20px;font-weight:900;color:white;letter-spacing:-1px;}
 .nav-live{display:flex;align-items:center;gap:6px;background:rgba(67,160,71,.2);border:1px solid rgba(67,160,71,.5);border-radius:16px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--green);cursor:pointer;transition:all .2s;letter-spacing:1px;}
@@ -746,9 +746,9 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
     <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
       <span></span><span></span><span></span>
     </button>
-    <div class="nav-logo" onclick="showMainTab('maclar');loadMaclar();" style="cursor:pointer;display:flex;align-items:center;gap:6px;">
-      <img src="/favicon.svg" style="width:28px;height:28px;object-fit:contain;">
-      <span class="ai" style="font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--gold-lt),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 20px rgba(255,213,79,.3);">ai</span><span class="alysis">Alysis</span>
+    <div class="nav-logo" onclick="showMainTab('maclar');loadMaclar();" style="cursor:pointer;">
+      <img src="/favicon.svg" style="width:24px;height:24px;object-fit:contain;">
+      <span class="ai">ai</span><span class="alysis">Alysis</span>
     </div>
     <div style="flex:1"></div>
     <div class="nav-search">
@@ -1621,7 +1621,6 @@ async function loadMaclar(){
 }
 
 function renderMaclar(liste){
-  fetchedAt=Date.now();
   const c=document.getElementById('maclarContainer');
   if(!liste.length){c.innerHTML='<div class="empty">Bu tarihte maç bulunamadı.</div>';return;}
   const favLigKeys=getFavLigler();
@@ -3083,19 +3082,6 @@ setInterval(()=>{
   if(ap?.id==='page-aialysis')loadAialysis();
 },30000);
 
-// Canlı dakika sayacı — API fetch'den bu yana geçen süreyi ekle
-let fetchedAt=Date.now();
-setInterval(()=>{
-  const mins=Math.floor((Date.now()-fetchedAt)/60000);
-  if(mins<1)return;
-  document.querySelectorAll('[data-elapsed]').forEach(el=>{
-    const base=parseInt(el.dataset.elapsed)||0;
-    const ext=parseInt(el.dataset.extra)||0;
-    const st=el.dataset.status||'';
-    if(ext){el.textContent=`${base}+${ext+mins}'`;}
-    else{const cur=base+mins;el.textContent=formatDk(cur,st);}
-  });
-},60000);
 
 document.addEventListener('visibilitychange',async()=>{
   if(!document.hidden){
@@ -3109,7 +3095,6 @@ document.addEventListener('visibilitychange',async()=>{
     // AIALYSIS sayfası aktifse onu da yenile
     const ap=document.querySelector('.page.active');
     if(ap?.id==='page-aialysis')loadAialysis();
-    fetchedAt=Date.now();
   }
 });
 
