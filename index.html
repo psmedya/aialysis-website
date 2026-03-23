@@ -69,7 +69,7 @@
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 
 /* LAYOUT */
-.layout{display:grid;grid-template-columns:var(--sidebar) 1fr 0;grid-template-rows:60px 1fr;min-height:100vh;transition:grid-template-columns .25s ease;}
+.layout{display:grid;grid-template-columns:var(--sidebar) 1fr 0;grid-template-rows:1fr;min-height:100vh;transition:grid-template-columns .25s ease;padding-top:60px;}
 .layout.panel-acik{grid-template-columns:var(--sidebar) 1fr var(--right);}
 .layout.sidebar-kapali.panel-acik{grid-template-columns:0 1fr var(--right);}
 .layout.sidebar-kapali{grid-template-columns:0 1fr 0;}
@@ -81,8 +81,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   display:flex;align-items:center;gap:16px;
   padding:0 24px;
   border-bottom:1px solid rgba(255,255,255,.1);
-  position:sticky;top:0;z-index:500;
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:60px;
+  transition:transform .3s ease;
 }
+.navbar.nav-hidden{transform:translateY(-100%);}
 .nav-logo{display:flex;align-items:baseline;gap:0;margin-right:8px;}
 .nav-logo .ai{font-style:italic;font-size:20px;font-weight:300;color:var(--gold-lt);}
 .nav-logo .alysis{font-size:20px;font-weight:900;color:white;letter-spacing:-1px;}
@@ -316,7 +319,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 .aia-takim-adi{font-size:11px;font-weight:700;margin-top:4px;}
 .aia-skor{text-align:center;padding:0 12px;}
 .aia-dk{background:rgba(67,160,71,.2);color:var(--green);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;margin-bottom:4px;display:inline-block;}
-.aia-score{font-size:26px;font-weight:900;color:var(--green);letter-spacing:4px;}
+.aia-score{font-size:26px;font-weight:900;color:var(--green);letter-spacing:4px;}.aia-score.aia-score-vs{font-size:14px;color:var(--muted);letter-spacing:2px;}
 .aia-tahminler{display:flex;gap:5px;flex-wrap:wrap;}
 .aia-t{background:rgba(67,160,71,.1);border:1px solid rgba(67,160,71,.3);border-radius:5px;padding:2px 7px;font-size:10px;color:var(--green);font-weight:700;}
 
@@ -430,7 +433,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   .nav-search{display:none !important;}
   .nav-links{display:none !important;}
   .hamburger{display:none !important;}
-  .layout,.layout.sidebar-kapali{grid-template-columns:1fr !important;grid-template-rows:50px 1fr !important;}
+  .layout,.layout.sidebar-kapali{grid-template-columns:1fr !important;grid-template-rows:1fr !important;padding-top:50px !important;}
   .main{padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .matches-header{padding:10px 12px !important;}
   .mac-tablo-header{display:none !important;}
@@ -743,17 +746,8 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
     <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
       <span></span><span></span><span></span>
     </button>
-    <div class="nav-logo" onclick="showMainTab('maclar');loadMaclar();" style="cursor:pointer;display:flex;align-items:center;gap:0;">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" style="width:40px;height:40px;">
-        <g transform="translate(100, 170)"><line x1="10" y1="0" x2="10" y2="18" stroke="#FFD54F" stroke-width="2"/><polygon points="10,0 24,5 10,10" fill="#FFD54F" opacity="0.8"/></g>
-        <g transform="translate(168, 170)"><circle cx="12" cy="9" r="9" fill="none" stroke="#7C6FFF" stroke-width="2"/><circle cx="12" cy="9" r="3.5" fill="#7C6FFF" opacity="0.5"/></g>
-        <g transform="translate(240, 170)"><rect x="5" y="0" width="14" height="20" rx="2" fill="#FFD32A" opacity="0.9"/></g>
-        <g transform="translate(305, 170)"><line x1="12" y1="2" x2="12" y2="20" stroke="#2ED573" stroke-width="2"/><polygon points="12,2 24,7 12,14" fill="#2ED573" opacity="0.8"/></g>
-        <rect x="68" y="200" width="55" height="140" rx="8" fill="#FFD54F"/><text x="95" y="280" font-family="Arial,sans-serif" font-size="34" font-weight="900" fill="#0A0A12" text-anchor="middle">L</text>
-        <rect x="138" y="240" width="55" height="100" rx="8" fill="#7C6FFF"/><text x="165" y="298" font-family="Arial,sans-serif" font-size="34" font-weight="900" fill="#FFFFFF" text-anchor="middle">I</text>
-        <rect x="208" y="270" width="55" height="70" rx="8" fill="#FFD32A"/><text x="235" y="313" font-family="Arial,sans-serif" font-size="34" font-weight="900" fill="#0A0A12" text-anchor="middle">V</text>
-        <rect x="278" y="250" width="55" height="90" rx="8" fill="#2ED573"/><text x="305" y="303" font-family="Arial,sans-serif" font-size="34" font-weight="900" fill="#0A0A12" text-anchor="middle">E</text>
-      </svg>
+    <div class="nav-logo" onclick="showMainTab('maclar');loadMaclar();" style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+      <img src="/favicon.svg" style="width:28px;height:28px;object-fit:contain;">
       <span class="ai" style="font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--gold-lt),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 20px rgba(255,213,79,.3);">ai</span><span class="alysis">Alysis</span>
     </div>
     <div style="flex:1"></div>
@@ -880,7 +874,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
     <div class="page" id="page-aialysis">
       <div class="matches-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div>
-          <div class="matches-title"><img src="/favicon.svg" style="height:22px;width:22px;vertical-align:middle;margin-right:4px"> aiALYSIS</div>
+          <div class="matches-title" style="color:var(--text)"><img src="/favicon.svg" style="height:22px;width:22px;vertical-align:middle;margin-right:4px"> aiALYSIS</div>
           <div class="matches-count">AI analiz edilmiş canlı maçlar</div>
         </div>
         <div id="aiaSortBtns" style="display:flex;gap:4px;">
@@ -2687,6 +2681,12 @@ function showMainTab(name){
   if(name==='favoriler')renderFavoriler();
 }
 
+function aiaLogo(url,name){
+  const ch=(name||'?').charAt(0);
+  const ph='<div style="width:36px;height:36px;background:var(--card);border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted);margin:0 auto">'+ch+'</div>';
+  if(!url)return ph;
+  return '<img src="'+url+'" style="width:36px;height:36px;object-fit:contain" onerror="this.onerror=null;var p=document.createElement(\'div\');p.style.cssText=\'width:36px;height:36px;background:#1A1A2E;border-radius:8px;border:1px solid #2A2A3E;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#7A7A95;margin:0 auto\';p.textContent=\''+ch+'\';this.parentNode.replaceChild(p,this);">';
+}
 async function loadAialysis(){
   const c=document.getElementById('aialysisContainer');
   c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>'+t('yukleniyor')+'</div>';
@@ -2806,9 +2806,9 @@ async function loadAialysis(){
       card.innerHTML=`
         <div class="aia-lig"><span style="font-size:11px;color:var(--muted)">${lig}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span><button class="aia-share-btn" onclick="event.stopPropagation();shareTahminById('${macId}')" title="Paylaş">🔗</button></div>
         <div class="aia-maclar">
-          <div class="aia-takim">${m?`<img src="${m.teams.home.logo}" onerror="this.style.display='none'">`:''}<div class="aia-takim-adi">${evAdi}</div></div>
-          <div class="aia-skor">${dk?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
-          <div class="aia-takim">${m?`<img src="${m.teams.away.logo}" onerror="this.style.display='none'">`:''}<div class="aia-takim-adi">${depAdi}</div></div>
+          <div class="aia-takim">${aiaLogo(m&&m.teams.home.logo,evAdi)}<div class="aia-takim-adi">${evAdi}</div></div>
+          <div class="aia-skor">${dk?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
+          <div class="aia-takim">${aiaLogo(m&&m.teams.away.logo,depAdi)}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
         <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
       const mid=parseInt(macId);
@@ -3233,6 +3233,30 @@ async function sendForumMsg(macId){
 }
 
 loadMaclar();
+
+/* ===== SCROLL HIDE/SHOW NAVBAR ===== */
+(function(){
+  const navbar=document.querySelector('.navbar');
+  const main=document.querySelector('.main');
+  if(!navbar||!main)return;
+  let lastScroll=0;
+  let ticking=false;
+  main.addEventListener('scroll',function(){
+    if(!ticking){
+      window.requestAnimationFrame(function(){
+        const curr=main.scrollTop;
+        if(curr>lastScroll&&curr>80){
+          navbar.classList.add('nav-hidden');
+        }else{
+          navbar.classList.remove('nav-hidden');
+        }
+        lastScroll=curr;
+        ticking=false;
+      });
+      ticking=true;
+    }
+  });
+})();
 
 /* ===== i18n / MULTI-LANGUAGE SYSTEM ===== */
 const I18N={
