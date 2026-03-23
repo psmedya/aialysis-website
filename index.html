@@ -791,7 +791,7 @@ body.light-theme .cerez-kategori{background:#fafafa;}
 <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">aiALYSIS Live - Yapay Zeka Destekli Maç Tahmini ve Canlı Analiz</h1>
 
 <!-- BAKIM MODU -->
-<div id="bakimModu" style="position:fixed;inset:0;z-index:99999;background:#0A0A12;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:'DM Sans',sans-serif;">
+<div id="bakimModu" style="position:fixed;inset:0;z-index:99999;background:#0A0A12;display:none;align-items:center;justify-content:center;flex-direction:column;font-family:'DM Sans',sans-serif;">
   <div style="text-align:center;max-width:420px;padding:24px;">
     <div style="margin-bottom:20px;">
       <span style="font-style:italic;font-size:40px;font-weight:900;color:#FFD54F;">ai</span><span style="font-size:40px;font-weight:900;color:white;">ALYSIS</span>
@@ -830,7 +830,8 @@ body.light-theme .cerez-kategori{background:#fafafa;}
     });
     var data = await r.json();
     var config = data && data[0] && data[0].value ? data[0].value : {};
-    if (!config.aktif) { document.getElementById('bakimModu').style.display='none'; return; }
+    if (!config.aktif) { return; }
+    document.getElementById('bakimModu').style.display='flex';
     if (config.mesaj) {
       var msgEl = document.querySelector('#bakimModu p[style*="color:#7A7A95"]');
       if (msgEl) msgEl.textContent = config.mesaj;
@@ -856,9 +857,9 @@ body.light-theme .cerez-kategori{background:#fafafa;}
 </script>
 
 <!-- LANDING SAYFA -->
-<div id="landingPage" style="position:fixed;inset:0;z-index:9999;background:#0A0A12;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+<div id="landingPage" style="position:fixed;inset:0;z-index:9999;background:#0A0A12;display:flex;align-items:flex-start;justify-content:flex-start;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <style>
-    .landing{text-align:center;max-width:480px;padding:40px 24px;}
+    .landing{text-align:center;max-width:480px;padding:40px 24px;margin:auto;width:100%;}
     .landing-logo{margin-bottom:8px;}
     .landing-logo .ai{font-style:italic;font-size:56px;font-weight:900;background:linear-gradient(135deg,#FFD54F,#D4A24C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 20px rgba(255,213,79,.4));}
     .landing-logo .alysis{font-size:48px;font-weight:900;color:white;letter-spacing:-2px;}
