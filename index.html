@@ -1014,7 +1014,15 @@ body.light-theme .cerez-kategori{background:#fafafa;}
       <button class="nav-more-btn" onclick="toggleNavDropdown(event)" title="Menü" aria-label="Menü">
         <span class="hamburger-icon"><span></span><span></span><span></span></span>
       </button>
-      <div class="nav-dropdown" id="navDropdown">
+    </div>
+    </div><!-- /nav-right -->
+    <!-- Hidden elements for backward compat -->
+    <div id="liveBtnEl" style="display:none;"></div>
+    <button id="hamburgerBtn" style="display:none;" onclick="toggleSidebar()"></button>
+    <button id="themeToggleBtn" style="display:none;"></button>
+  </nav>
+  <!-- DROPDOWN BODY SEVİYESİNDE -->
+  <div class="nav-dropdown" id="navDropdown">
         <!-- Arama -->
         <div class="nav-dropdown-search">
           <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1070,13 +1078,6 @@ body.light-theme .cerez-kategori{background:#fafafa;}
           <svg viewBox="0 0 24 24" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <span id="authBtnLabel">Giriş Yap</span>
         </button>
       </div>
-    </div>
-    </div><!-- /nav-right -->
-    <!-- Hidden elements for backward compat -->
-    <div id="liveBtnEl" style="display:none;"></div>
-    <button id="hamburgerBtn" style="display:none;" onclick="toggleSidebar()"></button>
-    <button id="themeToggleBtn" style="display:none;"></button>
-  </nav>
   <div class="nav-dropdown-overlay" id="navDropdownOverlay" onclick="closeNavDropdown()"></div>
 
   <!-- SIDEBAR -->
@@ -1837,7 +1838,7 @@ function closeNavDropdown(){
 document.addEventListener('click',function(e){
   const wrap=document.getElementById('navMoreWrap');
   const dd=document.getElementById('navDropdown');
-  if(dd&&dd.classList.contains('open')&&wrap&&!wrap.contains(e.target)&&!e.target.closest('#mob-more')){
+  if(dd&&dd.classList.contains('open')&&wrap&&!wrap.contains(e.target)&&!dd.contains(e.target)&&!e.target.closest('#mob-more')){
     closeNavDropdown();
   }
 });
