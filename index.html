@@ -3065,7 +3065,7 @@ async function loadTahminler(filter='hepsi') {
   c.innerHTML = '<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';
 
   try {
-    let url = `${SU}/rest/v1/tahmin_sonuclari?oran=not.is.null&order=created_at.desc&limit=200`;
+    let url = `${SU}/rest/v1/tahmin_sonuclari?order=created_at.desc&limit=200`;
     if (filter === 'tamamlandi') url += `&sonuc=in.(DOGRU,YANLIS)`;
     else if (filter === 'hepsi') url += `&sonuc=in.(DOGRU,YANLIS,BEKLIYOR)`;
     else url += `&sonuc=eq.${filter}`;
@@ -3080,7 +3080,7 @@ async function loadTahminler(filter='hepsi') {
     const data = await r.json();
 
     // Istatistikler — zaman filtresine gore
-    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&oran=not.is.null&select=sonuc,kategori,created_at,mac_id,cizgi,ust_alt,oran,gercek_deger`;
+    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&select=sonuc,kategori,created_at,mac_id,cizgi,ust_alt,oran,gercek_deger`;
     if (tahminGun > 0) {
       const sinir = new Date(Date.now() - tahminGun * 86400000).toISOString();
       statsUrl += `&created_at=gte.${sinir}`;
