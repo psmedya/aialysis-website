@@ -26,8 +26,8 @@
 <meta name="twitter:description" content="Yapay zeka destekli canlı maç analizi ve tahminler. Ücretsiz futbol tahmin platformu.">
 <meta name="twitter:image" content="https://aialysis.live/og-image.png">
 <meta name="theme-color" content="#4A3AFF">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-M9Y0T0648K"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-M9Y0T0648K');</script>
+<!-- GA4: Conditional — yükleme cerezYoneticisi tarafından yapılır -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -729,6 +729,61 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 /* CONFETTI */
 @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(60px) rotate(360deg);opacity:0}}
 .confetti-piece{position:absolute;width:6px;height:6px;border-radius:1px;animation:confettiFall .8s ease forwards;}
+
+/* ÇEREZ BANNER */
+.cerez-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(18,18,30,.97);border-top:1px solid var(--border);padding:18px 24px;display:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:cerezSlideUp .4s ease;}
+@keyframes cerezSlideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.cerez-banner-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.cerez-banner-text{flex:1;font-size:13px;color:var(--text);line-height:1.6;min-width:200px;}
+.cerez-banner-text a{color:var(--gold-lt);text-decoration:underline;}
+.cerez-banner-btns{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+.cerez-btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;transition:all .2s;}
+.cerez-btn-kabul{background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1A1A2E;}
+.cerez-btn-kabul:hover{transform:scale(1.03);box-shadow:0 4px 16px rgba(212,162,76,.3);}
+.cerez-btn-zorunlu{background:var(--card);color:var(--text);border:1px solid var(--border);}
+.cerez-btn-zorunlu:hover{border-color:var(--gold-lt);}
+.cerez-btn-ayarlar{background:none;color:var(--muted);text-decoration:underline;padding:10px 12px;}
+.cerez-btn-ayarlar:hover{color:var(--text);}
+@media(max-width:768px){
+  .cerez-banner{padding:16px;}
+  .cerez-banner-inner{flex-direction:column;text-align:center;}
+  .cerez-banner-btns{width:100%;justify-content:center;}
+  .cerez-btn{padding:10px 16px;font-size:12px;}
+}
+
+/* ÇEREZ AYARLAR MODAL */
+.cerez-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.cerez-modal-overlay.open{display:flex;}
+.cerez-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:cerezModalIn .3s ease;}
+@keyframes cerezModalIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.cerez-modal h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.cerez-modal p{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.cerez-kategori{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;}
+.cerez-kategori-header{display:flex;align-items:center;justify-content:space-between;}
+.cerez-kategori-name{font-size:13px;font-weight:700;color:var(--text);}
+.cerez-kategori-desc{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;}
+.cerez-toggle{position:relative;width:40px;height:22px;flex-shrink:0;}
+.cerez-toggle input{opacity:0;width:0;height:0;}
+.cerez-toggle-slider{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:11px;cursor:pointer;transition:all .3s;}
+.cerez-toggle-slider::before{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:white;top:3px;left:3px;transition:all .3s;}
+.cerez-toggle input:checked+.cerez-toggle-slider{background:var(--green);}
+.cerez-toggle input:checked+.cerez-toggle-slider::before{transform:translateX(18px);}
+.cerez-toggle input:disabled+.cerez-toggle-slider{opacity:.6;cursor:not-allowed;}
+.cerez-modal-btns{display:flex;gap:8px;margin-top:16px;}
+.cerez-modal-btns .cerez-btn{flex:1;text-align:center;}
+body.light-theme .cerez-banner{background:rgba(255,255,255,.97);}
+body.light-theme .cerez-modal{background:#fff;}
+body.light-theme .cerez-kategori{background:#fafafa;}
+
+/* SON BAKTIKLARIN */
+.son-baktigin-wrap{padding:12px 24px;}
+.son-baktigin-title{font-size:11px;font-weight:700;color:var(--gold-lt);letter-spacing:1px;margin-bottom:8px;}
+.son-baktigin-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;}
+.son-baktigin-card{flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all .2s;min-width:140px;text-align:center;}
+.son-baktigin-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.son-baktigin-takim{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.son-baktigin-vs{font-size:10px;color:var(--muted);margin:2px 0;}
+.son-baktigin-skor{font-size:13px;font-weight:700;color:var(--blue-lt);}
 </style>
 </head>
 <body>
@@ -1068,6 +1123,8 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
           <button onclick="toggleCanli()" id="mobilCanliBtn" style="background:rgba(46,213,115,.15);border:1px solid rgba(46,213,115,.4);color:var(--green);padding:6px 12px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;">CANLI</button>
         </div>
       </div>
+      <!-- Son Baktıkların -->
+      <div id="sonBaktiklarinWrap" class="son-baktigin-wrap" style="display:none;"></div>
       <div class="matches-header">
         <div>
           <div class="matches-title" id="matchesTitle">Maçlar</div>
@@ -1435,6 +1492,7 @@ async function onTelegramAuth(user){
       if(signUpErr){console.error('Telegram kayıt hatası:',signUpErr);alert('Telegram giriş hatası: '+signUpErr.message);return;}
     }
     // Basarili - modal kapat, sayfayi guncelle
+    trackEvent('kayit',{method:'telegram'});
     document.getElementById('authOverlay').style.display='none';
     location.reload();
   }catch(e){
@@ -1444,6 +1502,7 @@ async function onTelegramAuth(user){
 }
 
 async function authSocialLogin(provider){
+  trackEvent('kayit',{method:provider});
   const {error}=await sbClient.auth.signInWithOAuth({
     provider: provider,
     options: { redirectTo: window.location.origin }
@@ -1560,6 +1619,10 @@ async function authVerifyOtp(){
     const _abl=document.getElementById('authBtnLabel');if(_abl)_abl.textContent=authEmail.split('@')[0];
     document.getElementById('authBtn').style.background='none';
     sbClient.auth.getUser().then(({data})=>{if(data?.user)updateNavProfileBtn(data.user);});
+    // Analitik: kayıt event
+    trackEvent('kayit',{method:'email_otp'});
+    // Pazarlama: UTM verisini profille ilişkilendir
+    if(cerezIzinVar('pazarlama')){const _utm=getCerez('pazarlama','utm_data');if(_utm)console.log('[AIALYSIS] UTM kayıt ilişkilendirme:',_utm);}
     // Re-open modal to show profile panel with fresh user data
     setTimeout(()=>authModal(),300);
   }catch(e){
@@ -2053,6 +2116,8 @@ async function loadMaclar(silent=false){
     }
     document.getElementById('matchesCount').textContent=`${liste.length} maç`;
     renderMaclar(liste);
+    // Son baktıkların bölümünü güncelle
+    sonBaktiklariniGoster();
   }catch(e){
     c.innerHTML=`<div class="error">Bağlantı hatası: ${e.message||e}</div>`;
     console.error('loadMaclar hata:',e);
@@ -2174,6 +2239,10 @@ async function openMac(id){
   // Aynı maça tıklanırsa kapat
   if(currentMac?.fixture.id===id){panelKapat();return;}
   currentMac=m;
+  // Çerez: son görüntülenen maç kaydet + analitik event
+  const _skor=(m.goals.home!==null?(m.goals.home+' - '+m.goals.away):'-');
+  sonGorutulenKaydet(id,m.teams.home.name,m.teams.away.name,_skor,m.league.name);
+  trackEvent('mac_goruntuleme',{mac_id:id,lig:m.league.name});
   layout.classList.add('panel-acik');
   // Navbar her zaman görünür kalsın — panel açılınca nav-hidden kaldır
   const nb=document.querySelector('.navbar');if(nb)nb.classList.remove('nav-hidden');
@@ -2628,6 +2697,7 @@ async function loadCommunityPredictions(macId){
 }
 
 async function saveUserPredictionSupabase(macId,secim){
+  trackEvent('tahmin_yapma',{kategori:secim});
   const user=await getForumUser();
   if(!user){
     saveUserPredictionLocal(macId,secim);
@@ -3154,6 +3224,8 @@ function switchDetailTab(name){
 }
 
 function showMainTab(name){
+  // Analitik event: sayfa görüntüleme
+  trackEvent('sayfa_goruntulenme',{sayfa:name});
   // Panel açıksa kapat
   panelKapat();
   ['maclar','favoriler','aialysis','dashboard','feed'].forEach(p=>{
@@ -5167,7 +5239,7 @@ loadAialysis=async function(silent){
   <h2 style="font-size:14px;color:var(--text);margin-bottom:8px;font-weight:700">aiALYSIS Live — Yapay Zeka Destekli Mac Tahmini</h2>
   <p>Canlı maç analizi, maç tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Şampiyonlar Ligi canlı skor ve istatistikler.</p>
   <p style="margin-top:8px">Futbol istatistikleri, canlı maç sonuçları, maç öncesi analiz, bahis analizi, banko maçlar. AI destekli akıllı tahmin platformu.</p>
-  <p style="margin-top:8px"><a href="/blog.html" title="aiALYSIS Live Blog - Maç Önizlemeleri ve Analizler" style="color:#D4A24C;font-size:12px;font-weight:600;text-decoration:none;">Blog</a> · <a href="/privacy.html" title="Gizlilik Politikası" style="color:#7A7A95;text-decoration:none;">Gizlilik</a> · <a href="/terms.html" title="Kullanım Şartları" style="color:#7A7A95;text-decoration:none;">Kullanım Şartları</a></p>
+  <p style="margin-top:8px"><a href="/blog.html" title="aiALYSIS Live Blog - Maç Önizlemeleri ve Analizler" style="color:#D4A24C;font-size:12px;font-weight:600;text-decoration:none;">Blog</a> · <a href="/privacy.html" title="Gizlilik Politikası" style="color:#7A7A95;text-decoration:none;">Gizlilik</a> · <a href="/terms.html" title="Kullanım Şartları" style="color:#7A7A95;text-decoration:none;">Kullanım Şartları</a> · <a href="/cookies.html" title="Çerez Politikası" style="color:#7A7A95;text-decoration:none;">Çerez Politikası</a> · <a href="javascript:void(0)" onclick="cerezAyarlariAc()" title="Çerez Ayarları" style="color:#7A7A95;text-decoration:none;">Çerez Ayarları</a></p>
   <div style="margin-top:16px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:inline-block;max-width:420px;text-align:left;">
     <p style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px;">Widget Ekle</p>
     <p style="font-size:10px;color:var(--muted);margin-bottom:8px;">Canlı skor widget'ını sitenize ekleyin:</p>
@@ -5197,6 +5269,285 @@ loadAialysis=async function(silent){
   }
   </script>
   <p style="margin-top:12px;color:var(--muted);font-size:12px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
+  <p style="margin-top:6px;font-size:11px;"><a href="/cookies.html" style="color:#7A7A95;text-decoration:none;">Cerez Politikasi</a> · <a href="javascript:void(0)" onclick="cerezAyarlariAc()" style="color:#7A7A95;text-decoration:none;">Cerez Ayarlari</a></p>
 </footer>
+
+<!-- ÇEREZ ONAY BANNER -->
+<div class="cerez-banner" id="cerezBanner">
+  <div class="cerez-banner-inner">
+    <div class="cerez-banner-text">
+      🍪 Deneyiminizi iyilestirmek icin cerezler kullaniyoruz. Detayli bilgi icin <a href="/cookies.html">Cerez Politikamizi</a> inceleyebilirsiniz.
+    </div>
+    <div class="cerez-banner-btns">
+      <button class="cerez-btn cerez-btn-kabul" onclick="cerezKabulEt('tumunu')">Tumunu Kabul Et</button>
+      <button class="cerez-btn cerez-btn-zorunlu" onclick="cerezKabulEt('zorunlu')">Sadece Zorunlu</button>
+      <button class="cerez-btn cerez-btn-ayarlar" onclick="cerezAyarlariAc()">Ayarlar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ÇEREZ AYARLAR MODAL -->
+<div class="cerez-modal-overlay" id="cerezModalOverlay" onclick="if(event.target===this)cerezModalKapat()">
+  <div class="cerez-modal">
+    <h3>Cerez Tercihleri</h3>
+    <p>Hangi cerez kategorilerini kullanmamiza izin verdiginizi secebilirsiniz. Zorunlu cerezler sitenin calismasi icin gereklidir ve kapatilamaz.</p>
+
+    <div class="cerez-kategori">
+      <div class="cerez-kategori-header">
+        <span class="cerez-kategori-name">Zorunlu Cerezler</span>
+        <label class="cerez-toggle"><input type="checkbox" checked disabled><span class="cerez-toggle-slider"></span></label>
+      </div>
+      <div class="cerez-kategori-desc">Oturum yonetimi, tema ve dil tercihi. Sitenin duzgun calismasi icin gereklidir.</div>
+    </div>
+
+    <div class="cerez-kategori">
+      <div class="cerez-kategori-header">
+        <span class="cerez-kategori-name">Islevsel Cerezler</span>
+        <label class="cerez-toggle"><input type="checkbox" id="cerezIslevsel"><span class="cerez-toggle-slider"></span></label>
+      </div>
+      <div class="cerez-kategori-desc">Son goruntulenen maclar, favori ligler, panel durumu gibi kisisellestirilmis deneyim icin kullanilir.</div>
+    </div>
+
+    <div class="cerez-kategori">
+      <div class="cerez-kategori-header">
+        <span class="cerez-kategori-name">Analitik Cerezler</span>
+        <label class="cerez-toggle"><input type="checkbox" id="cerezAnalitik"><span class="cerez-toggle-slider"></span></label>
+      </div>
+      <div class="cerez-kategori-desc">Google Analytics ile site kullanim istatistiklerini toplamak icin kullanilir. Kisisel veri icermez.</div>
+    </div>
+
+    <div class="cerez-kategori">
+      <div class="cerez-kategori-header">
+        <span class="cerez-kategori-name">Pazarlama Cerezleri</span>
+        <label class="cerez-toggle"><input type="checkbox" id="cerezPazarlama"><span class="cerez-toggle-slider"></span></label>
+      </div>
+      <div class="cerez-kategori-desc">Kampanya takibi, UTM parametreleri ve davet kodu izleme icin kullanilir.</div>
+    </div>
+
+    <div class="cerez-modal-btns">
+      <button class="cerez-btn cerez-btn-kabul" onclick="cerezKabulEt('tumunu')">Tumunu Kabul Et</button>
+      <button class="cerez-btn cerez-btn-zorunlu" onclick="cerezSecileniKaydet()">Secilenleri Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ÇEREZ YÖNETİM SİSTEMİ -->
+<script>
+// === ÇEREZ YÖNETİCİSİ ===
+const CEREZ_KEY='cerez_tercihi';
+const GA4_ID='G-M9Y0T0648K';
+
+function getCerezTercihi(){
+  try{return JSON.parse(localStorage.getItem(CEREZ_KEY));}catch(e){return null;}
+}
+
+function setCerezTercihi(tercih){
+  localStorage.setItem(CEREZ_KEY,JSON.stringify(tercih));
+  // Cookie olarak da kaydet (30 gün)
+  const d=new Date();d.setTime(d.getTime()+30*24*60*60*1000);
+  document.cookie=CEREZ_KEY+'='+encodeURIComponent(JSON.stringify(tercih))+';expires='+d.toUTCString()+';path=/;SameSite=Lax';
+}
+
+function cerezIzinVar(kategori){
+  const t=getCerezTercihi();
+  if(!t)return false;
+  if(kategori==='zorunlu')return true;
+  return !!t[kategori];
+}
+
+// Kategori bazlı localStorage yöneticisi
+function setCerez(kategori,key,value){
+  if(kategori==='zorunlu'||cerezIzinVar(kategori)){
+    localStorage.setItem(key,typeof value==='string'?value:JSON.stringify(value));
+    return true;
+  }
+  return false;
+}
+
+function getCerez(kategori,key){
+  if(kategori==='zorunlu'||cerezIzinVar(kategori)){
+    const v=localStorage.getItem(key);
+    try{return JSON.parse(v);}catch(e){return v;}
+  }
+  return null;
+}
+
+// === BANNER GÖSTERİMİ ===
+function cerezBannerGoster(){
+  const banner=document.getElementById('cerezBanner');
+  if(!getCerezTercihi()&&banner){banner.style.display='block';}
+}
+
+function cerezBannerGizle(){
+  const banner=document.getElementById('cerezBanner');
+  if(banner)banner.style.display='none';
+}
+
+// === KABUL FONKSİYONLARI ===
+function cerezKabulEt(tip){
+  let tercih;
+  if(tip==='tumunu'){
+    tercih={zorunlu:true,islevsel:true,analitik:true,pazarlama:true};
+  }else{
+    tercih={zorunlu:true,islevsel:false,analitik:false,pazarlama:false};
+  }
+  setCerezTercihi(tercih);
+  cerezBannerGizle();
+  cerezModalKapat();
+  cerezSistemiBaslat(tercih);
+}
+
+function cerezSecileniKaydet(){
+  const tercih={
+    zorunlu:true,
+    islevsel:!!document.getElementById('cerezIslevsel').checked,
+    analitik:!!document.getElementById('cerezAnalitik').checked,
+    pazarlama:!!document.getElementById('cerezPazarlama').checked
+  };
+  setCerezTercihi(tercih);
+  cerezBannerGizle();
+  cerezModalKapat();
+  cerezSistemiBaslat(tercih);
+}
+
+// === AYARLAR MODALI ===
+function cerezAyarlariAc(){
+  cerezBannerGizle();
+  const overlay=document.getElementById('cerezModalOverlay');
+  const tercih=getCerezTercihi()||{zorunlu:true,islevsel:false,analitik:false,pazarlama:false};
+  document.getElementById('cerezIslevsel').checked=tercih.islevsel;
+  document.getElementById('cerezAnalitik').checked=tercih.analitik;
+  document.getElementById('cerezPazarlama').checked=tercih.pazarlama;
+  overlay.classList.add('open');
+}
+
+function cerezModalKapat(){
+  document.getElementById('cerezModalOverlay').classList.remove('open');
+}
+
+// === GA4 KONDİSYONEL YÜKLEME ===
+let ga4Loaded=false;
+function ga4Yukle(){
+  if(ga4Loaded)return;
+  ga4Loaded=true;
+  const s=document.createElement('script');
+  s.async=true;
+  s.src='https://www.googletagmanager.com/gtag/js?id='+GA4_ID;
+  document.head.appendChild(s);
+  s.onload=function(){
+    gtag('js',new Date());
+    gtag('config',GA4_ID);
+  };
+}
+
+// Custom event tracking (sadece analitik izni varsa)
+function trackEvent(eventName,params){
+  if(!cerezIzinVar('analitik'))return;
+  if(!ga4Loaded)return;
+  gtag('event',eventName,params||{});
+}
+
+// === İŞLEVSEL: SON GÖRÜNTÜLENEN MAÇLAR ===
+function sonGorutulenKaydet(macId,evTakim,depTakim,skor,lig){
+  if(!cerezIzinVar('islevsel'))return;
+  let liste=getCerez('islevsel','son_gorutulen_maclar')||[];
+  // Duplicate varsa çıkar
+  liste=liste.filter(m=>m.id!==macId);
+  // Başa ekle
+  liste.unshift({id:macId,ev:evTakim,dep:depTakim,skor:skor||'-',lig:lig||'',t:Date.now()});
+  // Max 10
+  if(liste.length>10)liste=liste.slice(0,10);
+  setCerez('islevsel','son_gorutulen_maclar',liste);
+  sonBaktiklariniGoster();
+}
+
+function sonBaktiklariniGoster(){
+  const wrap=document.getElementById('sonBaktiklarinWrap');
+  if(!wrap)return;
+  if(!cerezIzinVar('islevsel')){wrap.style.display='none';return;}
+  const liste=getCerez('islevsel','son_gorutulen_maclar')||[];
+  if(!liste.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const goster=liste.slice(0,5);
+  wrap.innerHTML='<div class="son-baktigin-title">SON BAKTIKLARIN</div><div class="son-baktigin-list">'+
+    goster.map(m=>'<div class="son-baktigin-card" onclick="openMac('+m.id+')">'+
+      '<div class="son-baktigin-takim">'+m.ev+'</div>'+
+      '<div class="son-baktigin-vs">vs</div>'+
+      '<div class="son-baktigin-takim">'+m.dep+'</div>'+
+      '<div class="son-baktigin-skor">'+m.skor+'</div></div>').join('')+'</div>';
+}
+
+// === İŞLEVSEL: FAVORİ LİGLER (Giriş yapmadan) ===
+function favoriLigKaydet(ligId){
+  if(!cerezIzinVar('islevsel'))return;
+  let ligler=getCerez('islevsel','favori_ligler')||[];
+  if(ligler.includes(ligId))ligler=ligler.filter(l=>l!==ligId);
+  else ligler.push(ligId);
+  setCerez('islevsel','favori_ligler',ligler);
+}
+
+// === İŞLEVSEL: SON TARİH ===
+function sonTarihKaydet(tarih){
+  setCerez('islevsel','son_tarih',tarih);
+}
+
+// === İŞLEVSEL: PANEL DURUMU ===
+function panelDurumuKaydet(durum){
+  setCerez('islevsel','panel_durumu',durum);
+}
+
+// === PAZARLAMA: UTM PARAMETRELERİ ===
+function utmParametreleriOku(){
+  if(!cerezIzinVar('pazarlama'))return;
+  const params=new URLSearchParams(window.location.search);
+  const utmKeys=['utm_source','utm_medium','utm_campaign'];
+  const utmData={};
+  let hasUtm=false;
+  utmKeys.forEach(k=>{
+    const v=params.get(k);
+    if(v){utmData[k]=v;hasUtm=true;}
+  });
+  if(hasUtm)setCerez('pazarlama','utm_data',utmData);
+
+  // Davet kodu takibi
+  const ref=params.get('ref');
+  if(ref)setCerez('pazarlama','davet_kodu',ref);
+}
+
+// === SİSTEM BAŞLATMA ===
+function cerezSistemiBaslat(tercih){
+  // GA4
+  if(tercih.analitik)ga4Yukle();
+
+  // İşlevsel
+  if(tercih.islevsel){
+    sonBaktiklariniGoster();
+  }
+
+  // Pazarlama
+  if(tercih.pazarlama){
+    utmParametreleriOku();
+    // Facebook Pixel placeholder (ileride aktif edilecek)
+    // fbq('init', 'PIXEL_ID'); fbq('track', 'PageView');
+  }
+}
+
+// === SAYFA YÜKLENME ===
+(function cerezInit(){
+  const tercih=getCerezTercihi();
+  if(tercih){
+    cerezSistemiBaslat(tercih);
+  }else{
+    // Tercih yapılmamış — banner göster
+    // DOM hazır olana kadar bekle
+    if(document.readyState==='loading'){
+      document.addEventListener('DOMContentLoaded',cerezBannerGoster);
+    }else{
+      cerezBannerGoster();
+    }
+  }
+})();
+</script>
+
 </body>
 </html>
