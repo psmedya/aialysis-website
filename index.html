@@ -1153,10 +1153,62 @@ const sbClient=window.supabase.createClient('https://fohmlwoewjupceznwmdr.supaba
 let authEmail='';
 
 function telegramLogin(){
-  // Telegram Login Widget popup
   const w=550,h=470,left=(screen.width-w)/2,top=(screen.height-h)/2;
   window.open(`https://oauth.telegram.org/auth?bot_id=8741800028&origin=${encodeURIComponent(window.location.origin)}&embed=1&request_access=write&return_to=${encodeURIComponent(window.location.origin)}`,
     'telegram_login',`width=${w},height=${h},left=${left},top=${top}`);
+}
+
+// Telegram OAuth popup'tan gelen mesajı dinle
+window.addEventListener('message',function(e){
+  if(e.origin==='https://oauth.telegram.org'){
+    try{
+      const data=JSON.parse(e.data);
+      if(data.event==='auth_result'&&data.result) onTelegramAuth(data.result);
+    }catch(ex){}
+  }
+});
+
+// URL hash'ten Telegram auth verisi kontrol et (redirect sonrası)
+(function checkTelegramRedirect(){
+  const hash=window.location.hash;
+  if(hash&&hash.includes('tgAuthResult=')){
+    try{
+      const encoded=hash.split('tgAuthResult=')[1];
+      const user=JSON.parse(decodeURIComponent(encoded));
+      if(user&&user.id) onTelegramAuth(user);
+      history.replaceState(null,'',window.location.pathname+window.location.search);
+    }catch(ex){}
+  }
+})();
+
+async function onTelegramAuth(user){
+  const tgEmail=`telegram_${user.id}@aialysis.app`;
+  const tgPass=`tg_${user.hash}`;
+  const fullName=[user.first_name,user.last_name].filter(Boolean).join(' ');
+  try{
+    // Once giris dene
+    const {data,error}=await sbClient.auth.signInWithPassword({email:tgEmail,password:tgPass});
+    if(error){
+      // Kayit ol
+      const {data:signUp,error:signUpErr}=await sbClient.auth.signUp({
+        email:tgEmail,password:tgPass,
+        options:{data:{
+          full_name:fullName,
+          avatar_url:user.photo_url||'',
+          provider:'telegram',
+          telegram_id:user.id,
+          aialysis_username:user.username||user.first_name
+        }}
+      });
+      if(signUpErr){console.error('Telegram kayıt hatası:',signUpErr);alert('Telegram giriş hatası: '+signUpErr.message);return;}
+    }
+    // Basarili - modal kapat, sayfayi guncelle
+    document.getElementById('authOverlay').style.display='none';
+    location.reload();
+  }catch(e){
+    console.error('Telegram login hatası:',e);
+    alert('Telegram giriş sırasında bir hata oluştu.');
+  }
 }
 
 async function authSocialLogin(provider){
@@ -1208,7 +1260,8 @@ function authModal(){
         'facebook':{icon:'f',text:'Facebook',color:'#1877F2'},
         'twitter':{icon:'X',text:'Twitter',color:'#1DA1F2'},
         'email':{icon:'@',text:'E-posta',color:'var(--blue-lt)'},
-        'apple':{icon:'',text:'Apple',color:'#999'}
+        'apple':{icon:'',text:'Apple',color:'#999'},
+        'telegram':{icon:'✈',text:'Telegram',color:'#0088CC'}
       };
       const pInfo=providerMap[provider]||{icon:'?',text:provider,color:'var(--muted)'};
       document.getElementById('profileProviderIcon').textContent=pInfo.icon;
