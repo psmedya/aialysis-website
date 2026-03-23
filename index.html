@@ -1558,9 +1558,10 @@ async function sbQuery(table,filters=''){
   return r.json();
 }
 function sbToApiFormat(row){
+  const apiLogo=(url,teamId)=>url||( teamId ? `https://media.api-sports.io/football/teams/${teamId}.png` : null);
   return {
     fixture:{id:row.fixture_id,date:row.mac_tarihi,referee:row.hakem,venue:{name:row.stadyum,city:row.sehir},status:{short:row.durum,elapsed:row.elapsed,extra:row.extra}},
-    teams:{home:{id:row.ev_takim_id,name:row.ev_takim_adi,logo:row.ev_logo},away:{id:row.dep_takim_id,name:row.dep_takim_adi,logo:row.dep_logo}},
+    teams:{home:{id:row.ev_takim_id,name:row.ev_takim_adi,logo:apiLogo(row.ev_logo,row.ev_takim_id)},away:{id:row.dep_takim_id,name:row.dep_takim_adi,logo:apiLogo(row.dep_logo,row.dep_takim_id)}},
     goals:{home:row.ev_gol,away:row.dep_gol},
     score:{halftime:{home:row.ev_gol_iy,away:row.dep_gol_iy}},
     league:{id:row.lig_id,name:row.lig_adi,logo:row.lig_logo,country:row.ulke,season:row.sezon,round:row.tur}
@@ -2708,7 +2709,7 @@ async function loadAialysis(){
     try{
       const fixIds=macIds.map(id=>parseInt(id)).filter(Boolean);
       if(fixIds.length){
-        const rows=await sbQuery('maclar',`fixture_id=in.(${fixIds.join(',')})`);
+        const rows=await sbQuery('maclar',`select=fixture_id,mac_tarihi,hakem,stadyum,sehir,durum,elapsed,extra,ev_takim_id,ev_takim_adi,ev_logo,dep_takim_id,dep_takim_adi,dep_logo,ev_gol,dep_gol,ev_gol_iy,dep_gol_iy,lig_id,lig_adi,lig_logo,ulke,sezon,tur&fixture_id=in.(${fixIds.join(',')})`);
         (rows||[]).forEach(r=>{canliMap[r.fixture_id]=sbToApiFormat(r);});
       }
     }catch(_){}
@@ -2776,9 +2777,10 @@ async function loadAialysis(){
     for(const macId of filteredMacIds){
       const tahminler=hazir[macId];
       const m=canliMap[parseInt(macId)];
-      // Bitmiş maçları gösterme
+      // Sadece canlı maçları göster (bitmiş, başlamamış ve durum bilgisi olmayanları atla)
       const st=m?.fixture?.status?.short||'';
-      if(['FT','AET','PEN','AWD','WO'].includes(st)) continue;
+      const canliDurumlar=['1H','2H','HT','ET','BT','P','SUSP','INT','LIVE'];
+      if(!canliDurumlar.includes(st)) continue;
       const evAdi=tahminler[0]?.ev_sahibi||'?';
       const depAdi=tahminler[0]?.deplasman||'?';
       const lig=tahminler[0]?.lig||'';
@@ -2806,9 +2808,9 @@ async function loadAialysis(){
       card.innerHTML=`
         <div class="aia-lig"><span style="font-size:11px;color:var(--muted)">${lig}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span><button class="aia-share-btn" onclick="event.stopPropagation();shareTahminById('${macId}')" title="Paylaş">🔗</button></div>
         <div class="aia-maclar">
-          <div class="aia-takim">${aiaLogo(m&&m.teams.home.logo,evAdi)}<div class="aia-takim-adi">${evAdi}</div></div>
-          <div class="aia-skor">${dk?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
-          <div class="aia-takim">${aiaLogo(m&&m.teams.away.logo,depAdi)}<div class="aia-takim-adi">${depAdi}</div></div>
+          <div class="aia-takim">${aiaLogo(m?.teams?.home?.logo,evAdi)}<div class="aia-takim-adi">${evAdi}</div></div>
+          <div class="aia-skor">${dk!=null?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
+          <div class="aia-takim">${aiaLogo(m?.teams?.away?.logo,depAdi)}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
         <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
       const mid=parseInt(macId);
