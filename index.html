@@ -1988,6 +1988,16 @@ function sbToApiFormat(row){
     league:{id:row.lig_id,name:row.lig_adi,logo:row.lig_logo,country:row.ulke,season:row.sezon,round:row.tur}
   };
 }
+function istatToApiFormat(row){
+  const apiLogo=(url,teamId)=>url||( teamId ? `https://media.api-sports.io/football/teams/${teamId}.png` : null);
+  return {
+    fixture:{id:row.fixture_id,date:row.mac_tarihi,referee:row.hakem||null,venue:{name:row.stadyum||null,city:row.sehir||null},status:{short:row.durum||'FT',elapsed:row.elapsed||90,extra:row.extra||null}},
+    teams:{home:{id:row.ev_takim_id,name:row.ev_takim_adi,logo:apiLogo(row.ev_logo,row.ev_takim_id)},away:{id:row.dep_takim_id,name:row.dep_takim_adi,logo:apiLogo(row.dep_logo,row.dep_takim_id)}},
+    goals:{home:row.ev_gol,away:row.dep_gol},
+    score:{halftime:{home:row.ev_gol_iy??null,away:row.dep_gol_iy??null}},
+    league:{id:row.lig_id,name:row.lig_adi,logo:row.lig_logo||null,country:row.ulke,season:row.sezon||null,round:row.tur||null}
+  };
+}
 // Eski apiFetch uyumluluğu — takım arama gibi nadir çağrılar için
 async function apiFetch(ep){
   const r=await fetch(`${SU}/functions/v1/api-proxy?path=${encodeURIComponent(ep)}`,{
@@ -2023,17 +2033,16 @@ async function loadMaclar(silent=false){
     } else {
       const istFmt=(d)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Istanbul'}).format(d);
       const tarihStr=istFmt(tarih);
-      let rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`);
-      // Geçmiş tarihte veri yoksa Edge Function ile doldur
       const bugun=istFmt(new Date());
-      if((!rows||rows.length===0)&&tarihStr<bugun){
-        c.innerHTML='<div class="loading"><div class="spinner"></div>Eski maçlar yükleniyor...</div>';
-        try{
-          await fetch(SU+'/functions/v1/mac-guncelle-gun',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SK},body:JSON.stringify({tarih:tarihStr})});
-          rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`);
-        }catch(ef){console.warn('Edge Function hatası:',ef);}
+      if(tarihStr<bugun){
+        // Geçmiş günler: mac_istatistikleri tablosundan oku
+        const rows=await sbQuery('mac_istatistikleri',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lt.${tarihStr}T23:59:59.999&order=mac_tarihi`);
+        liste=(rows||[]).map(istatToApiFormat);
+      } else {
+        // Bugün ve gelecek: maclar tablosundan oku
+        const rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`);
+        liste=(rows||[]).map(sbToApiFormat);
       }
-      liste=(rows||[]).map(sbToApiFormat);
       document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
     }
     maclar=liste;
