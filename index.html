@@ -554,6 +554,42 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   [dir="rtl"] .lang-dropdown{right:auto;left:-10px;}
   #langSelect{max-width:64px !important;padding:4px 18px 4px 6px !important;font-size:11px !important;}
 }
+
+/* ===== PROFIL MODAL ===== */
+.profil-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;animation:profFadeIn .2s ease;}
+@keyframes profFadeIn{from{opacity:0}to{opacity:1}}
+.profil-modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:420px;max-width:92vw;max-height:88vh;overflow-y:auto;animation:profSlideUp .25s ease;box-shadow:0 24px 80px rgba(0,0,0,.5);}
+@keyframes profSlideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.profil-modal::-webkit-scrollbar{width:4px;}
+.profil-modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.profil-header{text-align:center;padding:32px 24px 20px;border-bottom:1px solid var(--border);position:relative;}
+.profil-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;transition:color .2s;}
+.profil-close:hover{color:var(--text);}
+.profil-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-lt));display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:white;margin:0 auto 12px;border:3px solid var(--gold-lt);box-shadow:0 4px 20px rgba(74,58,255,.3);}
+.profil-name{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.profil-rutbe{display:inline-flex;align-items:center;gap:6px;background:rgba(212,162,76,.12);border:1px solid rgba(212,162,76,.3);border-radius:20px;padding:4px 14px;font-size:13px;font-weight:600;color:var(--gold-lt);}
+.profil-tarih{font-size:11px;color:var(--muted);margin-top:8px;}
+.profil-body{padding:20px 24px;}
+.profil-puan-kart{background:linear-gradient(135deg,rgba(74,58,255,.15),rgba(124,111,255,.08));border:1px solid rgba(74,58,255,.25);border-radius:12px;padding:20px;text-align:center;margin-bottom:16px;}
+.profil-puan-sayi{font-size:36px;font-weight:900;color:var(--blue-lt);line-height:1;}
+.profil-puan-label{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
+.profil-progress{height:6px;background:var(--border);border-radius:3px;margin-top:12px;overflow:hidden;}
+.profil-progress-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--gold-lt));border-radius:3px;transition:width .5s ease;}
+.profil-progress-info{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px;}
+.profil-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.profil-stat-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 8px;text-align:center;}
+.profil-stat-val{font-size:20px;font-weight:900;}
+.profil-stat-val.green{color:var(--green);}
+.profil-stat-val.red{color:var(--red);}
+.profil-stat-val.blue{color:var(--blue-lt);}
+.profil-stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+.profil-goruntulenme{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:16px;}
+.profil-mesajlar{border-top:1px solid var(--border);padding-top:12px;}
+.profil-mesajlar h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.profil-mesaj-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;font-size:12px;color:var(--text);}
+.profil-mesaj-item .pm-time{font-size:10px;color:var(--muted);margin-top:4px;}
+.forum-user-link{cursor:pointer;color:var(--gold-lt);font-weight:700;transition:opacity .2s;}
+.forum-user-link:hover{opacity:.8;text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -3089,38 +3125,123 @@ async function loadYildizlar(){
 }
 
 // === EN AKTİF KULLANICILAR (Leaderboard) ===
+// ===== RÜTBE SİSTEMİ =====
+function rutbeHesapla(puan){
+  if(puan>=5000)return{ad:'Legend',rozet:'\u{1F451}',min:5000,max:99999};
+  if(puan>=1500)return{ad:'Mastermind',rozet:'\u{1F9E0}',min:1500,max:4999};
+  if(puan>=500)return{ad:'Strategist',rozet:'\u{1F3C6}',min:500,max:1499};
+  if(puan>=200)return{ad:'Analyst',rozet:'\u{1F3AF}',min:200,max:499};
+  if(puan>=50)return{ad:'Scout',rozet:'\u26BD',min:50,max:199};
+  return{ad:'Rookie',rozet:'\u{1F331}',min:0,max:49};
+}
+function rutbeRozet(rutbe){
+  const r={Rookie:'\u{1F331}',Scout:'\u26BD',Analyst:'\u{1F3AF}',Strategist:'\u{1F3C6}',Mastermind:'\u{1F9E0}',Legend:'\u{1F451}'};
+  return r[rutbe]||'\u{1F331}';
+}
+
+// ===== PROFİL MODAL =====
+async function openProfile(userId){
+  try{
+    // 1. Profil bilgilerini çek
+    const pRes=await fetch(`${SU}/rest/v1/profiller?user_id=eq.${userId}&select=*`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    let profil=null;
+    if(pRes.ok){const pData=await pRes.json();if(pData.length)profil=pData[0];}
+
+    // Profil yoksa minimal bilgi göster
+    const puan=profil?profil.puan||0:0;
+    const rutbe=rutbeHesapla(puan);
+    const ad=profil?(profil.kullanici_adi||'Kullanici'):'Kullanici';
+    const initial=ad.charAt(0).toUpperCase();
+    const kayitTarihi=profil&&profil.created_at?new Date(profil.created_at):new Date();
+    const aylar=['Ocak','Subat','Mart','Nisan','Mayis','Haziran','Temmuz','Agustos','Eylul','Ekim','Kasim','Aralik'];
+    const kayitStr=aylar[kayitTarihi.getMonth()]+' '+kayitTarihi.getFullYear();
+    const goruntulenme=profil?profil.goruntulenme||0:0;
+
+    // 2. Görüntülenme artır (RPC)
+    try{
+      await fetch(`${SU}/rest/v1/rpc/profil_goruntule`,{method:'POST',headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Content-Type':'application/json'},body:JSON.stringify({p_user_id:userId})});
+    }catch(e){}
+
+    // 3. Tahmin istatistikleri - profiller tablosundan
+    const dogru=profil?profil.dogru_tahmin||0:0;
+    const yanlis=profil?profil.yanlis_tahmin||0:0;
+    const toplam=dogru+yanlis;
+    const oran=toplam>0?Math.round((dogru/toplam)*100):0;
+
+    // 4. Son forum mesajları
+    let sonMesajlar=[];
+    try{
+      const mRes=await fetch(`${SU}/rest/v1/forum_mesajlar?user_id=eq.${userId}&order=created_at.desc&limit=5&select=mesaj,created_at`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+      if(mRes.ok)sonMesajlar=await mRes.json();
+    }catch(e){}
+
+    // Progress bar hesapla
+    const progressPuan=puan-rutbe.min;
+    const progressMax=rutbe.max-rutbe.min+1;
+    const progressPct=Math.min(100,Math.round((progressPuan/progressMax)*100));
+    const sonrakiRutbe=puan<50?'Scout':puan<200?'Analyst':puan<500?'Strategist':puan<1500?'Mastermind':puan<5000?'Legend':'MAX';
+
+    // Modal HTML
+    const mesajlarHtml=sonMesajlar.length?sonMesajlar.map(m=>`<div class="profil-mesaj-item">${escapeHtml(m.mesaj)}<div class="pm-time">${zamanOnce(m.created_at)}</div></div>`).join(''):'<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px;">Henuz mesaj yok</div>';
+
+    const modalHtml=`<div class="profil-overlay" onclick="if(event.target===this)this.remove()">
+      <div class="profil-modal">
+        <div class="profil-header">
+          <button class="profil-close" onclick="document.querySelector('.profil-overlay').remove()">&times;</button>
+          <div class="profil-avatar">${initial}</div>
+          <div class="profil-name">${escapeHtml(ad)}</div>
+          <div class="profil-rutbe">${rutbe.rozet} ${rutbe.ad}</div>
+          <div class="profil-tarih">${kayitStr}'dan beri uye</div>
+        </div>
+        <div class="profil-body">
+          <div class="profil-puan-kart">
+            <div class="profil-puan-sayi">${puan.toLocaleString('tr-TR')}</div>
+            <div class="profil-puan-label">Toplam Puan</div>
+            <div class="profil-progress"><div class="profil-progress-bar" style="width:${progressPct}%"></div></div>
+            <div class="profil-progress-info"><span>${rutbe.rozet} ${rutbe.ad}</span><span>${sonrakiRutbe==='MAX'?'Maksimum Seviye':rutbeRozet(sonrakiRutbe)+' '+sonrakiRutbe}</span></div>
+          </div>
+          <div class="profil-stats">
+            <div class="profil-stat-box"><div class="profil-stat-val green">${dogru}</div><div class="profil-stat-lbl">Dogru Tahmin</div></div>
+            <div class="profil-stat-box"><div class="profil-stat-val red">${yanlis}</div><div class="profil-stat-lbl">Yanlis Tahmin</div></div>
+            <div class="profil-stat-box"><div class="profil-stat-val blue">%${oran}</div><div class="profil-stat-lbl">Basari Orani</div></div>
+          </div>
+          <div class="profil-goruntulenme">\u{1F441} ${goruntulenme+1} goruntulenme</div>
+          <div class="profil-mesajlar">
+            <h4>Son Mesajlar</h4>
+            ${mesajlarHtml}
+          </div>
+        </div>
+      </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend',modalHtml);
+  }catch(e){console.error('Profil yuklenemedi:',e);}
+}
+
 async function loadLeaderboard(){
   const lc=document.getElementById('leaderboardContainer');
   if(!lc)return;
   try{
-    // forum_mesajlar tablosundan normal mesajlari say (TAHMIN: olanlar haric), kullanici_adi'na gore grupla
-    const r=await fetch(`${SU}/rest/v1/forum_mesajlar?select=kullanici_adi,user_id,mesaj&order=created_at.desc&limit=1000`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    // profiller tablosundan puana gore sirala
+    const r=await fetch(`${SU}/rest/v1/profiller?select=user_id,kullanici_adi,puan,rutbe&order=puan.desc&limit=10`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
     if(!r.ok)throw new Error(r.status);
-    const msgs=await r.json();
-    // Count messages per user (exclude TAHMIN: messages)
-    const userMap={};
-    msgs.forEach(m=>{
-      if(m.mesaj&&m.mesaj.startsWith('TAHMIN:'))return;
-      const ad=m.kullanici_adi||'Anonim';
-      if(!userMap[ad])userMap[ad]={count:0,userId:m.user_id};
-      userMap[ad].count++;
-    });
-    const sorted=Object.entries(userMap).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
-    if(!sorted.length){
+    const users=await r.json();
+    if(!users.length){
       lc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Henuz aktif kullanici yok.</div>';
       return;
     }
     const rankColors=['linear-gradient(135deg,var(--gold),var(--gold-lt))','linear-gradient(135deg,#8E8E93,#C7C7CC)','linear-gradient(135deg,#CD7F32,#E8A85C)'];
-    lc.innerHTML=sorted.map(([ad,info],i)=>{
+    lc.innerHTML=users.map((u,i)=>{
+      const ad=u.kullanici_adi||'Anonim';
       const initial=ad.charAt(0).toUpperCase();
       const avatarBg=i<3?rankColors[i]:'linear-gradient(135deg,var(--blue),var(--blue-lt))';
       const textColor=i<3?'#1A1A2E':'white';
-      return `<div class="leaderboard-card">
+      const rInfo=rutbeHesapla(u.puan||0);
+      return `<div class="leaderboard-card" style="cursor:pointer;" onclick="openProfile('${u.user_id}')">
         <div style="font-size:12px;font-weight:900;color:${i<3?'var(--gold-lt)':'var(--muted)'};width:20px;text-align:center;flex-shrink:0;">${i+1}</div>
         <div class="leaderboard-avatar" style="background:${avatarBg};color:${textColor};">${initial}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ad}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${info.count} mesaj</div>
+          <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${rInfo.rozet} ${escapeHtml(ad)}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${(u.puan||0).toLocaleString('tr-TR')} puan &middot; ${rInfo.ad}</div>
         </div>
         ${i===0?'<span style="font-size:16px;">&#127942;</span>':i===1?'<span style="font-size:14px;">&#129352;</span>':i===2?'<span style="font-size:14px;">&#129353;</span>':''}
       </div>`;
@@ -3195,12 +3316,25 @@ async function renderForumMesajlar(msgs,containerId){
   }
   const curUser=await getForumUser();
   const curId=curUser?curUser.id:null;
+  // Kullanıcıların rütbe bilgilerini toplu çek
+  const userIds=[...new Set(msgs.map(m=>m.user_id).filter(Boolean))];
+  let rutbeMap={};
+  if(userIds.length){
+    try{
+      const rRes=await fetch(`${SU}/rest/v1/profiller?user_id=in.(${userIds.join(',')})&select=user_id,puan,rutbe`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+      if(rRes.ok){const rData=await rRes.json();rData.forEach(p=>{rutbeMap[p.user_id]=p;});}
+    }catch(e){}
+  }
   el.innerHTML=msgs.reverse().map(m=>{
     const ad=m.kullanici_adi||m.user_name||'Anonim';
     const isOwn=curId&&m.user_id===curId;
     const prefix=containerId==='chatMesajlar'?'chat':'forum';
+    const prof=rutbeMap[m.user_id];
+    const puan=prof?prof.puan||0:0;
+    const rInfo=rutbeHesapla(puan);
+    const userSpan=m.user_id?`<span class="forum-user-link" onclick="openProfile('${m.user_id}')">${rInfo.rozet} ${escapeHtml(ad)}</span>`:`${escapeHtml(ad)}`;
     return `<div class="${prefix}-msg${isOwn?' own':''}">
-      <div class="${prefix}-msg-user">${ad}</div>
+      <div class="${prefix}-msg-user">${userSpan}</div>
       <div class="${prefix}-msg-text">${escapeHtml(m.mesaj)}</div>
       <div class="${prefix}-msg-time">${zamanOnce(m.created_at)}</div>
     </div>`;
@@ -3240,6 +3374,10 @@ async function sendChatMsg(){
   try{
     const {error}=await sbClient.from('forum_mesajlar').insert({user_id:user.id,kullanici_adi:user.name,mac_id:0,mesaj:text,icerik:text});
     if(error)console.error('Insert:',error);
+    // Puan ekle (mesaj basina 2 puan)
+    try{
+      fetch(`${SU}/rest/v1/rpc/puan_ekle`,{method:'POST',headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Content-Type':'application/json'},body:JSON.stringify({p_user_id:user.id,p_tip:'mesaj',p_puan:2})});
+    }catch(e){}
     await loadChatMesajlar();
   }catch(e){
     console.error('Chat gonderme hatasi:',e);
@@ -3279,6 +3417,10 @@ async function sendForumMsg(macId){
   try{
     const {error}=await sbClient.from('forum_mesajlar').insert({user_id:user.id,kullanici_adi:user.name,mac_id:macId,mesaj:text,icerik:text});
     if(error)console.error('Insert:',error);
+    // Puan ekle (mesaj basina 2 puan)
+    try{
+      fetch(`${SU}/rest/v1/rpc/puan_ekle`,{method:'POST',headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Content-Type':'application/json'},body:JSON.stringify({p_user_id:user.id,p_tip:'mesaj',p_puan:2})});
+    }catch(e){}
     await loadDetailForum(macId);
   }catch(e){
     console.error('Forum gonderme hatasi:',e);
