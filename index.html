@@ -1372,7 +1372,7 @@ supabaseClient
   .channel('tahmin-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'tahmin_sonuclari' }, () => {
     const ap = document.querySelector('.page.active');
-    if(ap?.id === 'page-aialysis') loadAialysis();
+    if(ap?.id === 'page-aialysis') loadAialysis(true);
   })
   .subscribe();
 
@@ -1784,7 +1784,7 @@ async function openMac(id){
   loadDetailKadro(m.fixture.id);
   loadDetailKarsi(m);
   const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
-  if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac);loadDetailIstat(id);loadDetailOzet(id,currentMac);}},10000);}
+  if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac,true);loadDetailIstat(id);loadDetailOzet(id,currentMac);}},10000);}
 }
 
 async function loadFormBars(evId, depId){
@@ -1884,7 +1884,7 @@ function findOddForTahmin(oddsMap, kategori, cizgi, ustAlt){
   return oddsMap[key]||null;
 }
 
-async function loadDetailAnaliz(m){
+async function loadDetailAnaliz(m, silent=false){
   const st = m.fixture.status.short;
   const bitti = ['FT','AET','PEN'].includes(st);
   const baslamadi = ['NS','TBD','PST'].includes(st);
@@ -1894,7 +1894,7 @@ async function loadDetailAnaliz(m){
   // Maç başlamadıysa — Supabase'den ön analiz çek
   if(baslamadi) {
     const c = document.getElementById('dc-analiz');
-    c.innerHTML = '<div class="loading"><div class="spinner"></div>Ön analiz yükleniyor...</div>';
+    if(!silent)c.innerHTML = '<div class="loading"><div class="spinner"></div>Ön analiz yükleniyor...</div>';
     try {
       const r = await fetch(`${SU}/rest/v1/mac_oncu_analizler?fixture_id=eq.${m.fixture.id}&select=analiz,created_at`,
         {headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}});
@@ -1930,7 +1930,7 @@ async function loadDetailAnaliz(m){
   }
 
   const c=document.getElementById('dc-analiz');
-  c.innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
+  if(!silent)c.innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
 
   // İstatistik verisi var mı kontrol et
   const istatCheck = await sbQuery('mac_canli_istatistikler', `fixture_id=eq.${m.fixture.id}&select=fixture_id`);
@@ -2742,9 +2742,9 @@ function aiaLogo(url,name){
   if(!url)return ph;
   return '<img src="'+url+'" style="width:36px;height:36px;object-fit:contain" onerror="this.onerror=null;var p=document.createElement(\'div\');p.style.cssText=\'width:36px;height:36px;background:#1A1A2E;border-radius:8px;border:1px solid #2A2A3E;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#7A7A95;margin:0 auto\';p.textContent=\''+ch+'\';this.parentNode.replaceChild(p,this);">';
 }
-async function loadAialysis(){
+async function loadAialysis(silent=false){
   const c=document.getElementById('aialysisContainer');
-  c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>'+t('yukleniyor')+'</div>';
+  if(!silent)c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>'+t('yukleniyor')+'</div>';
   try{
     // 1) Supabase'den BEKLIYOR tahminleri çek (cron'un ürettiği — sabit kalır)
     const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman,lig&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
@@ -3134,22 +3134,22 @@ async function loadLeaderboard(){
 setInterval(()=>{
   const ap=document.querySelector('.page.active');
   if(ap?.id==='page-maclar')loadMaclar(true);
-  if(ap?.id==='page-aialysis')loadAialysis();
+  if(ap?.id==='page-aialysis')loadAialysis(true);
 },60000);
 
 
 document.addEventListener('visibilitychange',async()=>{
   if(!document.hidden){
-    await loadMaclar();
+    await loadMaclar(true);
     // loadMaclar içinde currentMac zaten senkronize edildi, şimdi detay verilerini yenile
     if(currentMac){
       const id=currentMac.fixture.id;
       const live=['1H','HT','2H','ET','P'].includes(currentMac.fixture.status?.short);
-      if(live){loadDetailAnaliz(currentMac);loadDetailIstat(id);loadDetailOzet(id,currentMac);}
+      if(live){loadDetailAnaliz(currentMac,true);loadDetailIstat(id);loadDetailOzet(id,currentMac);}
     }
     // AIALYSIS sayfası aktifse onu da yenile
     const ap=document.querySelector('.page.active');
-    if(ap?.id==='page-aialysis')loadAialysis();
+    if(ap?.id==='page-aialysis')loadAialysis(true);
   }
 });
 
