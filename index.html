@@ -129,6 +129,13 @@ body.light-theme .nav-dropdown-item:hover{background:rgba(0,0,0,.04);}
   .nav-dropdown{position:fixed !important;top:auto !important;bottom:70px;left:10px;right:10px;min-width:0;width:auto;max-width:none;border-radius:12px;box-shadow:0 -8px 40px rgba(0,0,0,.5);}
   .nav-more-wrap{position:static;}
 }
+/* Navbar Profile Icon */
+.nav-profile-btn{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:8px;padding:0;overflow:hidden;transition:all .2s;}
+.nav-profile-btn svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:2;}
+.nav-profile-btn.logged-in{border-color:var(--gold);background:var(--blue);}
+.nav-profile-btn.logged-in .nav-profile-initial{color:white;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;line-height:1;}
+.nav-profile-btn.logged-in img{width:32px;height:32px;border-radius:50%;object-fit:cover;}
+@media(max-width:768px){.nav-profile-btn{display:none !important;}}
 .nav-dropdown-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:599;background:rgba(0,0,0,.3);}
 .nav-dropdown-overlay.open{display:block;}
 
@@ -874,7 +881,10 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       </button>
     </div>
 
-    <!-- SAĞ: Hamburger Menü -->
+    <!-- SAĞ: Profil İkonu + Hamburger Menü -->
+    <button class="nav-profile-btn" id="navProfileBtn" onclick="navProfileClick()" title="Profil" aria-label="Profil">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </button>
     <div class="nav-more-wrap" id="navMoreWrap">
       <button class="nav-more-btn" onclick="toggleNavDropdown(event)" title="Menü" aria-label="Menü">
         <span class="hamburger-icon"><span></span><span></span><span></span></span>
@@ -1478,6 +1488,7 @@ async function authVerifyOtp(){
     document.getElementById('authStep2').style.display='none';
     const _abl=document.getElementById('authBtnLabel');if(_abl)_abl.textContent=authEmail.split('@')[0];
     document.getElementById('authBtn').style.background='none';
+    sbClient.auth.getUser().then(({data})=>{if(data?.user)updateNavProfileBtn(data.user);});
     // Re-open modal to show profile panel with fresh user data
     setTimeout(()=>authModal(),300);
   }catch(e){
@@ -1495,6 +1506,7 @@ async function authLogout(){
   document.getElementById('authOverlay').style.display='none';
   const _abl2=document.getElementById('authBtnLabel');if(_abl2)_abl2.textContent='Giriş Yap';
   document.getElementById('authBtn').style.background='none';
+  updateNavProfileBtn(null);
 }
 
 // Premium system removed
@@ -1534,6 +1546,7 @@ async function saveAialysisUsername(){
     successEl.style.display='block';
     document.getElementById('profileDisplayName').textContent=username;
     const _abl3=document.getElementById('authBtnLabel');if(_abl3)_abl3.textContent=username;
+    sbClient.auth.getUser().then(({data})=>{if(data?.user)updateNavProfileBtn(data.user);});
     // Switch to display mode after short delay
     setTimeout(()=>{
       document.getElementById('profileUsernameDisplay').style.display='block';
@@ -1548,6 +1561,36 @@ async function saveAialysisUsername(){
   btn.disabled=false;
 }
 
+// === NAVBAR PROFİL İKONU ===
+function updateNavProfileBtn(user){
+  const btn=document.getElementById('navProfileBtn');
+  if(!btn)return;
+  if(user){
+    const meta=user.user_metadata||{};
+    const avatarUrl=meta.avatar_url||meta.picture||'';
+    const displayName=meta.aialysis_username||meta.full_name||meta.name||(user.email?user.email.split('@')[0]:'K');
+    const initial=displayName.charAt(0).toUpperCase();
+    btn.classList.add('logged-in');
+    if(avatarUrl){
+      btn.innerHTML='<img src="'+avatarUrl+'" alt="'+initial+'">';
+    }else{
+      btn.innerHTML='<span class="nav-profile-initial">'+initial+'</span>';
+    }
+  }else{
+    btn.classList.remove('logged-in');
+    btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  }
+}
+function navProfileClick(){
+  sbClient.auth.getUser().then(({data})=>{
+    if(data?.user){
+      openProfile(data.user.id);
+    }else{
+      authModal();
+    }
+  });
+}
+
 // Sayfa yüklendiğinde oturum kontrol
 sbClient.auth.getUser().then(({data})=>{
   if(data?.user){
@@ -1555,6 +1598,7 @@ sbClient.auth.getUser().then(({data})=>{
     const name=u.user_metadata?.full_name||u.user_metadata?.name||(u.email?u.email.split('@')[0]:'Kullanıcı');
     const _abl4=document.getElementById('authBtnLabel');if(_abl4)_abl4.textContent=name;
     document.getElementById('authBtn').style.background='none';
+    updateNavProfileBtn(u);
   }
 });
 
