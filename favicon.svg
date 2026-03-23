@@ -1,4 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <text x="1" y="28" font-family="sans-serif" font-size="22" font-weight="900" font-style="italic" fill="#FFD54F">ai</text>
-  <text x="19" y="28" font-family="sans-serif" font-size="22" font-weight="900" fill="#FFFFFF">A</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <!-- Şeffaf arka plan - arka plan yok -->
+
+  <!-- aiAlysis yazısı - tam ortalanmış -->
+  <text x="200" y="135" font-family="Arial, sans-serif" font-size="78" font-weight="300" font-style="italic" fill="#FFD54F" text-anchor="middle" letter-spacing="-2">
+    <tspan font-weight="300" font-style="italic" fill="#FFD54F">ai</tspan><tspan font-weight="900" fill="#FFFFFF" font-style="normal">Alysis</tspan>
+  </text>
+
+  <!-- İkonlar - ortalanmış (4 ikon eşit aralıkla) -->
+  <!-- Korner bayrağı -->
+  <g transform="translate(100, 170)">
+    <line x1="10" y1="0" x2="10" y2="18" stroke="#FFD54F" stroke-width="2"/>
+    <polygon points="10,0 24,5 10,10" fill="#FFD54F" opacity="0.8"/>
+  </g>
+
+  <!-- Gol - futbol topu -->
+  <g transform="translate(168, 170)">
+    <circle cx="12" cy="9" r="9" fill="none" stroke="#7C6FFF" stroke-width="2"/>
+    <circle cx="12" cy="9" r="3.5" fill="#7C6FFF" opacity="0.5"/>
+  </g>
+
+  <!-- Kart -->
+  <g transform="translate(240, 170)">
+    <rect x="5" y="0" width="14" height="20" rx="2" fill="#FFD32A" opacity="0.9"/>
+  </g>
+
+  <!-- Ofsayt bayrağı -->
+  <g transform="translate(305, 170)">
+    <line x1="12" y1="2" x2="12" y2="20" stroke="#2ED573" stroke-width="2"/>
+    <polygon points="12,2 24,7 12,14" fill="#2ED573" opacity="0.8"/>
+  </g>
+
+  <!-- 4 İstatistik çubuğu - tam ortalanmış -->
+  <!-- Çubuk 1: L - en uzun -->
+  <rect x="68" y="200" width="55" height="140" rx="8" fill="#FFD54F"/>
+  <text x="95" y="280" font-family="Arial, sans-serif" font-size="34" font-weight="900" fill="#0A0A12" text-anchor="middle">L</text>
+
+  <!-- Çubuk 2: I - orta-uzun -->
+  <rect x="138" y="240" width="55" height="100" rx="8" fill="#7C6FFF"/>
+  <text x="165" y="298" font-family="Arial, sans-serif" font-size="34" font-weight="900" fill="#FFFFFF" text-anchor="middle">I</text>
+
+  <!-- Çubuk 3: V - kısa -->
+  <rect x="208" y="270" width="55" height="70" rx="8" fill="#FFD32A"/>
+  <text x="235" y="313" font-family="Arial, sans-serif" font-size="34" font-weight="900" fill="#0A0A12" text-anchor="middle">V</text>
+
+  <!-- Çubuk 4: E - orta -->
+  <rect x="278" y="250" width="55" height="90" rx="8" fill="#2ED573"/>
+  <text x="305" y="303" font-family="Arial, sans-serif" font-size="34" font-weight="900" fill="#0A0A12" text-anchor="middle">E</text>
 </svg>
