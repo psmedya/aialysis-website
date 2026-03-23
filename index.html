@@ -3671,8 +3671,8 @@ async function loadTahminler(filter='hepsi') {
       if (oranSayi > 0) ortOran = (oranToplam / oranSayi).toFixed(2);
     } catch (_) {}
 
-    // Oransız tahminleri statsData'dan çıkar (oran=null/undefined/0 olanları filtrele)
-    const statsFiltered = statsData.filter(x => x._oran && x._oran > 0);
+    // Tüm tahminleri göster (oranı olan/olmayan fark etmez)
+    const statsFiltered = statsData;
     const toplam2 = statsFiltered.length;
     const dogru2 = statsFiltered.filter(x => x.sonuc === 'DOGRU').length;
     const yanlis2 = statsFiltered.filter(x => x.sonuc === 'YANLIS').length;
@@ -3801,8 +3801,8 @@ async function loadTahminler(filter='hepsi') {
       trendContainer.innerHTML = '';
     }
 
-    // Oransız tahminleri listeden çıkar
-    const dataFiltered = data.filter(t => t._oran && t._oran > 0);
+    // Tüm tahminleri göster
+    const dataFiltered = data;
 
     if (!dataFiltered.length) {
       c.innerHTML = '<div class="empty">Henüz tahmin kaydı yok.</div>';
