@@ -2181,8 +2181,8 @@ function formatDk(dk,st,ext){
 function macSatir(m){
   const ev=m.goals.home??'-',dep=m.goals.away??'-';
   const dk=m.fixture.status.elapsed,st=m.fixture.status.short,ext=m.fixture.status.extra;
-  const live=['1H','HT','2H','ET','P'].includes(st);
-  const bitti=['FT','AET','PEN'].includes(st);
+  const live=['1H','HT','2H','ET','BT','P','LIVE','SUSP','INT'].includes(st);
+  const bitti=['FT','AET','PEN','AWD','ABD','WO','CANC'].includes(st);
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const dkTxt=formatDk(dk,st,ext);
   const uzatmaStr=ext&&ext>0?`<span style="font-size:10px;color:var(--orange);margin-left:2px">(+${ext})</span>`:'';
@@ -2217,7 +2217,7 @@ function updateDetailHeader(m){
   const evGol=m.goals.home??0,depGol=m.goals.away??0,dk=m.fixture.status.elapsed,ext=m.fixture.status.extra;
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const iy=m.score?.halftime;
-  const bitti=['FT','AET','PEN'].includes(m.fixture.status.short);
+  const bitti=['FT','AET','PEN','AWD','ABD','WO','CANC'].includes(m.fixture.status.short);
   const hdr=document.getElementById('detailHeader');
   if(!hdr)return;
   hdr.innerHTML=`
@@ -2273,7 +2273,7 @@ async function openMac(id){
   loadDetailIstat(m.fixture.id);
   loadDetailKadro(m.fixture.id);
   loadDetailKarsi(m);
-  const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
+  const live=['1H','HT','2H','ET','BT','P','LIVE','SUSP','INT'].includes(m.fixture.status.short);
   if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac,true);loadDetailIstat(id);loadDetailOzet(id,currentMac);}},10000);}
 }
 
@@ -2298,7 +2298,7 @@ async function loadFormBars(evId, depId){
       if(!el)return;
       const dots=fixtures.slice().reverse().map(f=>{
         const st=f.fixture.status.short;
-        if(!['FT','AET','PEN'].includes(st))return null;
+        if(!['FT','AET','PEN','AWD','ABD','WO','CANC'].includes(st))return null;
         const evTakim=f.teams.home.id===teamId;
         const evGol=f.goals.home??0,depGol=f.goals.away??0;
         let res;
@@ -2376,7 +2376,7 @@ function findOddForTahmin(oddsMap, kategori, cizgi, ustAlt){
 
 async function loadDetailAnaliz(m, silent=false){
   const st = m.fixture.status.short;
-  const bitti = ['FT','AET','PEN'].includes(st);
+  const bitti = ['FT','AET','PEN','AWD','ABD','WO','CANC'].includes(st);
   const baslamadi = ['NS','TBD','PST'].includes(st);
 
   if(bitti) { loadBitmisMacTahminleri(m); return; }
@@ -2776,7 +2776,7 @@ async function kullaniciTahminYap(macId,secim,evAdi,depAdi){
 function renderDetailAnaliz(a,m){
   const tah=a.tahminler||[],o=a.olasiliklar||{};
   currentDetailTahminler=tah;
-  const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
+  const live=['1H','HT','2H','ET','BT','P','LIVE','SUSP','INT'].includes(m.fixture.status.short);
   const skor=a.skor_tahmini||{};
   const guven=a.tahmin_guveni||0;
   // Güven 0 veya tarihsel veri yoksa boş analiz gösterme
@@ -3146,7 +3146,7 @@ async function loadDetailKarsi(m){
     const h2hR={response:formToApi(h2hData)};
 
     const macSatirKarsi=(fixtures, focusId, label)=>{
-      const finished=(fixtures||[]).filter(f=>['FT','AET','PEN'].includes(f.fixture.status.short));
+      const finished=(fixtures||[]).filter(f=>['FT','AET','PEN','AWD','ABD','WO','CANC'].includes(f.fixture.status.short));
       if(!finished.length)return`<div class="karsi-sec-title">${label}</div><div style="font-size:11px;color:var(--muted);padding:6px 0">Maç bulunamadı.</div>`;
       return`<div class="karsi-sec-title">${label}</div>
         ${finished.map(f=>{
@@ -3172,7 +3172,7 @@ async function loadDetailKarsi(m){
         }).join('')}`;
     };
 
-    const h2hFinished=(h2hR.response||[]).filter(f=>['FT','AET','PEN'].includes(f.fixture.status.short));
+    const h2hFinished=(h2hR.response||[]).filter(f=>['FT','AET','PEN','AWD','ABD','WO','CANC'].includes(f.fixture.status.short));
     // H2H stats from current home team perspective
     let evKazanma=0, beraberlik=0, depKazanma=0;
     h2hFinished.forEach(f=>{
@@ -3919,7 +3919,7 @@ document.addEventListener('visibilitychange',async()=>{
     // loadMaclar içinde currentMac zaten senkronize edildi, şimdi detay verilerini yenile
     if(currentMac){
       const id=currentMac.fixture.id;
-      const live=['1H','HT','2H','ET','P'].includes(currentMac.fixture.status?.short);
+      const live=['1H','HT','2H','ET','BT','P','LIVE','SUSP','INT'].includes(currentMac.fixture.status?.short);
       if(live){loadDetailAnaliz(currentMac,true);loadDetailIstat(id);loadDetailOzet(id,currentMac);}
     }
     // AIALYSIS sayfası aktifse onu da yenile
