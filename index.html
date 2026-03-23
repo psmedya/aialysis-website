@@ -1607,6 +1607,11 @@ async function loadMaclar(){
       document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
     }
     maclar=liste;
+    // Detay paneli açıksa currentMac'ı yeni veriyle senkronize et
+    if(currentMac){
+      const updated=liste.find(x=>x.fixture.id===currentMac.fixture.id);
+      if(updated){currentMac=updated;updateDetailHeader(updated);}
+    }
     document.getElementById('matchesCount').textContent=`${liste.length} maç`;
     renderMaclar(liste);
   }catch(e){
@@ -1693,22 +1698,15 @@ function aramaYap(q){
   showMainTab('maclar');
 }
 
-async function openMac(id){
-  const m=maclar.find(x=>x.fixture.id===id);
+function updateDetailHeader(m){
   if(!m)return;
-  const layout=document.querySelector('.layout');
-  // Aynı maça tıklanırsa kapat
-  if(currentMac?.fixture.id===id){panelKapat();return;}
-  currentMac=m;
-  layout.classList.add('panel-acik');
-  const mn=document.querySelector('.mobil-nav');if(mn)mn.style.display='none';
-  document.getElementById('defaultPanel').style.display='none';
-  document.getElementById('matchDetail').classList.add('active');
   const evGol=m.goals.home??0,depGol=m.goals.away??0,dk=m.fixture.status.elapsed,ext=m.fixture.status.extra;
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const iy=m.score?.halftime;
   const bitti=['FT','AET','PEN'].includes(m.fixture.status.short);
-  document.getElementById('detailHeader').innerHTML=`
+  const hdr=document.getElementById('detailHeader');
+  if(!hdr)return;
+  hdr.innerHTML=`
     <div class="detail-lig">${m.league.country} | ${m.league.name} · ${localSaat}</div>
     <div class="detail-takimlar">
       <div class="detail-takim">
@@ -1729,6 +1727,20 @@ async function openMac(id){
         <div class="form-bar" id="formBarDep"></div>
       </div>
     </div>`;
+}
+
+async function openMac(id){
+  const m=maclar.find(x=>x.fixture.id===id);
+  if(!m)return;
+  const layout=document.querySelector('.layout');
+  // Aynı maça tıklanırsa kapat
+  if(currentMac?.fixture.id===id){panelKapat();return;}
+  currentMac=m;
+  layout.classList.add('panel-acik');
+  const mn=document.querySelector('.mobil-nav');if(mn)mn.style.display='none';
+  document.getElementById('defaultPanel').style.display='none';
+  document.getElementById('matchDetail').classList.add('active');
+  updateDetailHeader(m);
   document.querySelectorAll('.detail-content').forEach(c=>{c.innerHTML='<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';c.classList.remove('active');});
   document.getElementById('dc-analiz').innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
   document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
@@ -3085,10 +3097,10 @@ setInterval(()=>{
   });
 },60000);
 
-document.addEventListener('visibilitychange',()=>{
+document.addEventListener('visibilitychange',async()=>{
   if(!document.hidden){
-    loadMaclar();
-    // Maç detay açıksa onu da yenile
+    await loadMaclar();
+    // loadMaclar içinde currentMac zaten senkronize edildi, şimdi detay verilerini yenile
     if(currentMac){
       const id=currentMac.fixture.id;
       const live=['1H','HT','2H','ET','P'].includes(currentMac.fixture.status?.short);
