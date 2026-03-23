@@ -1588,11 +1588,11 @@ function toggleCanli(){
   loadMaclar();
 }
 
-async function loadMaclar(){
+async function loadMaclar(silent=false){
   document.getElementById('dateLabelEl').textContent=fmtTR(tarih);
   const ml=document.getElementById('mobilTarihLabel');if(ml)ml.textContent=fmtTR(tarih);
   const c=document.getElementById('maclarContainer');
-  c.innerHTML='<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';
+  if(!silent)c.innerHTML='<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';
   try{
     let liste=[];
     if(canliMod){
@@ -1753,7 +1753,7 @@ async function openMac(id){
   loadDetailKadro(m.fixture.id);
   loadDetailKarsi(m);
   const live=['1H','HT','2H','ET','P'].includes(m.fixture.status.short);
-  if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac);loadDetailIstat(id);loadDetailOzet(id,currentMac);}},30000);}
+  if(live){detailTimer=setInterval(()=>{if(currentMac?.fixture.id===id){loadDetailAnaliz(currentMac);loadDetailIstat(id);loadDetailOzet(id,currentMac);}},10000);}
 }
 
 async function loadFormBars(evId, depId){
@@ -3075,12 +3075,12 @@ async function loadLeaderboard(){
   }
 }
 
-// Otomatik yenileme
+// Otomatik yenileme (10sn — canlı skor takibi için)
 setInterval(()=>{
   const ap=document.querySelector('.page.active');
-  if(ap?.id==='page-maclar')loadMaclar();
+  if(ap?.id==='page-maclar')loadMaclar(true);
   if(ap?.id==='page-aialysis')loadAialysis();
-},30000);
+},10000);
 
 
 document.addEventListener('visibilitychange',async()=>{
