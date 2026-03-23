@@ -1932,6 +1932,18 @@ async function loadDetailAnaliz(m){
   const c=document.getElementById('dc-analiz');
   c.innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
 
+  // İstatistik verisi var mı kontrol et
+  const istatCheck = await sbQuery('mac_canli_istatistikler', `fixture_id=eq.${m.fixture.id}&select=fixture_id`);
+  if (!istatCheck || !istatCheck.length) {
+    document.getElementById('dc-analiz').innerHTML = `
+      <div style="text-align:center;padding:40px">
+        <div style="font-size:48px;margin-bottom:16px;opacity:.5">📊</div>
+        <div style="color:var(--text);font-weight:700;font-size:15px;margin-bottom:8px">Yeterli Veri Yok</div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.6">Bu lig veya takımlar için yeterli istatistik verisi bulunmadığından<br><span style="color:var(--gold-lt);font-weight:700">aiAlysis</span> hizmet veremiyor.</div>
+      </div>`;
+    return;
+  }
+
   // Canlı istatistikleri Supabase'den çek
   let mevcutIstat={gol:(m.goals.home??0)+(m.goals.away??0),korner:0,faul:0,sari:0};
   try{
@@ -2801,6 +2813,18 @@ async function loadAialysis(){
             // Eğer tüm tahminler filtrelendiyse bu maçı kaldır
             if(!hazir[macId].length)delete hazir[macId];
           }
+        }
+      }
+    }catch(_){}
+
+    // İstatistik verisi olmayan maçları filtrele
+    try{
+      const istatFixIds=macIds.map(id=>parseInt(id)).filter(Boolean);
+      if(istatFixIds.length){
+        const istatRows=await sbQuery('mac_canli_istatistikler',`fixture_id=in.(${istatFixIds.join(',')})&select=fixture_id`);
+        const istatSet=new Set((istatRows||[]).map(r=>String(r.fixture_id)));
+        for(const macId of macIds){
+          if(!istatSet.has(macId)) delete hazir[macId];
         }
       }
     }catch(_){}
