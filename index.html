@@ -670,6 +670,64 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 .perf-bar-fill{height:100%;border-radius:4px;transition:width .4s ease;}
 .perf-bar-val{font-size:11px;color:var(--muted);width:50px;text-align:right;flex-shrink:0;}
 .perf-best-card{background:linear-gradient(135deg,rgba(212,162,76,.1),rgba(255,213,79,.05));border:1px solid rgba(212,162,76,.3);border-radius:10px;padding:14px;margin-top:12px;}
+
+/* GÜNLÜK GÖREVLER */
+.gorev-kart{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;}
+.gorev-baslik{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.gorev-baslik-txt{font-size:13px;font-weight:800;color:var(--gold-lt);letter-spacing:.5px;}
+.gorev-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;transition:all .2s;}
+.gorev-item.tamamlandi{border-color:rgba(46,213,115,.3);background:rgba(46,213,115,.05);}
+.gorev-ikon{font-size:20px;flex-shrink:0;width:32px;text-align:center;}
+.gorev-bilgi{flex:1;min-width:0;}
+.gorev-adi{font-size:12px;font-weight:700;color:var(--text);}
+.gorev-puan{font-size:10px;color:var(--gold-lt);margin-top:2px;}
+.gorev-progress{height:4px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden;}
+.gorev-progress-bar{height:100%;background:var(--green);border-radius:2px;transition:width .4s ease;}
+.gorev-tik{font-size:18px;flex-shrink:0;}
+
+/* STREAK */
+.streak-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;background:rgba(255,127,80,.15);border:1px solid rgba(255,127,80,.3);color:var(--orange);}
+
+/* HAFTALIK YARISMA TOGGLE */
+.lb-toggle{display:flex;gap:4px;margin-left:auto;}
+.lb-toggle-btn{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.lb-toggle-btn.active{background:var(--blue);border-color:var(--blue);color:white;}
+.lb-medal{font-size:16px;flex-shrink:0;}
+
+/* DAVET SİSTEMİ */
+.davet-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px;}
+.davet-kod{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.davet-kod-text{font-size:18px;font-weight:900;letter-spacing:4px;color:var(--gold-lt);flex:1;text-align:center;}
+.davet-kopyala{background:var(--blue);border:none;color:white;padding:6px 14px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.davet-paylas{display:flex;gap:8px;margin-top:8px;}
+.davet-paylas-btn{flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;transition:all .2s;}
+.davet-paylas-btn:hover{border-color:var(--gold);background:rgba(212,162,76,.1);}
+
+/* ROZETLER */
+.rozet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.rozet-item{text-align:center;padding:10px 4px;border-radius:10px;border:1px solid var(--border);background:var(--surface);transition:all .2s;}
+.rozet-item.kazanildi{border-color:rgba(212,162,76,.4);background:rgba(212,162,76,.08);}
+.rozet-item.kilitli{opacity:.4;filter:grayscale(1);}
+.rozet-ikon{font-size:28px;margin-bottom:4px;}
+.rozet-adi{font-size:9px;font-weight:700;color:var(--text);line-height:1.3;}
+.rozet-kilit{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* CANLI ORAN GRAFİĞİ */
+.oran-grafik-wrap{position:relative;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px;}
+.oran-grafik-legend{display:flex;gap:14px;margin-bottom:10px;font-size:10px;font-weight:700;}
+.oran-grafik-legend span{display:flex;align-items:center;gap:4px;}
+.oran-grafik-legend .dot{width:8px;height:8px;border-radius:50%;}
+.oran-tooltip{position:absolute;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:10px;color:var(--text);pointer-events:none;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.3);display:none;}
+
+/* SENİN İÇİN */
+.senin-icin-box{background:linear-gradient(135deg,rgba(212,162,76,.08),rgba(255,213,79,.04));border:1px solid rgba(212,162,76,.25);border-radius:12px;padding:16px;margin-bottom:16px;}
+.senin-icin-baslik{font-size:11px;font-weight:800;color:var(--gold-lt);letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.senin-icin-item{display:flex;align-items:center;gap:8px;padding:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all .2s;}
+.senin-icin-item:hover{border-color:var(--gold);transform:translateY(-1px);}
+
+/* CONFETTI */
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(60px) rotate(360deg);opacity:0}}
+.confetti-piece{position:absolute;width:6px;height:6px;border-radius:1px;animation:confettiFall .8s ease forwards;}
 </style>
 </head>
 <body>
@@ -1046,6 +1104,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
           <button class="filter-btn" onclick="aiaSort='ihtimal';loadAialysis();this.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">İhtimal</button>
         </div>
       </div>
+      <div id="seninIcinContainer"></div>
       <div class="aialysis-grid" id="aialysisContainer">
         <div class="loading"><div class="spinner"></div>Yükleniyor...</div>
       </div>
@@ -1057,6 +1116,9 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         <div class="matches-title">📈 Tahmin Performansı</div>
       </div>
       <div style="padding:0 16px">
+        <!-- Günlük Görevler -->
+        <div id="gunlukGorevlerContainer"></div>
+
         <!-- İstatistik kartları -->
         <div class="genel-istat-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
@@ -1130,7 +1192,10 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
             <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
               <span style="font-size:18px;">&#127942;</span>
               <span style="font-size:13px;font-weight:800;color:var(--gold-lt);letter-spacing:0.5px;">En Aktif Kullanicilar</span>
-              <span style="font-size:10px;color:var(--muted);margin-left:auto;">Top 10</span>
+              <div class="lb-toggle">
+                <button class="lb-toggle-btn active" id="lbToggleAll" onclick="lbMode='all';loadLeaderboard();document.getElementById('lbToggleWeek').classList.remove('active');this.classList.add('active');">Tüm Zamanlar</button>
+                <button class="lb-toggle-btn" id="lbToggleWeek" onclick="lbMode='week';loadLeaderboard();document.getElementById('lbToggleAll').classList.remove('active');this.classList.add('active');">Bu Hafta</button>
+              </div>
             </div>
             <div id="leaderboardContainer">
               <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Yukleniyor...</div>
@@ -1175,6 +1240,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         <div class="detail-tab" onclick="switchDetailTab('istat')">İstatistik</div>
         <div class="detail-tab" onclick="switchDetailTab('kadro')">Kadro</div>
         <div class="detail-tab" onclick="switchDetailTab('karsi')">Karşılaştırma</div>
+        <div class="detail-tab" onclick="switchDetailTab('oranlar')">Oranlar</div>
         <div class="detail-tab" onclick="switchDetailTab('forum')">Forum</div>
       </div>
       <div class="detail-body">
@@ -1183,6 +1249,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         <div class="detail-content" id="dc-istat"></div>
         <div class="detail-content" id="dc-kadro"></div>
         <div class="detail-content" id="dc-karsi"></div>
+        <div class="detail-content" id="dc-oranlar"></div>
         <div class="detail-content" id="dc-forum"></div>
       </div>
     </div>
@@ -3054,11 +3121,12 @@ async function loadDetailKarsi(m){
 
 
 function switchDetailTab(name){
-  const tabs=['analiz','ozet','istat','kadro','karsi','forum'];
+  const tabs=['analiz','ozet','istat','kadro','karsi','oranlar','forum'];
   document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===name));
   document.querySelectorAll('.detail-content').forEach(c=>c.classList.remove('active'));
   document.getElementById(`dc-${name}`).classList.add('active');
   if(name==='forum'&&currentMac) loadDetailForum(currentMac.fixture.id);
+  if(name==='oranlar'&&currentMac) loadDetailOranlar(currentMac.fixture.id);
 }
 
 function showMainTab(name){
@@ -3226,7 +3294,7 @@ async function loadAialysis(silent=false){
           <div class="aia-skor">${dk!=null?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
           <div class="aia-takim">${aiaLogo(m?.teams?.away?.logo,depAdi)}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
-        <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}${p._oran?' | Oran: '+p._oran.toFixed(2):''}</span>`).join('')}</div>`;
+        <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}${p._oran?' | Oran: '+p._oran.toFixed(2):''}<button style="background:none;border:none;cursor:pointer;font-size:10px;margin-left:4px;padding:0;line-height:1;" onclick="event.stopPropagation();shareAiaTahmin('${evAdi.replace(/'/g,"\\'")}','${depAdi.replace(/'/g,"\\'")}','${p.kategori}',${p.cizgi},'${p.ust_alt}')">🔗</button></span>`).join('')}</div>`;
       const mid=parseInt(macId);
       if(m){card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==mid),m];openMac(mid);};}
       else if(maclar.find(x=>x.fixture.id===mid)){card.onclick=()=>openMac(mid);}
@@ -4535,13 +4603,14 @@ function applyTranslations(){
 
   // Detail tabs
   const detailTabs=document.querySelectorAll('#detailTabsEl .detail-tab');
-  if(detailTabs.length>=6){
+  if(detailTabs.length>=7){
     detailTabs[0].innerHTML='✦ '+t('aialysis');
     detailTabs[1].textContent=t('ozet');
     detailTabs[2].textContent=t('istatistik');
     detailTabs[3].textContent=t('kadro');
     detailTabs[4].textContent=t('karsilastirma');
-    detailTabs[5].textContent=t('forum');
+    detailTabs[5].textContent=t('oranlar');
+    detailTabs[6].textContent=t('forum');
   }
 
   // Right panel default
@@ -4575,6 +4644,464 @@ function applyTranslations(){
     });
   });
 })();
+
+// ===== 1. GÜNLÜK GÖREVLER =====
+async function loadGunlukGorevler(){
+  const c=document.getElementById('gunlukGorevlerContainer');
+  if(!c)return;
+  const user=await getForumUser();
+  if(!user){c.innerHTML='';return;}
+  try{
+    const gorevlerR=await fetch(`${SU}/rest/v1/gunluk_gorevler?aktif=eq.true&select=*&order=sira`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const gorevler=await gorevlerR.json();
+    if(!gorevler||!gorevler.length){c.innerHTML='';return;}
+    const bugun=new Date().toISOString().split('T')[0];
+    const tamamR=await fetch(`${SU}/rest/v1/kullanici_gorevler?user_id=eq.${user.id}&tarih=eq.${bugun}&select=gorev_id,tamamlandi`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const tamamData=await tamamR.json();
+    const tamamSet=new Set((tamamData||[]).filter(x=>x.tamamlandi).map(x=>x.gorev_id));
+    const tamamlananSayi=tamamSet.size;
+    const toplamPuan=gorevler.reduce((s,g)=>s+(tamamSet.has(g.id)?g.puan:0),0);
+    c.innerHTML=`<div class="gorev-kart">
+      <div class="gorev-baslik">
+        <span style="font-size:18px">📋</span>
+        <span class="gorev-baslik-txt">Günlük Görevler</span>
+        <span style="font-size:10px;color:var(--muted);margin-left:auto;">${tamamlananSayi}/${gorevler.length} tamamlandı · +${toplamPuan} puan</span>
+      </div>
+      ${gorevler.map(g=>{
+        const done=tamamSet.has(g.id);
+        return `<div class="gorev-item${done?' tamamlandi':''}">
+          <div class="gorev-ikon">${g.ikon||'🎯'}</div>
+          <div class="gorev-bilgi">
+            <div class="gorev-adi">${escapeHtml(g.baslik)}</div>
+            <div class="gorev-puan">+${g.puan} puan</div>
+            <div class="gorev-progress"><div class="gorev-progress-bar" style="width:${done?100:0}%"></div></div>
+          </div>
+          <div class="gorev-tik">${done?'✅':'⬜'}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }catch(e){c.innerHTML='';}
+}
+
+function gorevConfetti(el){
+  if(!el)return;
+  const rect=el.getBoundingClientRect();
+  const colors=['#FFD54F','#2ED573','#4A3AFF','#FF4757','#FF7F50'];
+  for(let i=0;i<12;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.background=colors[i%colors.length];
+    p.style.left=(rect.left+rect.width/2+Math.random()*40-20)+'px';
+    p.style.top=(rect.top)+'px';
+    p.style.transform=`rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),900);
+  }
+}
+
+// ===== 2. STREAK GÖSTERİMİ =====
+function renderStreakBadge(streak){
+  if(!streak||streak<1)return '';
+  return `<span class="streak-badge">🔥 ${streak} gün</span>`;
+}
+
+// ===== 3. HAFTALIK YARISMA (Leaderboard Toggle) =====
+let lbMode='all';
+
+// Override loadLeaderboard to support weekly mode
+const _origLoadLeaderboard=loadLeaderboard;
+loadLeaderboard=async function(){
+  const lc=document.getElementById('leaderboardContainer');
+  if(!lc)return;
+  if(lbMode==='all'){
+    // Existing all-time leaderboard
+    await _origLoadLeaderboard();
+    return;
+  }
+  // Weekly leaderboard: son 7 gün kullanıcı tahminleri
+  try{
+    const sinir=new Date(Date.now()-7*86400000).toISOString();
+    const r=await fetch(`${SU}/rest/v1/kullanici_tahminleri?created_at=gte.${sinir}&select=user_id,kullanici_adi`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const data=await r.json();
+    if(!data||!data.length){lc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Bu hafta henüz tahmin yok.</div>';return;}
+    const userMap={};
+    data.forEach(d=>{
+      if(!userMap[d.user_id])userMap[d.user_id]={name:d.kullanici_adi||'Anonim',count:0};
+      userMap[d.user_id].count++;
+    });
+    const sorted=Object.entries(userMap).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
+    const medals=['🥇','🥈','🥉'];
+    const rankColors=['linear-gradient(135deg,var(--gold),var(--gold-lt))','linear-gradient(135deg,#8E8E93,#C7C7CC)','linear-gradient(135deg,#CD7F32,#E8A85C)'];
+    lc.innerHTML=sorted.map(([uid,info],i)=>{
+      const initial=info.name.charAt(0).toUpperCase();
+      const avatarBg=i<3?rankColors[i]:'linear-gradient(135deg,var(--blue),var(--blue-lt))';
+      const textColor=i<3?'#1A1A2E':'white';
+      return `<div class="leaderboard-card" style="cursor:pointer;" onclick="openProfile('${uid}')">
+        <div style="font-size:12px;font-weight:900;color:${i<3?'var(--gold-lt)':'var(--muted)'};width:20px;text-align:center;flex-shrink:0;">${i+1}</div>
+        <div class="leaderboard-avatar" style="background:${avatarBg};color:${textColor};">${initial}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(info.name)}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${info.count} tahmin bu hafta</div>
+        </div>
+        ${i<3?`<span class="lb-medal">${medals[i]}</span>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){lc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Yüklenemedi.</div>';}
+};
+
+// ===== 4. DAVET SİSTEMİ =====
+function generateInviteCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='';
+  for(let i=0;i<8;i++)code+=chars.charAt(Math.floor(Math.random()*chars.length));
+  return code;
+}
+
+async function loadDavetKodu(){
+  const user=await getForumUser();
+  if(!user)return null;
+  try{
+    const r=await fetch(`${SU}/rest/v1/davetler?davet_eden_id=eq.${user.id}&select=kod&limit=1`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const data=await r.json();
+    if(data&&data.length)return data[0].kod;
+    // Yeni kod oluştur
+    const yeniKod=generateInviteCode();
+    await sbClient.from('davetler').insert({davet_eden_id:user.id,kod:yeniKod});
+    return yeniKod;
+  }catch(e){return generateInviteCode();}
+}
+
+function renderDavetBox(kod){
+  if(!kod)return '';
+  const mesaj=`aiALYSIS Live'a katıl! Davet kodum: ${kod} 🎯 https://aialysis.live`;
+  const waLink=`https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+  const twLink=`https://twitter.com/intent/tweet?text=${encodeURIComponent(mesaj)}`;
+  return `<div class="davet-box">
+    <div style="font-size:11px;font-weight:700;color:var(--gold-lt);letter-spacing:1px;margin-bottom:6px">🎁 ARKADAŞ DAVET ET</div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Davet kodunu paylaş, arkadaşların katılsın!</div>
+    <div class="davet-kod">
+      <span class="davet-kod-text">${kod}</span>
+      <button class="davet-kopyala" onclick="navigator.clipboard.writeText('${kod}');showToast('Kod kopyalandı!');">Kopyala</button>
+    </div>
+    <div class="davet-paylas">
+      <a class="davet-paylas-btn" href="${waLink}" target="_blank" rel="noopener" style="text-decoration:none;color:var(--green);">WhatsApp</a>
+      <a class="davet-paylas-btn" href="${twLink}" target="_blank" rel="noopener" style="text-decoration:none;color:#1DA1F2;">Twitter</a>
+    </div>
+  </div>`;
+}
+
+// ===== 5. PAYLAŞILABİLİR TAHMİN KARTI =====
+function shareAiaTahmin(evAdi,depAdi,kategori,cizgi,ustAlt){
+  const text=`🎯 ${evAdi} vs ${depAdi} - ${kategori} ${cizgi} ${ustAlt} | aialysis.live`;
+  if(navigator.share){
+    navigator.share({title:'aiALYSIS Tahmin',text,url:'https://aialysis.live'}).catch(()=>{});
+  }else{
+    navigator.clipboard.writeText(text).then(()=>showToast('Tahmin kopyalandı!')).catch(()=>prompt('Kopyalayın:',text));
+  }
+}
+
+// ===== 6. CANLI MAÇ SOHBETİ (Realtime) =====
+let forumRealtimeChannels={};
+
+function subscribeForumRealtime(macId,containerId){
+  // Önceki subscription varsa kaldır
+  if(forumRealtimeChannels[macId]){
+    supabaseClient.removeChannel(forumRealtimeChannels[macId]);
+  }
+  const channel=supabaseClient
+    .channel(`forum-${macId}`)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'forum_mesajlar',filter:`mac_id=eq.${macId}`},async(payload)=>{
+      if(!payload.new)return;
+      const m=payload.new;
+      const el=document.getElementById(containerId);
+      if(!el)return;
+      const curUser=await getForumUser();
+      const curId=curUser?curUser.id:null;
+      const isOwn=curId&&m.user_id===curId;
+      const prefix=containerId==='chatMesajlar'?'chat':'forum';
+      // Rütbe bilgisi
+      let rInfo={rozet:'🌱'};
+      try{
+        const rRes=await fetch(`${SU}/rest/v1/profiller?user_id=eq.${m.user_id}&select=puan`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+        const rData=await rRes.json();
+        if(rData&&rData.length)rInfo=rutbeHesapla(rData[0].puan||0);
+      }catch(_){}
+      const ad=m.kullanici_adi||'Anonim';
+      const userSpan=m.user_id?`<span class="forum-user-link" onclick="openProfile('${m.user_id}')">${rInfo.rozet} ${escapeHtml(ad)}</span>`:escapeHtml(ad);
+      const msgHtml=`<div class="${prefix}-msg${isOwn?' own':''}">
+        <div class="${prefix}-msg-user">${userSpan}</div>
+        <div class="${prefix}-msg-text">${escapeHtml(m.mesaj)}</div>
+        <div class="${prefix}-msg-time">Az önce</div>
+      </div>`;
+      el.insertAdjacentHTML('beforeend',msgHtml);
+      el.scrollTop=el.scrollHeight;
+    })
+    .subscribe();
+  forumRealtimeChannels[macId]=channel;
+}
+
+// Override loadChatMesajlar to add realtime
+const _origLoadChatMesajlar=loadChatMesajlar;
+loadChatMesajlar=async function(){
+  await _origLoadChatMesajlar();
+  subscribeForumRealtime(0,'chatMesajlar');
+};
+
+// Override loadDetailForum to add realtime
+const _origLoadDetailForum=loadDetailForum;
+loadDetailForum=async function(macId){
+  await _origLoadDetailForum(macId);
+  subscribeForumRealtime(macId,'forumMesajlar');
+};
+
+// ===== 8. KİŞİSELLEŞTİRİLMİŞ ÖNERİLER =====
+async function loadSeninIcin(){
+  const c=document.getElementById('seninIcinContainer');
+  if(!c)return;
+  const user=await getForumUser();
+  if(!user){c.innerHTML='';return;}
+  try{
+    // Kullanıcının en başarılı kategorisini bul
+    const sinir=new Date(Date.now()-30*86400000).toISOString();
+    const r=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&created_at=gte.${sinir}&select=sonuc,kategori`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const data=await r.json();
+    if(!data||!data.length){c.innerHTML='';return;}
+    const katMap={};
+    data.forEach(x=>{
+      const k=(x.kategori||'').toUpperCase();
+      if(!katMap[k])katMap[k]={d:0,y:0};
+      if(x.sonuc==='DOGRU')katMap[k].d++;else katMap[k].y++;
+    });
+    let bestKat='',bestPct=0;
+    Object.entries(katMap).forEach(([k,v])=>{
+      const t=v.d+v.y;if(t<2)return;
+      const pct=Math.round(v.d/t*100);
+      if(pct>bestPct){bestPct=pct;bestKat=k;}
+    });
+    if(!bestKat){c.innerHTML='';return;}
+    // Bu kategorideki aktif tahminleri çek
+    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&kategori=ilike.${bestKat}&select=mac_id,ev_sahibi,deplasman,kategori,cizgi,ust_alt,guc&order=guc.desc&limit=5`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const tahminler=await tr.json();
+    if(!tahminler||!tahminler.length){c.innerHTML='';return;}
+    c.innerHTML=`<div class="senin-icin-box" style="margin:0 24px 0;">
+      <div class="senin-icin-baslik">⭐ SENİN İÇİN — En iyi kategorin: <span style="color:var(--green)">${bestKat} (%${bestPct})</span></div>
+      ${tahminler.map(t=>`<div class="senin-icin-item" onclick="openMac(${t.mac_id})">
+        <div style="font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(t.ev_sahibi||'')} vs ${escapeHtml(t.deplasman||'')}</div>
+        <span class="t-tag ${t.ust_alt==='ÜST'?'u':'a'}" style="font-size:10px">${t.cizgi} ${t.ust_alt}</span>
+        <span style="font-size:11px;font-weight:700;color:${t.guc>=70?'var(--green)':t.guc>=55?'var(--yellow)':'var(--red)'}">%${t.guc}</span>
+      </div>`).join('')}
+    </div>`;
+  }catch(e){c.innerHTML='';}
+}
+
+// ===== 9. ROZETLER =====
+async function loadRozetler(userId){
+  try{
+    const [rozetlerR,kazanilanR]=await Promise.all([
+      fetch(`${SU}/rest/v1/rozetler?select=*&order=sira`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}}),
+      fetch(`${SU}/rest/v1/kullanici_rozetler?user_id=eq.${userId}&select=rozet_id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}})
+    ]);
+    const rozetler=await rozetlerR.json();
+    const kazanilan=await kazanilanR.json();
+    if(!rozetler||!rozetler.length)return '';
+    const kazanilanSet=new Set((kazanilan||[]).map(k=>k.rozet_id));
+    return `<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+      <h4 style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🏅 Rozetler</h4>
+      <div class="rozet-grid">
+        ${rozetler.map(r=>{
+          const kazanildi=kazanilanSet.has(r.id);
+          return `<div class="rozet-item ${kazanildi?'kazanildi':'kilitli'}">
+            <div class="rozet-ikon">${r.ikon||'🏅'}</div>
+            <div class="rozet-adi">${escapeHtml(r.ad||'')}</div>
+            ${kazanildi?'':`<div class="rozet-kilit">🔒</div>`}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }catch(e){return '';}
+}
+
+// ===== 10. CANLI ORAN GRAFİĞİ =====
+async function loadDetailOranlar(fixtureId){
+  const c=document.getElementById('dc-oranlar');
+  if(!c)return;
+  c.innerHTML='<div class="loading"><div class="spinner"></div>Oranlar yükleniyor...</div>';
+  try{
+    // Mevcut oranları göster
+    const oranRows=await sbQuery('mac_oranlar',`fixture_id=eq.${fixtureId}`);
+    let oranHtml='';
+    if(oranRows&&oranRows.length){
+      const bets=oranRows[0].api_odds||[];
+      const matchWinner=bets.find(b=>(b.name||'').toLowerCase().includes('match winner'));
+      if(matchWinner){
+        oranHtml+=`<div class="odds-bm">
+          <div class="odds-bm-name">1X2</div>
+          <div class="odds-row">
+            ${(matchWinner.values||[]).map(v=>`<div class="odds-val"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}
+          </div>
+        </div>`;
+      }
+      const ou=bets.find(b=>(b.name||'').toLowerCase().includes('goals over/under'));
+      if(ou){
+        oranHtml+=`<div class="odds-bm">
+          <div class="odds-bm-name">Gol Üst/Alt</div>
+          <div class="odds-row">
+            ${(ou.values||[]).slice(0,6).map(v=>`<div class="odds-val"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}
+          </div>
+        </div>`;
+      }
+    }
+
+    // Oran geçmişi grafiği
+    let grafikHtml='';
+    try{
+      const gecmisR=await fetch(`${SU}/rest/v1/oran_gecmisi?fixture_id=eq.${fixtureId}&order=tarih`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+      const gecmis=await gecmisR.json();
+      if(gecmis&&gecmis.length>1){
+        grafikHtml=renderOranGrafik(gecmis);
+      }
+    }catch(_){}
+
+    c.innerHTML=`<div style="padding:16px">
+      ${oranHtml||'<div style="text-align:center;color:var(--muted);font-size:12px;padding:20px;">Oran verisi bulunamadı.</div>'}
+      ${grafikHtml}
+    </div>`;
+  }catch(e){
+    c.innerHTML='<div class="error">Oranlar yüklenemedi.</div>';
+  }
+}
+
+function renderOranGrafik(data){
+  if(!data||data.length<2)return '';
+  const w=400,h=200,pad=30;
+  const evVals=data.map(d=>parseFloat(d.ev_oran)||0);
+  const berVals=data.map(d=>parseFloat(d.ber_oran)||0);
+  const depVals=data.map(d=>parseFloat(d.dep_oran)||0);
+  const allVals=[...evVals,...berVals,...depVals].filter(v=>v>0);
+  if(!allVals.length)return '';
+  const minV=Math.max(1,Math.min(...allVals)-0.5);
+  const maxV=Math.max(...allVals)+0.5;
+  const scaleX=(i)=>pad+((w-2*pad)*i/(data.length-1));
+  const scaleY=(v)=>h-pad-((v-minV)/(maxV-minV))*(h-2*pad);
+  const makeLine=(vals,color)=>{
+    const pts=vals.map((v,i)=>`${scaleX(i).toFixed(1)},${scaleY(v||minV).toFixed(1)}`);
+    return `<polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>`;
+  };
+  const makeDots=(vals,color,label)=>{
+    return vals.map((v,i)=>{
+      if(!v)return '';
+      const tarih=data[i].tarih?new Date(data[i].tarih).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}):'';
+      return `<circle cx="${scaleX(i).toFixed(1)}" cy="${scaleY(v).toFixed(1)}" r="3" fill="${color}" stroke="${color}" stroke-width="1" style="cursor:pointer" onmouseover="showOranTooltip(event,'${label}: ${v.toFixed(2)}${tarih?' ('+tarih+')':''}')" onmouseout="hideOranTooltip()"/>`;
+    }).join('');
+  };
+  // Y axis labels
+  const yLabels=[];
+  const step=(maxV-minV)/4;
+  for(let i=0;i<=4;i++){
+    const val=minV+step*i;
+    yLabels.push(`<text x="${pad-4}" y="${scaleY(val).toFixed(1)}" fill="#7A7A95" font-size="9" text-anchor="end" dominant-baseline="middle">${val.toFixed(1)}</text>`);
+    yLabels.push(`<line x1="${pad}" y1="${scaleY(val).toFixed(1)}" x2="${w-pad}" y2="${scaleY(val).toFixed(1)}" stroke="#2A2A3E" stroke-width="0.5"/>`);
+  }
+  return `<div class="oran-grafik-wrap">
+    <div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">ORAN DEĞİŞİM GRAFİĞİ</div>
+    <div class="oran-grafik-legend">
+      <span><span class="dot" style="background:var(--blue-lt)"></span> Ev</span>
+      <span><span class="dot" style="background:#7A7A95"></span> Berabere</span>
+      <span><span class="dot" style="background:var(--red)"></span> Deplasman</span>
+    </div>
+    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;">
+      ${yLabels.join('')}
+      ${makeLine(evVals,'#7C6FFF')}
+      ${makeLine(berVals,'#7A7A95')}
+      ${makeLine(depVals,'#FF4757')}
+      ${makeDots(evVals,'#7C6FFF','Ev')}
+      ${makeDots(berVals,'#7A7A95','Ber')}
+      ${makeDots(depVals,'#FF4757','Dep')}
+    </svg>
+    <div class="oran-tooltip" id="oranTooltip"></div>
+  </div>`;
+}
+
+function showOranTooltip(e,text){
+  const tip=document.getElementById('oranTooltip');
+  if(!tip)return;
+  tip.textContent=text;
+  tip.style.display='block';
+  const wrap=tip.parentElement;
+  const rect=wrap.getBoundingClientRect();
+  tip.style.left=(e.clientX-rect.left+10)+'px';
+  tip.style.top=(e.clientY-rect.top-30)+'px';
+}
+function hideOranTooltip(){
+  const tip=document.getElementById('oranTooltip');
+  if(tip)tip.style.display='none';
+}
+
+// ===== PROFIL MODAL GÜNCELLEMELERİ (Streak + Rozetler + Davet) =====
+const _origOpenProfile=openProfile;
+openProfile=async function(userId){
+  await _origOpenProfile(userId);
+  // Profil modal'a streak, rozetler ve davet ekle
+  const modal=document.querySelector('.profil-modal .profil-body');
+  if(!modal)return;
+  try{
+    // Streak
+    const pRes=await fetch(`${SU}/rest/v1/profiller?user_id=eq.${userId}&select=streak`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const pData=await pRes.json();
+    const streak=pData&&pData.length?pData[0].streak||0:0;
+    if(streak>0){
+      const streakEl=document.createElement('div');
+      streakEl.style.cssText='text-align:center;margin-bottom:12px;';
+      streakEl.innerHTML=renderStreakBadge(streak);
+      const puanKart=modal.querySelector('.profil-puan-kart');
+      if(puanKart)puanKart.parentElement.insertBefore(streakEl,puanKart);
+    }
+    // Rozetler
+    const rozetHtml=await loadRozetler(userId);
+    if(rozetHtml){
+      const mesajlarEl=modal.querySelector('.profil-mesajlar');
+      if(mesajlarEl)mesajlarEl.insertAdjacentHTML('beforebegin',rozetHtml);
+    }
+    // Davet (sadece kendi profilinde)
+    const curUser=await getForumUser();
+    if(curUser&&curUser.id===userId){
+      const kod=await loadDavetKodu();
+      if(kod){
+        const mesajlarEl=modal.querySelector('.profil-mesajlar');
+        if(mesajlarEl)mesajlarEl.insertAdjacentHTML('beforebegin',renderDavetBox(kod));
+      }
+    }
+  }catch(e){}
+};
+
+// ===== showMainTab GÜNCELLEMESİ =====
+const _origShowMainTab=showMainTab;
+showMainTab=function(name){
+  _origShowMainTab(name);
+  if(name==='dashboard')loadGunlukGorevler();
+  if(name==='aialysis')loadSeninIcin();
+};
+
+// ===== openMac GÜNCELLEMESİ — Oranlar tab yükleme =====
+const _origOpenMac=openMac;
+openMac=async function(id){
+  await _origOpenMac(id);
+  // Oranlar tab'ı lazy load (tab tıklandığında yüklenir)
+};
+
+// ===== LEADERBOARD'DA STREAK GÖSTERİMİ =====
+// loadLeaderboard zaten override edildi, streak bilgisi profiller tablosundan çekilecek
+
+// ===== TAHMİN KARTLARINDA PAYLAŞ BUTONU =====
+// loadAialysis'teki kartlara paylaş butonu ekleme
+const _origLoadAialysis=loadAialysis;
+loadAialysis=async function(silent){
+  await _origLoadAialysis(silent);
+  // Senin İçin bölümünü de yükle
+  loadSeninIcin();
+};
+
+// Detail tabs i18n already handled in main applyTranslations (7 tabs)
 </script>
 
 <!-- Mobil Bottom Nav -->
