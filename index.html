@@ -472,7 +472,8 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   .ai-grid{grid-template-columns:repeat(2,1fr) !important;}
   .tahmin-row{grid-template-columns:1fr !important;gap:4px !important;padding:10px 0 !important;font-size:11px !important;}
   .tahmin-row>div{overflow:hidden;text-overflow:ellipsis;}
-  .tahmin-row .tahmin-row-meta{display:flex !important;align-items:center;gap:8px;flex-wrap:wrap;}
+  .tahmin-row .tahmin-row-extra{display:none !important;}
+  .tahmin-row .tahmin-row-kat{display:none !important;}
   .tahmin-header-grid{display:none !important;}
   .genel-istat-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px !important;}
   .genel-istat-kart{padding:12px !important;}
@@ -496,7 +497,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   .tahmin-line{flex-wrap:wrap !important;gap:4px !important;}
   .tahmin-desc{font-size:10px !important;min-width:0;word-break:break-word;}
   .tahmin-guc{font-size:11px !important;}
-  .t-tag{font-size:10px !important;padding:2px 6px !important;}
+  .t-tag{font-size:10px !important;padding:2px 6px !important;white-space:normal !important;flex-shrink:1 !important;word-break:break-word !important;line-height:1.4 !important;}
   /* Favoriler mobile */
   #page-favoriler .matches-header{padding:10px 12px !important;gap:6px !important;}
   #page-favoriler .matches-title{font-size:16px !important;}
@@ -3306,10 +3307,10 @@ async function loadTahminler(filter='hepsi') {
                   : '<span style="font-size:10px;color:var(--muted)">bekliyor</span>'}
                 ${tziStr ? `<span style="font-size:9px;color:var(--muted)">${tziStr}</span>` : ''}
               </div>
-              <div style="font-size:11px;color:var(--muted)">${t.kategori}</div>
-              <div style="font-size:11px;font-weight:700;color:var(--gold-lt)">${oranStr}</div>
-              <div style="font-size:12px;font-weight:700;color:${t.guc>=70?'var(--green)':t.guc>=55?'var(--yellow)':'var(--red)'}">%${t.guc}</div>
-              <div style="font-size:18px;color:${sonucRenk};text-align:center">${sonucIcon}</div>
+              <div class="tahmin-row-kat" style="font-size:11px;color:var(--muted)">${t.kategori}</div>
+              <div class="tahmin-row-extra" style="font-size:11px;font-weight:700;color:var(--gold-lt)">${oranStr}</div>
+              <div class="tahmin-row-extra" style="font-size:12px;font-weight:700;color:${t.guc>=70?'var(--green)':t.guc>=55?'var(--yellow)':'var(--red)'}">%${t.guc}</div>
+              <div class="tahmin-row-extra" style="font-size:18px;color:${sonucRenk};text-align:center">${sonucIcon}</div>
             </div>`;
           }).join('')}
         </div>
