@@ -130,7 +130,8 @@ body.light-theme .nav-dropdown-item:hover{background:rgba(0,0,0,.04);}
   .nav-more-wrap{position:static;}
 }
 /* Navbar Profile Icon */
-.nav-profile-btn{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:8px;padding:0;overflow:hidden;transition:all .2s;}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-profile-btn{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;overflow:hidden;transition:all .2s;}
 .nav-profile-btn svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:2;}
 .nav-profile-btn.logged-in{border-color:var(--gold);background:var(--blue);}
 .nav-profile-btn.logged-in .nav-profile-initial{color:white;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;line-height:1;}
@@ -882,6 +883,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
     </div>
 
     <!-- SAĞ: Profil İkonu + Hamburger Menü -->
+    <div class="nav-right">
     <button class="nav-profile-btn" id="navProfileBtn" onclick="navProfileClick()" title="Profil" aria-label="Profil">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </button>
@@ -946,6 +948,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         </button>
       </div>
     </div>
+    </div><!-- /nav-right -->
     <!-- Hidden elements for backward compat -->
     <div id="liveBtnEl" style="display:none;"></div>
     <button id="hamburgerBtn" style="display:none;" onclick="toggleSidebar()"></button>
