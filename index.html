@@ -1951,8 +1951,11 @@ function ligOncelik(s){
   if(s.includes('turkey')&&(s.includes('süper')||s.includes('super'))) return 20000;
   if(s.includes('turkey')) return 9000;
   if(s.includes('champions league')&&!s.includes('concacaf')&&!s.includes('caf')) return 18000;
-  if(s.includes('europa league')) return 17900;
+  if(s.includes('europa league')&&!s.includes('conference')) return 17900;
   if(s.includes('conference league')) return 17800;
+  if(s.includes('world cup')) return 17700;
+  if(s.includes('euro 20')||s.includes('european championship')) return 17600;
+  if(s.includes('nations league')) return 17500;
   if(s.includes('premier league')&&s.includes('england')) return 16000;
   if(s.includes('la liga')&&s.includes('spain')) return 15900;
   if(s.includes('bundesliga')&&s.includes('germany')&&!s.includes('2.')) return 15800;
