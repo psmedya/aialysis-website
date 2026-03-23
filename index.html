@@ -3275,7 +3275,10 @@ loadMaclar();
     if(!ticking){
       window.requestAnimationFrame(function(){
         const curr=main.scrollTop;
-        if(curr>lastScroll&&curr>80){
+        // Detay paneli açıkken navbar her zaman görünsün
+        if(currentMac){
+          navbar.classList.remove('nav-hidden');
+        }else if(curr>lastScroll&&curr>80){
           navbar.classList.add('nav-hidden');
         }else{
           navbar.classList.remove('nav-hidden');
