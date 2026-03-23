@@ -1948,69 +1948,81 @@ function fmtTR(d){
 // Lig öncelik sistemi: lig ID bazlı kesin sıralama + keyword fallback
 const LIG_PUAN={
   // Türkiye
-  203:20000,204:19800,205:9200,206:19700,552:9100,553:9100,554:9100,1027:9100,551:19500,
-  // Avrupa kulüp
-  2:18000,3:17900,848:17800,
+  203:20000,204:9700,205:9200,206:9500,552:9100,553:9100,554:9100,1027:9100,551:9700,
+  // UEFA kulüp
+  2:19500,3:17000,848:15000,
   // İngiltere
-  39:16000,40:14500,41:7000,42:6800,45:15500,48:14000,43:5000,
+  39:19500,40:13000,41:7500,42:6000,45:15000,48:12500,43:5000,
   // İspanya
-  140:15900,141:14400,143:15400,
+  140:19000,141:9000,143:14000,
   // Almanya
-  78:15800,79:14300,80:7200,81:15300,
+  78:18000,79:10000,80:5500,81:13000,
   // İtalya
-  135:15700,136:14200,137:6500,547:15200,
+  135:18500,136:9000,137:6000,547:13500,
   // Fransa
-  61:15600,62:14100,66:15100,
+  61:17000,62:8500,66:12000,
   // Hollanda
-  88:15500,89:14000,
+  88:14500,89:6500,
   // Portekiz
-  94:15400,95:13900,
+  94:14500,95:7000,
   // Belçika
-  144:14500,
+  144:12000,
   // İskoçya
-  179:14600,180:7100,
+  179:11500,180:5500,
   // Rusya
-  235:13500,236:7000,
+  235:11000,236:5000,
   // Danimarka
-  119:13400,
+  119:9000,
   // İsveç
-  113:13300,
+  113:8500,
   // Norveç
-  103:13200,
+  103:8000,
   // İsviçre
-  207:13100,208:7000,
+  207:9000,208:5000,
   // Avusturya
-  218:13000,219:7000,
+  218:8500,219:4500,
   // Yunanistan
-  197:12900,
+  197:10000,
   // Çek
-  345:12800,
+  345:8500,
   // Polonya
-  106:12700,107:7000,
+  106:9500,107:5000,
   // Hırvatistan
-  210:12600,
+  210:8000,
   // Sırbistan
-  286:12500,
+  286:8000,
   // Romanya
-  283:12400,
+  283:7500,
   // Ukrayna
-  333:12300,
+  333:9500,
   // Macaristan
-  271:12200,
+  271:7000,
   // İsrail
-  382:12100,
+  382:7000,
   // Bulgaristan
-  172:12000,
-  // Güney Amerika
-  71:14700,72:7500, // Brezilya
-  128:14600,239:7000, // Arjantin
+  172:6000,
+  // Suudi Arabistan
+  307:15000,308:6000,
+  // Brezilya
+  71:16500,72:9500,73:12000,
+  // Arjantin
+  128:15500,239:7000,
   // Kuzey Amerika
-  253:14800,262:14700, // MLS, Liga MX
+  253:13500,262:14000, // MLS, Liga MX
   // Asya
-  98:11000,99:7000, // Japonya
-  292:10900,293:7000, // G.Kore
-  // Kupa/Süper Kupa
-  10:17500,15:8000, // Dünya/Ülke finalleri
+  17:12000, // AFC Champions
+  98:11500,99:5500, // Japonya
+  292:10000,293:5000, // G.Kore
+  169:10000, // Çin
+  323:10000, // Hindistan
+  // Afrika
+  12:12500, // CAF Champions
+  13:9500, // CAF Confederation
+  233:11500, // Mısır
+  // Avustralya
+  188:9500,
+  // Uluslararası
+  10:17000,15:17200,1:17500,9:14500,29:12500,
 };
 function ligOncelik(s){
   // Maç objesinden lig ID'si varsa kullan
@@ -2018,32 +2030,157 @@ function ligOncelik(s){
   if(idMatch){const p=LIG_PUAN[parseInt(idMatch[1])];if(p)return p;}
   // Keyword bazlı fallback
   s=s.toLowerCase();
+  // DÜŞÜK ÖNCELİK — önce filtrele
   if(s.includes('women')||s.includes('ladies')||s.includes('female')||s.includes('frauen')||s.includes('femenina')) return 500;
-  if(s.match(/\bu\d{2}\b/)||s.includes('youth')||s.includes('junior')||s.includes('academy')||s.includes('development')||s.includes('premier league 2')||s.includes('division one')||s.includes('division two')) return 400;
+  if(s.match(/\bu1[89]\b/)||s.match(/\bu2[01]\b/)||s.includes('youth')||s.includes('junior')||s.includes('academy')||s.includes('development')||s.includes('premier league 2')) return 400;
   if(s.includes('reserve')||s.includes('amateur')||s.includes('non league')) return 300;
   if(s.includes('friendl')) return 600;
-  // Ülke bazlı keyword
-  if(s.includes('turkey')&&(s.includes('süper')||s.includes('super'))) return 20000;
-  if(s.includes('turkey')) return 9000;
-  if(s.includes('champions league')&&!s.includes('concacaf')&&!s.includes('caf')) return 18000;
-  if(s.includes('europa league')&&!s.includes('conference')) return 17900;
-  if(s.includes('conference league')) return 17800;
-  if(s.includes('world cup')) return 17700;
-  if(s.includes('euro 20')||s.includes('european championship')) return 17600;
-  if(s.includes('nations league')) return 17500;
-  if(s.includes('premier league')&&s.includes('england')) return 16000;
-  if(s.includes('la liga')&&s.includes('spain')) return 15900;
-  if(s.includes('bundesliga')&&s.includes('germany')&&!s.includes('2.')) return 15800;
-  if(s.includes('serie a')&&s.includes('italy')) return 15700;
-  if(s.includes('ligue 1')&&s.includes('france')) return 15600;
-  // Bölge bazlı default
-  const eu=['england','spain','germany','italy','france','netherlands','portugal','belgium','scotland','austria','switzerland','denmark','sweden','norway','poland','greece','czech','croatia','serbia','romania','ukraine','hungary','israel','bulgaria','russia','turkey','finland','iceland','bosnia'];
-  const sa=['brazil','argentina','colombia','uruguay','chile','paraguay','peru','ecuador','bolivia','venezuela'];
-  for(const c of eu) if(s.includes(c)) return 8000;
-  for(const c of sa) if(s.includes(c)) return 6000;
-  if(s.includes('usa')||s.includes('united states')||s.includes('mexico')||s.includes('canada')) return 7000;
-  if(s.includes('japan')||s.includes('korea')||s.includes('china')||s.includes('australia')) return 5500;
-  if(s.includes('africa')||s.includes('nigeria')||s.includes('egypt')||s.includes('morocco')) return 4000;
+
+  // TÜRKİYE — HER ZAMAN EN ÜSTTE
+  if((s.includes('turkey')||s.includes('türkiye'))&&(s.includes('süper')||s.includes('super'))) return 20000;
+  if((s.includes('turkey')||s.includes('türkiye'))&&(s.includes('kupa')||s.includes('cup'))) return 9700;
+  if((s.includes('turkey')||s.includes('türkiye'))&&(s.includes('1.lig')||s.includes('1. lig')||s.includes('tff'))) return 9500;
+  if((s.includes('turkey')||s.includes('türkiye'))&&s.includes('2.lig')) return 9200;
+  if(s.includes('turkey')||s.includes('türkiye')) return 9000;
+
+  // UEFA KULÜP
+  if(s.includes('champions league')&&!s.includes('concacaf')&&!s.includes('caf')) return 19500;
+  if(s.includes('europa league')&&!s.includes('conference')) return 17000;
+  if(s.includes('conference league')) return 15000;
+
+  // MİLLİ TAKIM TURNUVALARI
+  if(s.includes('copa america')) return 17500;
+  if(s.includes('euro 20')||s.includes('european champ')) return 17200;
+  if(s.includes('world cup')) return 17000;
+  if(s.includes('nations league')) return 14500;
+  if(s.includes('africa cup of nations')||s.includes('afcon')) return 14000;
+  if(s.includes('asian cup')) return 12500;
+  if(s.includes('olympics football')||s.includes('olympic football')) return 12000;
+  if(s.includes('gold cup')||s.includes('concacaf')) return 11500;
+
+  // İNGİLTERE
+  if(s.includes('england')&&s.includes('premier league')) return 19500;
+  if(s.includes('england')&&s.includes('fa cup')) return 15000;
+  if(s.includes('england')&&s.includes('championship')) return 13000;
+  if(s.includes('england')&&(s.includes('league cup')||s.includes('efl')||s.includes('carabao'))) return 12500;
+  if(s.includes('england')&&s.includes('league one')) return 7500;
+  if(s.includes('england')&&s.includes('league two')) return 6000;
+
+  // İSPANYA
+  if(s.includes('spain')&&(s.includes('la liga')||s.includes('primera'))) return 19000;
+  if(s.includes('spain')&&s.includes('copa del rey')) return 14000;
+  if(s.includes('spain')&&s.includes('segunda')) return 9000;
+
+  // İTALYA
+  if(s.includes('italy')&&s.includes('serie a')) return 18500;
+  if(s.includes('italy')&&s.includes('coppa')) return 13500;
+  if(s.includes('italy')&&s.includes('serie b')) return 9000;
+
+  // ALMANYA
+  if(s.includes('germany')&&s.includes('bundesliga')&&!s.includes('2.')) return 18000;
+  if(s.includes('germany')&&(s.includes('dfb')||s.includes('pokal'))) return 13000;
+  if(s.includes('germany')&&s.includes('2. bundesliga')) return 10000;
+  if(s.includes('germany')&&s.includes('3. liga')) return 5500;
+
+  // FRANSA
+  if(s.includes('france')&&s.includes('ligue 1')) return 17000;
+  if(s.includes('france')&&s.includes('coupe')) return 12000;
+  if(s.includes('france')&&s.includes('ligue 2')) return 8500;
+
+  // SUUDİ ARABİSTAN
+  if(s.includes('saudi')&&s.includes('pro league')) return 15000;
+  if(s.includes('saudi')&&s.includes('first')) return 6000;
+
+  // BREZİLYA
+  if(s.includes('brazil')&&s.includes('serie a')) return 16500;
+  if(s.includes('brazil')&&s.includes('serie b')) return 9500;
+  if(s.includes('brazil')&&s.includes('copa')) return 12000;
+
+  // ARJANTİN
+  if(s.includes('argentina')&&s.includes('primera')) return 15500;
+
+  // HOLLANDA
+  if(s.includes('netherlands')&&s.includes('eredivisie')) return 14500;
+  if(s.includes('netherlands')&&s.includes('eerste')) return 6500;
+
+  // PORTEKİZ
+  if(s.includes('portugal')&&s.includes('primeira')) return 14500;
+
+  // GÜNEY AMERİKA KULÜP
+  if(s.includes('libertadores')) return 16000;
+  if(s.includes('sudamericana')) return 13000;
+
+  // KUZEY AMERİKA
+  if(s.includes('liga mx')||s.includes('mexico')) return 14000;
+  if(s.includes('mls')) return 13500;
+
+  // AFRİKA KULÜP
+  if(s.includes('caf champions')) return 12500;
+  if(s.includes('caf confederation')) return 9500;
+
+  // ASYA KULÜP
+  if(s.includes('afc champions')) return 12000;
+
+  // BELÇİKA
+  if(s.includes('belgium')&&(s.includes('pro')||s.includes('jupiler'))) return 12000;
+
+  // DİĞER AVRUPA
+  if(s.includes('scotland')&&s.includes('premiership')) return 11500;
+  if(s.includes('russia')&&s.includes('premier')) return 11000;
+  if(s.includes('greece')&&s.includes('super')) return 10000;
+  if(s.includes('ukraine')&&s.includes('premier')) return 9500;
+  if(s.includes('poland')&&s.includes('ekstraklasa')) return 9500;
+  if(s.includes('denmark')&&s.includes('superliga')) return 9000;
+  if(s.includes('switzerland')&&s.includes('super')) return 9000;
+  if(s.includes('czech')&&s.includes('first')) return 8500;
+  if(s.includes('sweden')&&s.includes('allsvenskan')) return 8500;
+  if(s.includes('austria')&&s.includes('bundesliga')) return 8500;
+  if(s.includes('norway')&&s.includes('eliteserien')) return 8000;
+  if(s.includes('croatia')&&s.includes('hnl')) return 8000;
+  if(s.includes('serbia')&&s.includes('superliga')) return 8000;
+  if(s.includes('romania')&&s.includes('liga')) return 7500;
+  if(s.includes('hungary')) return 7000;
+  if(s.includes('israel')) return 7000;
+  if(s.includes('bulgaria')) return 6000;
+  if(s.includes('ireland')&&s.includes('league')) return 5500;
+  if(s.includes('finland')) return 5500;
+  if(s.includes('cyprus')) return 5000;
+  if(s.includes('iceland')) return 4000;
+
+  // AFRİKA ÜLKE
+  if(s.includes('egypt')) return 11500;
+  if(s.includes('south africa')) return 9000;
+  if(s.includes('morocco')) return 9000;
+  if(s.includes('algeria')) return 7500;
+  if(s.includes('tunisia')) return 7000;
+  if(s.includes('nigeria')) return 6500;
+  if(s.includes('ghana')) return 5000;
+
+  // ASYA ÜLKE
+  if(s.includes('japan')||s.includes('j-league')||s.includes('j1 league')) return 11500;
+  if(s.includes('korea')||s.includes('k-league')||s.includes('k league')) return 10000;
+  if(s.includes('china')&&s.includes('super')) return 10000;
+  if(s.includes('india')&&s.includes('super')) return 10000;
+  if(s.includes('iran')) return 9500;
+  if(s.includes('australia')||s.includes('a-league')) return 9500;
+  if(s.includes('colombia')) return 8500;
+  if(s.includes('uae')) return 8000;
+  if(s.includes('indonesia')) return 7500;
+  if(s.includes('qatar')) return 7500;
+  if(s.includes('chile')) return 7500;
+  if(s.includes('thai')) return 7000;
+  if(s.includes('uruguay')) return 9000;
+  if(s.includes('peru')) return 6500;
+  if(s.includes('paraguay')) return 6500;
+  if(s.includes('iraq')) return 6500;
+  if(s.includes('ecuador')) return 6000;
+  if(s.includes('malaysia')) return 5500;
+  if(s.includes('vietnam')) return 5500;
+  if(s.includes('syria')) return 4000;
+
+  // OKYANUS
+  if(s.includes('new zealand')) return 3000;
+
   return 3000;
 }
 
