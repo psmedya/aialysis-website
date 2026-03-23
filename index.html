@@ -2023,7 +2023,16 @@ async function loadMaclar(silent=false){
     } else {
       const istFmt=(d)=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Istanbul'}).format(d);
       const tarihStr=istFmt(tarih);
-      const rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`);
+      let rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`);
+      // Geçmiş tarihte veri yoksa Edge Function ile doldur
+      const bugun=istFmt(new Date());
+      if((!rows||rows.length===0)&&tarihStr<bugun){
+        c.innerHTML='<div class="loading"><div class="spinner"></div>Eski maçlar yükleniyor...</div>';
+        try{
+          await fetch(SU+'/functions/v1/mac-guncelle-gun',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SK},body:JSON.stringify({tarih:tarihStr})});
+          rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`);
+        }catch(ef){console.warn('Edge Function hatası:',ef);}
+      }
       liste=(rows||[]).map(sbToApiFormat);
       document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
     }
