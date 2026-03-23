@@ -104,6 +104,25 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,.1);color:white;}
 .nav-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;}
 
+/* HAMBURGER DROPDOWN MENU */
+.nav-more-wrap{position:relative;flex-shrink:0;}
+.nav-more-btn{background:none;border:none;color:rgba(255,255,255,.7);padding:8px 10px;border-radius:8px;cursor:pointer;font-size:20px;line-height:1;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.nav-more-btn:hover,.nav-more-btn.active{background:rgba(255,255,255,.1);color:white;}
+.nav-dropdown{position:fixed;top:64px;right:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;min-width:200px;padding:8px 0;box-shadow:0 12px 40px rgba(0,0,0,.4);z-index:600;opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .2s ease;overflow:hidden;}
+.nav-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown-item{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:background .15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;text-decoration:none;}
+.nav-dropdown-item:hover{background:rgba(255,255,255,.06);}
+.nav-dropdown-item svg{width:16px;height:16px;stroke:currentColor;fill:none;flex-shrink:0;}
+.nav-dropdown-sep{height:1px;background:var(--border);margin:4px 0;}
+body.light-theme .nav-dropdown{background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.15);}
+body.light-theme .nav-dropdown-item:hover{background:rgba(0,0,0,.04);}
+@media(max-width:768px){
+  .nav-dropdown{position:fixed !important;top:auto !important;bottom:70px;left:10px;right:10px;min-width:0;width:auto;border-radius:12px;box-shadow:0 -8px 40px rgba(0,0,0,.5);}
+  .nav-more-wrap{position:static;}
+}
+.nav-dropdown-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:599;background:rgba(0,0,0,.3);}
+.nav-dropdown-overlay.open{display:block;}
+
 /* SIDEBAR */
 .sidebar{
   background:var(--surface);
@@ -452,6 +471,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   .nav-search{display:none !important;}
   .nav-links{display:none !important;}
   .hamburger{display:none !important;}
+  .nav-more-btn{display:none !important;}
   .layout,.layout.sidebar-kapali{grid-template-columns:1fr !important;grid-template-rows:1fr !important;padding-top:50px !important;}
   .main{padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .matches-header{padding:10px 12px !important;}
@@ -863,18 +883,28 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       <button class="nav-btn" onclick="showMainTab('aialysis')" id="nav-aialysis">
         <img src="/favicon.svg" alt="aiALYSIS Live" style="height:18px;width:18px;vertical-align:middle;margin-right:2px"> aiALYSIS
       </button>
-      <button class="nav-btn" onclick="showMainTab('favoriler')" id="nav-favoriler">
-        <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Favoriler
-      </button>
-      <button class="nav-btn" onclick="showMainTab('dashboard')" id="nav-dashboard">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Performans
-      </button>
-      <button class="nav-btn" onclick="showMainTab('feed')" id="nav-feed">
-        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg> Feed
-      </button>
-      <a class="nav-btn" href="/blog.html" id="nav-blog" title="aiALYSIS Live Blog - Maç Önizlemeleri ve Analizler" style="text-decoration:none;">
-        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Blog
-      </a>
+    </div>
+    <div class="nav-more-wrap" id="navMoreWrap">
+      <button class="nav-more-btn" onclick="toggleNavDropdown(event)" title="Daha Fazla" aria-label="Menü">&#9776;</button>
+      <div class="nav-dropdown" id="navDropdown">
+        <button class="nav-dropdown-item" onclick="showMainTab('favoriler');closeNavDropdown();" id="nav-favoriler">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Favoriler
+        </button>
+        <button class="nav-dropdown-item" onclick="showMainTab('dashboard');closeNavDropdown();" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Performans
+        </button>
+        <button class="nav-dropdown-item" onclick="showMainTab('feed');closeNavDropdown();" id="nav-feed">
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg> Feed
+        </button>
+        <div class="nav-dropdown-sep"></div>
+        <a class="nav-dropdown-item" href="/blog.html" id="nav-blog" title="aiALYSIS Live Blog" onclick="closeNavDropdown();">
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Blog
+        </a>
+        <div class="nav-dropdown-sep"></div>
+        <button class="nav-dropdown-item" onclick="closeNavDropdown();getForumUser().then(u=>{if(u)openProfile(u.id);else authModal();});">
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profil
+        </button>
+      </div>
     </div>
     <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk"
        rel="nofollow noopener" title="Android APK İndir"
@@ -898,6 +928,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       Giriş Yap
     </button>
   </nav>
+  <div class="nav-dropdown-overlay" id="navDropdownOverlay" onclick="closeNavDropdown()"></div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
@@ -1577,6 +1608,33 @@ function toggleSidebar(){
   layout.classList.toggle('sidebar-kapali');
   btn.classList.toggle('active');
 }
+
+/* Nav dropdown (hamburger menu) */
+function toggleNavDropdown(e){
+  e&&e.stopPropagation();
+  const dd=document.getElementById('navDropdown');
+  const ov=document.getElementById('navDropdownOverlay');
+  const btn=document.querySelector('.nav-more-btn');
+  if(!dd)return;
+  const isOpen=dd.classList.contains('open');
+  if(isOpen){closeNavDropdown();}
+  else{dd.classList.add('open');if(ov)ov.classList.add('open');if(btn)btn.classList.add('active');}
+}
+function closeNavDropdown(){
+  const dd=document.getElementById('navDropdown');
+  const ov=document.getElementById('navDropdownOverlay');
+  const btn=document.querySelector('.nav-more-btn');
+  if(dd)dd.classList.remove('open');
+  if(ov)ov.classList.remove('open');
+  if(btn)btn.classList.remove('active');
+}
+document.addEventListener('click',function(e){
+  const wrap=document.getElementById('navMoreWrap');
+  const dd=document.getElementById('navDropdown');
+  if(dd&&dd.classList.contains('open')&&wrap&&!wrap.contains(e.target)&&!e.target.closest('#mob-more')){
+    closeNavDropdown();
+  }
+});
 
 function panelKapat(){
   document.querySelector('.layout').classList.remove('panel-acik');
@@ -4119,7 +4177,7 @@ loadLandingBlog();
 /* ===== i18n / MULTI-LANGUAGE SYSTEM ===== */
 const I18N={
   tr:{
-    maclar:'Maçlar',aialysis:'aiALYSIS',favoriler:'Favoriler',performans:'Performans',
+    maclar:'Maçlar',aialysis:'aiALYSIS',favoriler:'Favoriler',performans:'Performans',daha:'Daha',
     girisYap:'Giriş Yap',indir:'İndir',canli:'CANLI',ara:'Takım veya lig ara...',
     tumMaclar:'Tüm Maçlar',hizliErisim:'HIZLI ERİŞİM',canliMaclar:'Canlı Maçlar',
     favoriMaclariniz:'Favori maçlarınız',tumunuTemizle:'Tümünü Temizle',
@@ -4147,7 +4205,7 @@ const I18N={
     macSec:'MAÇ SEÇ', macSecDesc:'Bir maça tıkla, AI analizi ve istatistikleri burada görün.'
   },
   en:{
-    maclar:'Matches',aialysis:'aiALYSIS',favoriler:'Favorites',performans:'Performance',
+    maclar:'Matches',aialysis:'aiALYSIS',favoriler:'Favorites',performans:'Performance',daha:'More',
     girisYap:'Sign In',indir:'Download',canli:'LIVE',ara:'Search team or league...',
     tumMaclar:'All Matches',hizliErisim:'QUICK ACCESS',canliMaclar:'Live Matches',
     favoriMaclariniz:'Your favorite matches',tumunuTemizle:'Clear All',
@@ -4175,7 +4233,7 @@ const I18N={
     macSec:'SELECT MATCH', macSecDesc:'Click a match to see AI analysis and statistics here.'
   },
   ar:{
-    maclar:'المباريات',aialysis:'aiALYSIS',favoriler:'المفضلة',performans:'الأداء',
+    maclar:'المباريات',aialysis:'aiALYSIS',favoriler:'المفضلة',performans:'الأداء',daha:'المزيد',
     girisYap:'تسجيل الدخول',indir:'تحميل',canli:'مباشر',ara:'ابحث عن فريق أو دوري...',
     tumMaclar:'جميع المباريات',hizliErisim:'وصول سريع',canliMaclar:'مباريات مباشرة',
     favoriMaclariniz:'مبارياتك المفضلة',tumunuTemizle:'مسح الكل',
@@ -4203,7 +4261,7 @@ const I18N={
     macSec:'اختر مباراة', macSecDesc:'انقر على مباراة لرؤية تحليل الذكاء الاصطناعي.'
   },
   zh:{
-    maclar:'比赛',aialysis:'aiALYSIS',favoriler:'收藏',performans:'表现',
+    maclar:'比赛',aialysis:'aiALYSIS',favoriler:'收藏',performans:'表现',daha:'更多',
     girisYap:'登录',indir:'下载',canli:'直播',ara:'搜索球队或联赛...',
     tumMaclar:'所有比赛',hizliErisim:'快速访问',canliMaclar:'直播比赛',
     favoriMaclariniz:'你的收藏比赛',tumunuTemizle:'清除全部',
@@ -4231,7 +4289,7 @@ const I18N={
     macSec:'选择比赛', macSecDesc:'点击比赛查看AI分析和统计数据。'
   },
   es:{
-    maclar:'Partidos',aialysis:'aiALYSIS',favoriler:'Favoritos',performans:'Rendimiento',
+    maclar:'Partidos',aialysis:'aiALYSIS',favoriler:'Favoritos',performans:'Rendimiento',daha:'Más',
     girisYap:'Iniciar Sesión',indir:'Descargar',canli:'EN VIVO',ara:'Buscar equipo o liga...',
     tumMaclar:'Todos los Partidos',hizliErisim:'ACCESO RÁPIDO',canliMaclar:'Partidos en Vivo',
     favoriMaclariniz:'Tus partidos favoritos',tumunuTemizle:'Borrar Todo',
@@ -4259,7 +4317,7 @@ const I18N={
     macSec:'SELECCIONAR PARTIDO', macSecDesc:'Haz clic en un partido para ver el análisis de IA.'
   },
   fr:{
-    maclar:'Matchs',aialysis:'aiALYSIS',favoriler:'Favoris',performans:'Performance',
+    maclar:'Matchs',aialysis:'aiALYSIS',favoriler:'Favoris',performans:'Performance',daha:'Plus',
     girisYap:'Connexion',indir:'Télécharger',canli:'EN DIRECT',ara:'Rechercher équipe ou ligue...',
     tumMaclar:'Tous les Matchs',hizliErisim:'ACCÈS RAPIDE',canliMaclar:'Matchs en Direct',
     favoriMaclariniz:'Vos matchs favoris',tumunuTemizle:'Tout Effacer',
@@ -4287,7 +4345,7 @@ const I18N={
     macSec:'SÉLECTIONNER UN MATCH', macSecDesc:'Cliquez sur un match pour voir l\'analyse IA.'
   },
   pt:{
-    maclar:'Jogos',aialysis:'aiALYSIS',favoriler:'Favoritos',performans:'Desempenho',
+    maclar:'Jogos',aialysis:'aiALYSIS',favoriler:'Favoritos',performans:'Desempenho',daha:'Mais',
     girisYap:'Entrar',indir:'Baixar',canli:'AO VIVO',ara:'Buscar time ou liga...',
     tumMaclar:'Todos os Jogos',hizliErisim:'ACESSO RÁPIDO',canliMaclar:'Jogos ao Vivo',
     favoriMaclariniz:'Seus jogos favoritos',tumunuTemizle:'Limpar Tudo',
@@ -4384,8 +4442,11 @@ function applyTranslations(){
 
   // Mobile bottom nav labels
   document.querySelectorAll('.mobil-nav-btn .mob-label').forEach((el,i)=>{
-    const keys=['maclar','favoriler','aialysis','performans'];
-    if(keys[i])el.textContent=t(keys[i]);
+    const keys=['maclar','canli','aialysis','daha'];
+    if(keys[i]){
+      const txt=t(keys[i]);
+      if(txt)el.textContent=txt;
+    }
   });
 
   // Landing page
@@ -4451,21 +4512,21 @@ function applyTranslations(){
 <!-- Mobil Bottom Nav -->
 <div class="mobil-nav">
   <div class="mobil-nav-items">
-    <button class="mobil-nav-btn active" id="mob-maclar" onclick="showMainTab('maclar');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
+    <button class="mobil-nav-btn active" id="mob-maclar" onclick="showMainTab('maclar');document.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
       <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span class="mob-label">Maclar</span>
     </button>
-    <button class="mobil-nav-btn" id="mob-favoriler" onclick="showMainTab('favoriler');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
-      <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span class="mob-label">Favoriler</span>
+    <button class="mobil-nav-btn" id="mob-canli" onclick="toggleCanli();document.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49"/><path d="M7.76 16.24a6 6 0 0 1 0-8.49"/></svg>
+      <span class="mob-label">Canli</span>
     </button>
-    <button class="mobil-nav-btn" id="mob-aialysis" onclick="showMainTab('aialysis');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
+    <button class="mobil-nav-btn" id="mob-aialysis" onclick="showMainTab('aialysis');document.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
       <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       <span class="mob-label">aiALYSIS</span>
     </button>
-    <button class="mobil-nav-btn" id="mob-dashboard" onclick="showMainTab('dashboard');this.parentElement.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
-      <svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span class="mob-label">Performans</span>
+    <button class="mobil-nav-btn" id="mob-more" onclick="toggleNavDropdown(event);">
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      <span class="mob-label">Daha</span>
     </button>
   </div>
 </div>
