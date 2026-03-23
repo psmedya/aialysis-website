@@ -196,8 +196,9 @@ body.light-theme .nav-dropdown-item:hover{background:rgba(0,0,0,.04);}
 .takim-adi{font-size:13px;}
 .takim-adi.kazanan{font-weight:700;color:white;}
 .mac-skor{text-align:center;}
-.skor-val{font-size:14px;font-weight:700;color:var(--green);}
-.skor-val.bitti{color:var(--text);}
+.skor-val{font-size:14px;font-weight:700;color:var(--text);}
+.skor-val.canli{color:var(--green);}
+.skor-val.baslamadi{color:var(--muted);}
 .mac-durum-col{text-align:center;font-size:11px;color:var(--muted);}
 .mac-arrow{text-align:center;color:var(--muted);}
 
@@ -2096,7 +2097,7 @@ function macSatir(m){
       <div class="mac-takim"><img class="takim-logo" src="${m.teams.home.logo}" onerror="this.style.display='none'"><span class="takim-adi ${live&&ev>dep?'kazanan':''}">${m.teams.home.name}</span></div>
       <div class="mac-takim"><img class="takim-logo" src="${m.teams.away.logo}" onerror="this.style.display='none'"><span class="takim-adi ${live&&dep>ev?'kazanan':''}">${m.teams.away.name}</span></div>
     </div>
-    <div class="mac-skor"><div class="skor-val ${bitti?'bitti':''}">${ev}</div><div class="skor-val ${bitti?'bitti':''}">${dep}</div></div>
+    <div class="mac-skor"><div class="skor-val ${live?'canli':bitti?'':'baslamadi'}">${live||bitti?ev:'-'}</div><div class="skor-val ${live?'canli':bitti?'':'baslamadi'}">${live||bitti?dep:'-'}</div></div>
     <div class="mac-durum-col">${m.league.name.substring(0,14)}</div>
     <button class="fav-star fav-star-mac${isFav?' aktif':''}" data-id="${m.fixture.id}" onclick="toggleFavMac(${m.fixture.id},event)">${isFav?'\u2605':'\u2606'}</button>
   </div>`;
@@ -2153,6 +2154,8 @@ async function openMac(id){
   if(currentMac?.fixture.id===id){panelKapat();return;}
   currentMac=m;
   layout.classList.add('panel-acik');
+  // Navbar her zaman görünür kalsın — panel açılınca nav-hidden kaldır
+  const nb=document.querySelector('.navbar');if(nb)nb.classList.remove('nav-hidden');
   const mn=document.querySelector('.mobil-nav');if(mn)mn.style.display='none';
   document.getElementById('defaultPanel').style.display='none';
   document.getElementById('matchDetail').classList.add('active');
