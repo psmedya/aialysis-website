@@ -1,6 +1,6 @@
 {
-  "name": "aiALYSIS Live",
-  "short_name": "aiALYSIS",
+  "name": "aiAlysis Live",
+  "short_name": "aiAlysis",
   "description": "AI destekli futbol analiz",
   "start_url": "/",
   "display": "standalone",
