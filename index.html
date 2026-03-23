@@ -611,6 +611,45 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 .profil-mesaj-item .pm-time{font-size:10px;color:var(--muted);margin-top:4px;}
 .forum-user-link{cursor:pointer;color:var(--gold-lt);font-weight:700;transition:opacity .2s;}
 .forum-user-link:hover{opacity:.8;text-decoration:underline;}
+
+/* KULLANICI TAHMİN FORMU */
+.kt-form{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:12px;}
+.kt-form-title{font-size:11px;font-weight:700;color:var(--gold-lt);letter-spacing:1px;margin-bottom:12px;}
+.kt-form-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.kt-select{flex:1;min-width:0;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;}
+.kt-radio-group{display:flex;gap:6px;}
+.kt-radio{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.kt-radio.selected{border-color:var(--gold);background:rgba(212,162,76,.15);color:var(--gold-lt);}
+.kt-radio:hover{border-color:var(--gold);}
+.kt-submit{width:100%;padding:10px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:8px;color:#1A1A2E;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.kt-submit:hover{transform:scale(1.02);box-shadow:0 4px 16px rgba(212,162,76,.3);}
+.kt-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* TAKIP BUTONU */
+.takip-btn{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;border:1px solid var(--blue-lt);background:transparent;color:var(--blue-lt);}
+.takip-btn:hover{background:rgba(74,58,255,.15);}
+.takip-btn.takip-ediliyor{background:var(--blue);border-color:var(--blue);color:white;}
+.takip-btn.takip-ediliyor:hover{background:rgba(229,57,53,.2);border-color:var(--red);color:var(--red);}
+
+/* FEED */
+.feed-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;transition:all .2s;}
+.feed-item:hover{border-color:rgba(212,162,76,.3);}
+.feed-user{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.feed-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-lt));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:white;flex-shrink:0;}
+.feed-name{font-size:12px;font-weight:700;color:var(--gold-lt);}
+.feed-time{font-size:10px;color:var(--muted);margin-left:auto;}
+.feed-tahmin{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+/* PERFORMANS RAPORU */
+.perf-toggle{display:flex;gap:4px;margin-bottom:12px;}
+.perf-toggle-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.perf-toggle-btn.active{background:var(--blue);border-color:var(--blue);color:white;}
+.perf-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.perf-bar-label{font-size:11px;font-weight:700;color:var(--text);width:80px;flex-shrink:0;}
+.perf-bar-track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;}
+.perf-bar-fill{height:100%;border-radius:4px;transition:width .4s ease;}
+.perf-bar-val{font-size:11px;color:var(--muted);width:50px;text-align:right;flex-shrink:0;}
+.perf-best-card{background:linear-gradient(135deg,rgba(212,162,76,.1),rgba(255,213,79,.05));border:1px solid rgba(212,162,76,.3);border-radius:10px;padding:14px;margin-top:12px;}
 </style>
 </head>
 <body>
@@ -828,6 +867,12 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       <button class="nav-btn" onclick="showMainTab('dashboard')" id="nav-dashboard">
         <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Performans
       </button>
+      <button class="nav-btn" onclick="showMainTab('feed')" id="nav-feed">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg> Feed
+      </button>
+      <a class="nav-btn" href="/blog.html" id="nav-blog" style="text-decoration:none;">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Blog
+      </a>
     </div>
     <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk"
        class="nav-indir-btn" style="background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1a1a2e;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;margin-left:8px;white-space:nowrap;flex-shrink:0;">
@@ -873,6 +918,9 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       </div>
       <div class="sidebar-item" onclick="showMainTab('dashboard')">
         <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Performans
+      </div>
+      <div class="sidebar-item" onclick="showMainTab('feed')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg> Feed
       </div>
     </div>
     <div class="sidebar-section">
@@ -983,6 +1031,9 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         <!-- Kategori Bazlı Başarı -->
         <div id="kategoriStats" style="margin-bottom:20px"></div>
 
+        <!-- Performans Raporu -->
+        <div id="perfRaporContainer" style="margin-bottom:20px"></div>
+
         <!-- Başarı Trendi -->
         <div id="trendContainer" style="margin-bottom:20px"></div>
 
@@ -1026,6 +1077,19 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- FEED -->
+    <div class="page" id="page-feed">
+      <div class="matches-header">
+        <div>
+          <div class="matches-title">Feed</div>
+          <div class="matches-count">Takip ettigin kullanicilarin tahminleri</div>
+        </div>
+      </div>
+      <div style="padding:0 16px" id="feedContainer">
+        <div class="loading"><div class="spinner"></div>Yukleniyor...</div>
       </div>
     </div>
 
@@ -2452,6 +2516,7 @@ function renderDetailAnaliz(a,m){
     </div>`:''}
     ${(()=>{const ke=a.kadro_etkisi;if(!ke)return '';const renderTakim=(takim,data)=>{const eksikNotlar=data.notlar.filter(n=>n.includes('kadroda yok'));const ilkOnbirNotlar=data.notlar.filter(n=>n.includes('ilk 11'));const kartNotlar=data.notlar.filter(n=>n.includes('kart riski'));const skorRenk=data.etki_skoru>=0.8?'var(--green)':data.etki_skoru>=0.6?'var(--yellow)':'var(--red)';const skorYuzde=Math.round(data.etki_skoru*100);return `<div style="margin-bottom:10px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700;color:var(--text)">${takim}</span><span style="font-size:11px;font-weight:800;color:${skorRenk}">Kadro Gücü: %${skorYuzde}</span></div>${data.eksik_gol_payi>0?`<div style="font-size:10px;color:var(--red);margin-bottom:4px">Eksik oyuncuların gol katkısı: %${Math.round(data.eksik_gol_payi*100)}</div>`:''}<div style="background:var(--bg);border-radius:6px;height:4px;overflow:hidden;margin-bottom:6px"><div style="height:100%;width:${skorYuzde}%;background:${skorRenk};border-radius:6px;transition:width .3s"></div></div>${eksikNotlar.length>0?eksikNotlar.map(n=>`<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:3px"><span style="color:var(--red);font-size:10px;flex-shrink:0">✕</span><span style="font-size:10px;color:var(--muted);line-height:1.4">${n}</span></div>`).join(''):`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="color:var(--green);font-size:10px">✓</span><span style="font-size:10px;color:var(--green)">Tam kadro</span></div>`}${ilkOnbirNotlar.map(n=>`<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:3px"><span style="color:var(--green);font-size:10px;flex-shrink:0">★</span><span style="font-size:10px;color:var(--muted);line-height:1.4">${n}</span></div>`).join('')}${kartNotlar.map(n=>`<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:3px"><span style="color:var(--yellow);font-size:10px;flex-shrink:0">⚠</span><span style="font-size:10px;color:var(--yellow);line-height:1.4">${n}</span></div>`).join('')}</div>`};return `<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:10px">⚽ KADRO ANALİZİ</div>${renderTakim(m.teams.home.name,ke.ev)}${ke.dep?`<div style="border-top:1px solid var(--border);margin:8px 0;padding-top:8px"></div>${renderTakim(m.teams.away.name,ke.dep)}`:''}</div>`})()}
     ${tah.length?`<div style="text-align:center;margin-top:12px"><button class="detail-share-btn" onclick="shareDetailCurrentTahmin()">🔗 ${t('paylas')}</button></div>`:''}
+    <div id="ktFormContainer"></div>
     <div id="userTahminContainer">${renderUserTahmin(m.fixture.id,m)}</div>
     ${live?`<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:10px;font-size:10px;color:var(--green);margin-top:8px"><div style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite"></div>Her 30 saniyede otomatik güncelleniyor</div>`:''}
     <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:6px">* AI tahminleri yalnızca bilgi amaçlıdır.</div>
@@ -2460,6 +2525,14 @@ function renderDetailAnaliz(a,m){
   loadCommunityPredictions(m.fixture.id).then(()=>{
     const box=document.getElementById('userTahminContainer');
     if(box)box.innerHTML=renderUserTahmin(m.fixture.id,m);
+  });
+  // Async render kullanici tahmin formu (currentUser check)
+  getForumUser().then(u=>{
+    const ktBox=document.getElementById('ktFormContainer');
+    if(ktBox&&u){
+      const bitti=['FT','AET','PEN','AWD','WO'].includes(m.fixture.status.short);
+      if(!bitti)ktBox.innerHTML=renderKullaniciTahminFormu(m.fixture.id,m);
+    }
   });
 }
 
@@ -2864,18 +2937,20 @@ function switchDetailTab(name){
 function showMainTab(name){
   // Panel açıksa kapat
   panelKapat();
-  ['maclar','favoriler','aialysis','dashboard'].forEach(p=>{
-    document.getElementById(`page-${p}`).classList.remove('active');
+  ['maclar','favoriler','aialysis','dashboard','feed'].forEach(p=>{
+    const el=document.getElementById(`page-${p}`);
+    if(el)el.classList.remove('active');
     const nb=document.getElementById(`nav-${p}`);
     if(nb)nb.classList.remove('active');
-    const sb=document.querySelectorAll('.sidebar-item');
   });
-  document.getElementById(`page-${name}`).classList.add('active');
+  const pageEl=document.getElementById(`page-${name}`);
+  if(pageEl)pageEl.classList.add('active');
   const nb=document.getElementById(`nav-${name}`);
   if(nb)nb.classList.add('active');
   if(name==='aialysis')loadAialysis();
-  if(name==='dashboard'){loadTahminler(aktifFilter);loadYildizlar();loadLeaderboard();}
+  if(name==='dashboard'){loadTahminler(aktifFilter);loadYildizlar();loadLeaderboard();loadPerfRapor();}
   if(name==='favoriler')renderFavoriler();
+  if(name==='feed')loadFeed();
 }
 
 function aiaLogo(url,name){
@@ -2953,7 +3028,7 @@ async function loadAialysis(silent=false){
             });
             // Tahminlerden oran < 1.35 olanları filtrele
             hazir[macId]=hazir[macId].filter(t=>{
-              if(t._oran===null||t._oran===undefined)return true; // Oran yoksa göster
+              if(t._oran===null||t._oran===undefined||t._oran===0)return false; // Oran yoksa gösterme
               return t._oran>=1.35; // Oran 1.35 altıysa gösterme
             });
             // Eğer tüm tahminler filtrelendiyse bu maçı kaldır
@@ -3104,7 +3179,8 @@ async function loadTahminler(filter='hepsi') {
       const oranYok = []; // oran alanı null olan tahminler
       statsData.forEach(x => {
         if (x.oran && parseFloat(x.oran) > 0) {
-          oranToplam += parseFloat(x.oran);
+          x._oran = parseFloat(x.oran);
+          oranToplam += x._oran;
           oranSayi++;
         } else {
           oranYok.push(x);
@@ -3146,7 +3222,7 @@ async function loadTahminler(filter='hepsi') {
               const om = perfOranMap[x.mac_id];
               if (!om) return;
               const odd = findOddForTahmin(om, x.kategori, x.cizgi, x.ust_alt);
-              if (odd && odd > 0) { oranToplam += odd; oranSayi++; }
+              if (odd && odd > 0) { x._oran = odd; oranToplam += odd; oranSayi++; }
             });
           }
         }
@@ -3154,10 +3230,17 @@ async function loadTahminler(filter='hepsi') {
       if (oranSayi > 0) ortOran = (oranToplam / oranSayi).toFixed(2);
     } catch (_) {}
 
-    document.getElementById('stat-toplam').textContent = toplam;
-    document.getElementById('stat-dogru').textContent = dogru;
-    document.getElementById('stat-yanlis').textContent = yanlis;
-    document.getElementById('stat-pct').textContent = toplam > 0 ? `${pct}%` : '--%';
+    // Oransız tahminleri statsData'dan çıkar (oran=null/undefined/0 olanları filtrele)
+    const statsFiltered = statsData.filter(x => x._oran && x._oran > 0);
+    const toplam2 = statsFiltered.length;
+    const dogru2 = statsFiltered.filter(x => x.sonuc === 'DOGRU').length;
+    const yanlis2 = statsFiltered.filter(x => x.sonuc === 'YANLIS').length;
+    const pct2 = toplam2 > 0 ? Math.round(dogru2 / (dogru2 + yanlis2) * 100) : 0;
+
+    document.getElementById('stat-toplam').textContent = toplam2;
+    document.getElementById('stat-dogru').textContent = dogru2;
+    document.getElementById('stat-yanlis').textContent = yanlis2;
+    document.getElementById('stat-pct').textContent = toplam2 > 0 ? `${pct2}%` : '--%';
     document.getElementById('stat-ort-oran').textContent = ortOran || '--';
 
     // data tahminlerine oran ekle (tahmin kartlarında göstermek için)
@@ -3215,9 +3298,9 @@ async function loadTahminler(filter='hepsi') {
       }
     } catch (_) {}
 
-    // Kategori bazli basari oranlari
+    // Kategori bazli basari oranlari (sadece oranlı tahminler)
     const katMap = {};
-    statsData.forEach(x => {
+    statsFiltered.forEach(x => {
       if (!x.kategori) return;
       const k = x.kategori.toUpperCase();
       if (!katMap[k]) katMap[k] = {dogru:0, yanlis:0};
@@ -3253,7 +3336,7 @@ async function loadTahminler(filter='hepsi') {
 
     // Basari trendi
     const trendContainer = document.getElementById('trendContainer');
-    const tamamlananAll = statsData.filter(x => x.sonuc === 'DOGRU' || x.sonuc === 'YANLIS');
+    const tamamlananAll = statsFiltered.filter(x => x.sonuc === 'DOGRU' || x.sonuc === 'YANLIS');
     if (tamamlananAll.length >= 5) {
       const sorted = [...tamamlananAll].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
       const half = Math.floor(sorted.length / 2);
@@ -3277,7 +3360,10 @@ async function loadTahminler(filter='hepsi') {
       trendContainer.innerHTML = '';
     }
 
-    if (!data.length) {
+    // Oransız tahminleri listeden çıkar
+    const dataFiltered = data.filter(t => t._oran && t._oran > 0);
+
+    if (!dataFiltered.length) {
       c.innerHTML = '<div class="empty">Henüz tahmin kaydı yok.</div>';
       return;
     }
@@ -3288,7 +3374,7 @@ async function loadTahminler(filter='hepsi') {
           <span>MAÇ</span><span>TAHMİN</span><span>KATEGORİ</span><span>ORAN</span><span>GÜVEN</span><span>SONUÇ</span>
         </div>
         <div style="padding:0 16px">
-          ${data.map(t => {
+          ${dataFiltered.map(t => {
             const tarihStr = new Date(t.mac_tarihi).toLocaleDateString('tr-TR', {day:'2-digit',month:'2-digit',year:'2-digit'});
             const sonucIcon = t.sonuc === 'DOGRU' ? '✅' : t.sonuc === 'YANLIS' ? '❌' : '⏳';
             const sonucRenk = t.sonuc === 'DOGRU' ? 'var(--green)' : t.sonuc === 'YANLIS' ? 'var(--red)' : 'var(--muted)';
@@ -3391,6 +3477,23 @@ async function openProfile(userId){
       await fetch(`${SU}/rest/v1/rpc/profil_goruntule`,{method:'POST',headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Content-Type':'application/json'},body:JSON.stringify({p_user_id:userId})});
     }catch(e){}
 
+    // 2b. Takipci/takip edilen sayilari
+    let takipciSayi=0,takipEdilenSayi=0,takipEdiyorMu=false;
+    const curUser=await getForumUser();
+    try{
+      const [tcR,teR]=await Promise.all([
+        fetch(`${SU}/rest/v1/takipler?takip_edilen_id=eq.${userId}&select=id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Prefer':'count=exact'}}),
+        fetch(`${SU}/rest/v1/takipler?takipci_id=eq.${userId}&select=id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Prefer':'count=exact'}})
+      ]);
+      const tcCount=tcR.headers.get('content-range');
+      const teCount=teR.headers.get('content-range');
+      if(tcCount){const m2=tcCount.match(/\/(\d+)/);if(m2)takipciSayi=parseInt(m2[1]);}
+      if(teCount){const m2=teCount.match(/\/(\d+)/);if(m2)takipEdilenSayi=parseInt(m2[1]);}
+      if(curUser&&curUser.id!==userId){
+        takipEdiyorMu=await takipDurumKontrol(userId);
+      }
+    }catch(_){}
+
     // 3. Tahmin istatistikleri - profiller tablosundan
     const dogru=profil?profil.dogru_tahmin||0:0;
     const yanlis=profil?profil.yanlis_tahmin||0:0;
@@ -3420,6 +3523,11 @@ async function openProfile(userId){
           <div class="profil-avatar">${initial}</div>
           <div class="profil-name">${escapeHtml(ad)}</div>
           <div class="profil-rutbe">${rutbe.rozet} ${rutbe.ad}</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px">
+            <div style="text-align:center"><div style="font-size:16px;font-weight:900;color:var(--text)">${takipciSayi}</div><div style="font-size:10px;color:var(--muted)">Takipci</div></div>
+            <div style="text-align:center"><div style="font-size:16px;font-weight:900;color:var(--text)">${takipEdilenSayi}</div><div style="font-size:10px;color:var(--muted)">Takip</div></div>
+          </div>
+          ${curUser&&curUser.id!==userId?`<div style="text-align:center;margin-top:10px"><button class="takip-btn${takipEdiyorMu?' takip-ediliyor':''}" data-uid="${userId}" onclick="${takipEdiyorMu?`takipBirak('${userId}')`:`takipEt('${userId}')`}">${takipEdiyorMu?'Takip Ediliyor':'Takip Et'}</button></div>`:''}
           <div class="profil-tarih">${kayitStr}'dan beri uye</div>
         </div>
         <div class="profil-body">
@@ -3458,8 +3566,20 @@ async function loadLeaderboard(){
       lc.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Henuz aktif kullanici yok.</div>';
       return;
     }
+    // Takip durumlarini kontrol et
+    const lbUser=await getForumUser();
+    let lbFollowSet=new Set();
+    if(lbUser){
+      try{
+        const fR=await fetch(`${SU}/rest/v1/takipler?takipci_id=eq.${lbUser.id}&select=takip_edilen_id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+        const fData=await fR.json();
+        if(fData)fData.forEach(f=>lbFollowSet.add(f.takip_edilen_id));
+      }catch(_){}
+    }
     const rankColors=['linear-gradient(135deg,var(--gold),var(--gold-lt))','linear-gradient(135deg,#8E8E93,#C7C7CC)','linear-gradient(135deg,#CD7F32,#E8A85C)'];
     lc.innerHTML=users.map((u,i)=>{
+      const isFollowing=lbFollowSet.has(u.user_id);
+      const isSelf=lbUser&&lbUser.id===u.user_id;
       const ad=u.kullanici_adi||'Anonim';
       const initial=ad.charAt(0).toUpperCase();
       const avatarBg=i<3?rankColors[i]:'linear-gradient(135deg,var(--blue),var(--blue-lt))';
@@ -3473,6 +3593,7 @@ async function loadLeaderboard(){
           <div style="font-size:10px;color:var(--muted);margin-top:2px;">${(u.puan||0).toLocaleString('tr-TR')} puan &middot; ${rInfo.ad}</div>
         </div>
         ${i===0?'<span style="font-size:16px;">&#127942;</span>':i===1?'<span style="font-size:14px;">&#129352;</span>':i===2?'<span style="font-size:14px;">&#129353;</span>':''}
+        ${isSelf?'':`<button class="takip-btn${isFollowing?' takip-ediliyor':''}" data-uid="${u.user_id}" onclick="event.stopPropagation();${isFollowing?`takipBirak('${u.user_id}')`:`takipEt('${u.user_id}')`}" style="flex-shrink:0;">${isFollowing?'Takip Ediliyor':'Takip Et'}</button>`}
       </div>`;
     }).join('');
   }catch(e){
@@ -3657,7 +3778,313 @@ async function sendForumMsg(macId){
   inp.disabled=false;inp.focus();
 }
 
+// ===== 1. KULLANICI TAHMİN SİSTEMİ =====
+let ktSeciliUstAlt='ÜST';
+function renderKullaniciTahminFormu(macId,m){
+  const bitti=['FT','AET','PEN','AWD','WO'].includes(m.fixture.status.short);
+  if(bitti)return '';
+  return `<div class="kt-form" id="ktForm-${macId}">
+    <div class="kt-form-title">TAHMİN YAP</div>
+    <div class="kt-form-row">
+      <select class="kt-select" id="ktKategori-${macId}">
+        <option value="GOL">Gol Ust/Alt</option>
+        <option value="KORNER">Korner Ust/Alt</option>
+        <option value="KART">Kart Ust/Alt</option>
+      </select>
+      <select class="kt-select" id="ktCizgi-${macId}">
+        <option value="0.5">0.5</option>
+        <option value="1.5">1.5</option>
+        <option value="2.5" selected>2.5</option>
+        <option value="3.5">3.5</option>
+        <option value="4.5">4.5</option>
+        <option value="5.5">5.5</option>
+      </select>
+    </div>
+    <div class="kt-form-row">
+      <div class="kt-radio-group">
+        <div class="kt-radio selected" id="ktUst-${macId}" onclick="ktSecUstAlt('${macId}','ÜST')">UST</div>
+        <div class="kt-radio" id="ktAlt-${macId}" onclick="ktSecUstAlt('${macId}','ALT')">ALT</div>
+      </div>
+    </div>
+    <button class="kt-submit" id="ktGonder-${macId}" onclick="ktGonderTahmin(${macId})">Tahmin Gonder</button>
+    <div id="ktMsg-${macId}" style="font-size:11px;text-align:center;margin-top:6px;display:none;"></div>
+  </div>`;
+}
+function ktSecUstAlt(macId,secim){
+  ktSeciliUstAlt=secim;
+  const ustEl=document.getElementById('ktUst-'+macId);
+  const altEl=document.getElementById('ktAlt-'+macId);
+  if(ustEl)ustEl.classList.toggle('selected',secim==='ÜST');
+  if(altEl)altEl.classList.toggle('selected',secim==='ALT');
+}
+async function ktGonderTahmin(macId){
+  const user=await getForumUser();
+  if(!user){showToast('Tahmin yapmak icin giris yapin.');authModal();return;}
+  const kategori=document.getElementById('ktKategori-'+macId)?.value;
+  const cizgi=parseFloat(document.getElementById('ktCizgi-'+macId)?.value);
+  const ustAlt=ktSeciliUstAlt;
+  const btn=document.getElementById('ktGonder-'+macId);
+  const msgEl=document.getElementById('ktMsg-'+macId);
+  btn.disabled=true;btn.textContent='Gonderiliyor...';
+  msgEl.style.display='none';
+  try{
+    // Duplicate kontrol
+    const dupR=await fetch(`${SU}/rest/v1/kullanici_tahminleri?user_id=eq.${user.id}&mac_id=eq.${macId}&kategori=eq.${kategori}&cizgi=eq.${cizgi}&select=id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const dupData=await dupR.json();
+    if(dupData&&dupData.length>0){
+      msgEl.textContent='Bu kategori ve cizgi icin zaten tahmin yaptin.';msgEl.style.color='var(--red)';msgEl.style.display='block';
+      btn.disabled=false;btn.textContent='Tahmin Gonder';return;
+    }
+    // Insert
+    const m=currentMac;
+    const evAdi=m?.teams?.home?.name||'';
+    const depAdi=m?.teams?.away?.name||'';
+    const lig=m?.league?.name||'';
+    const {error}=await sbClient.from('kullanici_tahminleri').insert({
+      user_id:user.id,kullanici_adi:user.name,mac_id:macId,
+      ev_sahibi:evAdi,deplasman:depAdi,lig:lig,
+      kategori:kategori,cizgi:cizgi,ust_alt:ustAlt,
+      mac_tarihi:m?.fixture?.date||new Date().toISOString()
+    });
+    if(error)throw error;
+    // Puan ekle
+    try{fetch(`${SU}/rest/v1/rpc/puan_ekle`,{method:'POST',headers:{apikey:SK,Authorization:`Bearer ${SK}`,'Content-Type':'application/json'},body:JSON.stringify({p_user_id:user.id,p_tip:'tahmin',p_puan:5})});}catch(_){}
+    msgEl.textContent='Tahminin kaydedildi!';msgEl.style.color='var(--green)';msgEl.style.display='block';
+    showToast('Tahminin kaydedildi!');
+  }catch(e){
+    msgEl.textContent='Hata: '+(e.message||'Bilinmeyen hata');msgEl.style.color='var(--red)';msgEl.style.display='block';
+  }
+  btn.disabled=false;btn.textContent='Tahmin Gonder';
+}
+
+// ===== 2. PERFORMANS RAPORU =====
+let perfRaporPeriyot='haftalik';
+async function loadPerfRapor(){
+  const c=document.getElementById('perfRaporContainer');
+  if(!c)return;
+  try{
+    const sinir=perfRaporPeriyot==='haftalik'?7:30;
+    const sinirDate=new Date(Date.now()-sinir*86400000).toISOString();
+    const r=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&created_at=gte.${sinirDate}&select=sonuc,kategori,lig,created_at`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const data=await r.json();
+    if(!data||!data.length){c.innerHTML='';return;}
+    // Kategori bazli
+    const katMap={};
+    data.forEach(x=>{
+      const k=(x.kategori||'').toUpperCase();
+      if(!katMap[k])katMap[k]={d:0,y:0};
+      if(x.sonuc==='DOGRU')katMap[k].d++;else katMap[k].y++;
+    });
+    // Lig bazli
+    const ligMap={};
+    data.forEach(x=>{
+      const l=x.lig||'Bilinmeyen';
+      if(!ligMap[l])ligMap[l]={d:0,y:0};
+      if(x.sonuc==='DOGRU')ligMap[l].d++;else ligMap[l].y++;
+    });
+    // En basarili kategori
+    let bestKat='',bestKatPct=0;
+    Object.entries(katMap).forEach(([k,v])=>{
+      const t=v.d+v.y;if(t<3)return;
+      const pct=Math.round(v.d/t*100);
+      if(pct>bestKatPct){bestKatPct=pct;bestKat=k;}
+    });
+    // En basarili lig
+    let bestLig='',bestLigPct=0;
+    Object.entries(ligMap).forEach(([l,v])=>{
+      const t=v.d+v.y;if(t<3)return;
+      const pct=Math.round(v.d/t*100);
+      if(pct>bestLigPct){bestLigPct=pct;bestLig=l;}
+    });
+    // Trend: 4 hafta
+    const haftalar=[];
+    for(let i=3;i>=0;i--){
+      const start=new Date(Date.now()-(i+1)*7*86400000);
+      const end=new Date(Date.now()-i*7*86400000);
+      const hData=data.filter(x=>{const d=new Date(x.created_at);return d>=start&&d<end;});
+      const hD=hData.filter(x=>x.sonuc==='DOGRU').length;
+      const hT=hData.length;
+      haftalar.push({pct:hT>0?Math.round(hD/hT*100):0,t:hT});
+    }
+    let trendYon='',trendRenk='var(--muted)';
+    if(haftalar.length>=2){
+      const son=haftalar[haftalar.length-1].pct;
+      const onceki=haftalar[haftalar.length-2].pct;
+      if(son>onceki){trendYon='\u2191';trendRenk='var(--green)';}
+      else if(son<onceki){trendYon='\u2193';trendRenk='var(--red)';}
+      else{trendYon='\u2192';trendRenk='var(--muted)';}
+    }
+
+    const katColors={'GOL':'var(--green)','KORNER':'var(--blue-lt)','KART':'var(--red)','FAUL':'var(--orange)'};
+    c.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px">PERFORMANS RAPORU</div>
+        <div class="perf-toggle">
+          <button class="perf-toggle-btn${perfRaporPeriyot==='haftalik'?' active':''}" onclick="perfRaporPeriyot='haftalik';loadPerfRapor()">Haftalik</button>
+          <button class="perf-toggle-btn${perfRaporPeriyot==='aylik'?' active':''}" onclick="perfRaporPeriyot='aylik';loadPerfRapor()">Aylik</button>
+        </div>
+      </div>
+      ${Object.entries(katMap).sort((a,b)=>(b[1].d+b[1].y)-(a[1].d+a[1].y)).map(([k,v])=>{
+        const t=v.d+v.y;const pct=t>0?Math.round(v.d/t*100):0;
+        return `<div class="perf-bar-row">
+          <div class="perf-bar-label">${k}</div>
+          <div class="perf-bar-track"><div class="perf-bar-fill" style="width:${pct}%;background:${katColors[k]||'var(--blue-lt)'}"></div></div>
+          <div class="perf-bar-val">${v.d}/${t} (%${pct})</div>
+        </div>`;
+      }).join('')}
+      ${haftalar.some(h=>h.t>0)?`<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">SON 4 HAFTA TREND</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${haftalar.map((h,i)=>`<div style="text-align:center;flex:1">
+            <div style="font-size:16px;font-weight:900;color:${h.pct>=60?'var(--green)':h.pct>=40?'var(--yellow)':'var(--red)'}">%${h.pct}</div>
+            <div style="font-size:9px;color:var(--muted)">${i+1}. hafta</div>
+          </div>`).join('<div style="font-size:14px;color:var(--muted)">\u2192</div>')}
+          <div style="font-size:28px;font-weight:900;color:${trendRenk}">${trendYon}</div>
+        </div>
+      </div>`:''}
+      ${bestKat||bestLig?`<div class="perf-best-card">
+        <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;margin-bottom:8px">EN BASARILI</div>
+        ${bestKat?`<div style="font-size:13px;color:var(--text);font-weight:700;margin-bottom:4px">Kategori: <span style="color:var(--green)">${bestKat}</span> (%${bestKatPct})</div>`:''}
+        ${bestLig?`<div style="font-size:13px;color:var(--text);font-weight:700">Lig: <span style="color:var(--green)">${bestLig}</span> (%${bestLigPct})</div>`:''}
+      </div>`:''}
+    </div>`;
+  }catch(e){c.innerHTML='';}
+}
+
+// ===== 3. SOSYAL ÖZELLIKLER =====
+// 3a. Takip sistemi
+async function takipDurumKontrol(hedefUserId){
+  const user=await getForumUser();
+  if(!user)return false;
+  try{
+    const r=await fetch(`${SU}/rest/v1/takipler?takipci_id=eq.${user.id}&takip_edilen_id=eq.${hedefUserId}&select=id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const d=await r.json();
+    return d&&d.length>0;
+  }catch(_){return false;}
+}
+
+async function takipEt(hedefUserId){
+  const user=await getForumUser();
+  if(!user){showToast('Giris yapin');authModal();return;}
+  if(user.id===hedefUserId){showToast('Kendini takip edemezsin');return;}
+  try{
+    const {error}=await sbClient.from('takipler').insert({takipci_id:user.id,takip_edilen_id:hedefUserId});
+    if(error){
+      if(error.code==='23505'){showToast('Zaten takip ediyorsun');return;}
+      throw error;
+    }
+    showToast('Takip edildi!');
+    // Butonu guncelle
+    document.querySelectorAll(`.takip-btn[data-uid="${hedefUserId}"]`).forEach(b=>{
+      b.classList.add('takip-ediliyor');b.textContent='Takip Ediliyor';
+      b.onclick=function(){takipBirak(hedefUserId);};
+    });
+  }catch(e){console.error('Takip hatasi:',e);}
+}
+
+async function takipBirak(hedefUserId){
+  const user=await getForumUser();
+  if(!user)return;
+  try{
+    await fetch(`${SU}/rest/v1/takipler?takipci_id=eq.${user.id}&takip_edilen_id=eq.${hedefUserId}`,{
+      method:'DELETE',headers:{apikey:SK,Authorization:`Bearer ${SK}`}
+    });
+    showToast('Takip birakildi');
+    document.querySelectorAll(`.takip-btn[data-uid="${hedefUserId}"]`).forEach(b=>{
+      b.classList.remove('takip-ediliyor');b.textContent='Takip Et';
+      b.onclick=function(){takipEt(hedefUserId);};
+    });
+  }catch(e){console.error('Takip birakma hatasi:',e);}
+}
+
+// 3c. Feed
+async function loadFeed(){
+  const c=document.getElementById('feedContainer');
+  const user=await getForumUser();
+  if(!user){
+    c.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">
+      <div style="font-size:32px;margin-bottom:12px">👥</div>
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">Giris yap ve takip et</div>
+      <div style="font-size:12px;margin-bottom:16px">Kullanicilari takip edip tahminlerini burada gorebilirsin.</div>
+      <button onclick="authModal()" style="padding:10px 24px;background:var(--blue);border:none;border-radius:8px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Giris Yap</button>
+    </div>`;
+    return;
+  }
+  c.innerHTML='<div class="loading"><div class="spinner"></div>Yukleniyor...</div>';
+  try{
+    // Takip edilenleri bul
+    const tR=await fetch(`${SU}/rest/v1/takipler?takipci_id=eq.${user.id}&select=takip_edilen_id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const takipList=await tR.json();
+    if(!takipList||!takipList.length){
+      c.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:12px">👥</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">Henuz kimseyi takip etmiyorsun</div>
+        <div style="font-size:12px">Performans sayfasindaki liderlik tablosundan kullanicilari takip edebilirsin.</div>
+      </div>`;
+      return;
+    }
+    const uids=takipList.map(t=>t.takip_edilen_id);
+    // Kullanici tahminlerini cek
+    const fR=await fetch(`${SU}/rest/v1/kullanici_tahminleri?user_id=in.(${uids.join(',')})&order=created_at.desc&limit=50`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const feedData=await fR.json();
+    if(!feedData||!feedData.length){
+      c.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:12px">📭</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">Feed bos</div>
+        <div style="font-size:12px">Takip ettigin kullanicilar henuz tahmin yapmamis.</div>
+      </div>`;
+      return;
+    }
+    c.innerHTML=feedData.map(f=>{
+      const initial=(f.kullanici_adi||'?').charAt(0).toUpperCase();
+      return `<div class="feed-item">
+        <div class="feed-user">
+          <div class="feed-avatar">${initial}</div>
+          <span class="feed-name forum-user-link" onclick="openProfile('${f.user_id}')">${escapeHtml(f.kullanici_adi||'Anonim')}</span>
+          <span class="feed-time">${zamanOnce(f.created_at)}</span>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">${escapeHtml(f.ev_sahibi||'')} - ${escapeHtml(f.deplasman||'')}</div>
+        <div class="feed-tahmin">
+          <span class="t-tag ${f.ust_alt==='ÜST'?'u':'a'}">${f.kategori} ${f.cizgi} ${f.ust_alt}</span>
+          <span style="font-size:10px;color:var(--muted)">${f.lig||''}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    c.innerHTML=`<div class="error">Feed yuklenemedi: ${e.message}</div>`;
+  }
+}
+
+// ===== LANDING SON BLOG YAZILARI =====
+async function loadLandingBlog(){
+  const c=document.getElementById('landingBlogContainer');
+  if(!c)return;
+  try{
+    const r=await fetch(`${SU}/rest/v1/blog_yazilar?yayinda=eq.true&order=created_at.desc&limit=3&select=baslik,ozet,slug,created_at,lig`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const yazilar=await r.json();
+    if(!yazilar||!yazilar.length){c.style.display='none';return;}
+    c.innerHTML=`<div style="font-size:13px;font-weight:800;color:var(--gold-lt);letter-spacing:0.5px;margin-bottom:12px">Son Blog Yazilari</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+      ${yazilar.map(y=>{
+        const tarih=new Date(y.created_at).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
+        return `<a href="/blog.html?yazi=${y.slug}" style="text-decoration:none;display:block">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:all .2s;cursor:pointer;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">${escapeHtml(y.baslik)}</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">${escapeHtml(y.ozet||'')}</div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)">
+              <span>${tarih}</span>
+              ${y.lig?`<span style="color:var(--gold)">${escapeHtml(y.lig)}</span>`:''}
+            </div>
+          </div>
+        </a>`;
+      }).join('')}
+    </div>
+    <a href="/blog.html" style="display:block;text-align:center;margin-top:12px;font-size:12px;color:var(--blue-lt);font-weight:700;text-decoration:none;">Tum yazilar &rarr;</a>`;
+  }catch(_){c.style.display='none';}
+}
+
 loadMaclar();
+loadLandingBlog();
 
 /* ===== SCROLL HIDE/SHOW NAVBAR ===== */
 (function(){
@@ -4039,6 +4466,9 @@ function applyTranslations(){
     </button>
   </div>
 </div>
+
+<!-- Son Blog Yazilari -->
+<div id="landingBlogContainer" style="max-width:900px;margin:20px auto;padding:0 20px;"></div>
 
 <!-- Bottom Ad Slot -->
 <div class="ad-slot" style="max-width:728px;margin:20px auto;">

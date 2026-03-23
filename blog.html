@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blog — aiALYSIS Live | Futbol Analiz ve Tahmin Yazıları</title>
+<title>Blog — aiALYSIS Live | Futbol Analiz ve Tahmin Yazilari</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
-<meta name="description" content="aiALYSIS Live blog: Yapay zeka ile futbol tahmini, Süper Lig analizi, maç istatistikleri nasıl okunur? Futbol analiz rehberleri ve uzman yazıları.">
-<meta name="keywords" content="futbol analiz blog, AI futbol tahmin, süper lig analiz, maç istatistikleri, iddaa rehberi, futbol tahmini nasıl yapılır, yapay zeka spor analizi">
+<meta name="description" content="aiALYSIS Live blog: Yapay zeka ile futbol tahmini, Super Lig analizi, mac istatistikleri nasil okunur? Futbol analiz rehberleri ve uzman yazilari.">
+<meta name="keywords" content="futbol analiz blog, AI futbol tahmin, super lig analiz, mac istatistikleri, iddaa rehberi, futbol tahmini nasil yapilir, yapay zeka spor analizi">
 <meta name="robots" content="index, follow">
 <meta name="author" content="aiALYSIS Live">
 <link rel="canonical" href="https://aialysis.live/blog.html">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://aialysis.live/blog.html">
-<meta property="og:title" content="Blog — aiALYSIS Live | Futbol Analiz Yazıları">
-<meta property="og:description" content="Yapay zeka ile futbol tahmini nasıl yapılır? Süper Lig sezon analizi, maç istatistikleri rehberi ve daha fazlası.">
+<meta property="og:title" content="Blog — aiALYSIS Live | Futbol Analiz Yazilari">
+<meta property="og:description" content="Yapay zeka ile futbol tahmini nasil yapilir? Super Lig sezon analizi, mac istatistikleri rehberi ve daha fazlasi.">
 <meta property="og:image" content="https://aialysis.live/og-image.png">
 <meta property="og:site_name" content="aiALYSIS Live">
 <meta property="og:locale" content="tr_TR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Blog — aiALYSIS Live">
-<meta name="twitter:description" content="Yapay zeka destekli futbol analiz rehberleri ve tahmin yazıları.">
+<meta name="twitter:description" content="Yapay zeka destekli futbol analiz rehberleri ve tahmin yazilari.">
 <meta name="twitter:image" content="https://aialysis.live/og-image.png">
 <meta name="theme-color" content="#4A3AFF">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M9Y0T0648K"></script>
@@ -31,7 +31,7 @@
   "@type": "Blog",
   "name": "aiALYSIS Live Blog",
   "url": "https://aialysis.live/blog.html",
-  "description": "Yapay zeka destekli futbol analiz ve tahmin yazıları",
+  "description": "Yapay zeka destekli futbol analiz ve tahmin yazilari",
   "inLanguage": "tr",
   "publisher": {"@type": "Organization", "name": "aiALYSIS Live", "url": "https://aialysis.live"}
 }
@@ -58,36 +58,56 @@ a:hover{text-decoration:underline;}
 .nav-logo{display:flex;align-items:baseline;gap:0;}
 .nav-logo .ai{font-style:italic;font-size:20px;font-weight:300;color:var(--gold-lt);}
 .nav-logo .alysis{font-size:20px;font-weight:900;color:white;letter-spacing:-1px;}
-.nav-back{margin-left:16px;background:rgba(255,255,255,.1);border:none;color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s;}
+.nav-back{margin-left:16px;background:rgba(255,255,255,.1);border:none;color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s;text-decoration:none;}
 .nav-back:hover{background:rgba(255,255,255,.2);}
 
 .container{max-width:900px;margin:0 auto;padding:40px 20px;}
 h1{font-size:32px;font-weight:900;margin-bottom:8px;color:var(--gold-lt);}
-.subtitle{color:var(--muted);font-size:15px;margin-bottom:40px;}
+.subtitle{color:var(--muted);font-size:15px;margin-bottom:20px;}
+
+.blog-filters{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.blog-filter-btn{padding:6px 16px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.blog-filter-btn:hover,.blog-filter-btn.active{background:var(--blue);border-color:var(--blue);color:white;}
+
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;}
 
 .article-card{
   background:var(--card);border:1px solid var(--border);border-radius:16px;
-  padding:28px 32px;margin-bottom:24px;transition:all .2s;cursor:default;
+  padding:28px 32px;transition:all .2s;cursor:pointer;
 }
-.article-card:hover{border-color:var(--blue);transform:translateY(-2px);}
+.article-card:hover{border-color:var(--gold);transform:translateY(-2px);}
 .article-meta{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
 .article-date{color:var(--muted);font-size:12px;}
-.article-tag{
-  display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
-}
+.article-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
 .tag-ai{background:rgba(74,58,255,.15);color:var(--blue-lt);border:1px solid rgba(74,58,255,.3);}
 .tag-analiz{background:rgba(46,213,115,.15);color:var(--green);border:1px solid rgba(46,213,115,.3);}
 .tag-rehber{background:rgba(255,127,80,.15);color:var(--orange);border:1px solid rgba(255,127,80,.3);}
+.tag-default{background:rgba(212,162,76,.15);color:var(--gold-lt);border:1px solid rgba(212,162,76,.3);}
 .article-card h2{font-size:20px;font-weight:700;margin-bottom:10px;color:white;}
 .article-card p{color:var(--muted);font-size:14px;line-height:1.7;}
-.article-body{margin-top:16px;}
-.article-body h3{font-size:16px;font-weight:700;color:var(--gold);margin:20px 0 8px;}
-.article-body ul{padding-left:20px;margin:8px 0;}
-.article-body li{color:var(--muted);font-size:13px;line-height:1.8;}
-.article-body .highlight{
-  background:var(--surface);border-left:3px solid var(--blue);
-  padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;
-  font-size:13px;color:var(--text);line-height:1.6;
+
+/* Detay Gorunumu */
+.blog-detail{max-width:700px;margin:0 auto;}
+.blog-detail-back{display:inline-flex;align-items:center;gap:6px;color:var(--blue-lt);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:20px;padding:6px 12px;border-radius:6px;transition:all .2s;}
+.blog-detail-back:hover{background:rgba(74,58,255,.1);}
+.blog-detail h1{font-size:28px;margin-bottom:12px;color:white;}
+.blog-detail-meta{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+.blog-detail-body{font-size:15px;color:var(--muted);line-height:1.8;}
+.blog-detail-body h3{font-size:18px;font-weight:700;color:var(--gold);margin:24px 0 10px;}
+.blog-detail-body p{margin-bottom:14px;}
+.blog-detail-body ul{padding-left:20px;margin:10px 0;}
+.blog-detail-body li{margin-bottom:6px;}
+.blog-detail-body .highlight{background:var(--surface);border-left:3px solid var(--blue);padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14px;color:var(--text);line-height:1.6;}
+
+.loading{text-align:center;padding:40px;color:var(--muted);}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--blue-lt);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .blog-grid{grid-template-columns:1fr;}
+  .article-card{padding:20px;}
+  h1{font-size:24px;}
+  .container{padding:20px 12px;}
 }
 
 footer{background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:11px;color:var(--muted);line-height:1.8;margin-top:60px;}
@@ -98,86 +118,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 <nav class="navbar">
   <a href="/" class="nav-logo"><span class="ai">ai</span><span class="alysis">ALYSIS</span></a>
   <a href="/" class="nav-back">Ana Sayfa</a>
+  <a href="/blog.html" class="nav-back" style="margin-left:0;">Blog</a>
 </nav>
 
-<div class="container">
-  <h1>Blog</h1>
-  <p class="subtitle">Futbol analizi, yapay zeka tahminleri ve istatistik rehberleri</p>
-
-  <!-- Article 1 -->
-  <article class="article-card">
-    <div class="article-meta">
-      <span class="article-tag tag-ai">Yapay Zeka</span>
-      <span class="article-date">20 Mart 2026</span>
-    </div>
-    <h2>AI ile Futbol Tahmin Nasil Yapilir?</h2>
-    <p>Yapay zeka destekli futbol tahmin sistemleri nasil calisir? aiALYSIS Live'in arkasindaki teknolojiye yakindan bakin.</p>
-    <div class="article-body">
-      <h3>Veri Toplama</h3>
-      <p>Her mac icin yuzlerce veri noktasi analiz edilir. Takim formu, kafa kafaya istatistikler, ev sahibi/deplasman performansi, oyuncu kadrolar ve sakatliklari hesaba katilir.</p>
-      <div class="highlight">aiALYSIS Live, her mac icin 7 katmanli istatistiksel analiz pipeline kullanir. Matematik hesaplamalari yapildiktan sonra AI modeli sadece yorum ve tahmin uretir.</div>
-      <h3>Analiz Katmanlari</h3>
-      <ul>
-        <li><strong>Gol Beklentisi (xG):</strong> Toplam sut, isabetli sut ve gol verilerinden hesaplanir</li>
-        <li><strong>Korner Analizi:</strong> Takim bazli korner ortalamasi ve mac temposu</li>
-        <li><strong>Kart Analizi:</strong> Hakem profili ve takim agresiflik endeksi</li>
-        <li><strong>Form Analizi:</strong> Son 5 mac performansi, ev/deplasman ayrimli</li>
-        <li><strong>H2H (Kafa Kafaya):</strong> Son 20 karsilasma istatistikleri</li>
-      </ul>
-      <h3>Tahmin Guveni</h3>
-      <p>Her tahmin icin %0-100 arasi bir guven skoru uretilir. aiALYSIS Live yalnizca %70 ve uzerindeki tahminleri gosterir. Bu esik, kullanicilara daha guvenilir tahminler sunmayi amaclar.</p>
-    </div>
-  </article>
-
-  <!-- Article 2 -->
-  <article class="article-card">
-    <div class="article-meta">
-      <span class="article-tag tag-analiz">Sezon Analizi</span>
-      <span class="article-date">15 Mart 2026</span>
-    </div>
-    <h2>Super Lig 2025-2026 Sezon Analizi</h2>
-    <p>Turkiye Super Lig'de sezon ortasi degerlendirmesi. Sampiyon adaylari, kuculme hatti ve surpriz takimlar.</p>
-    <div class="article-body">
-      <h3>Sampiyon Adaylari</h3>
-      <p>Sezonun ikinci yarisina girilirken lig tablosundaki yogunluk dikkat cekiyor. Ilk 5 takim arasindaki puan farki oldukca az ve her mac kritik onem tasiyor.</p>
-      <div class="highlight">AI analizlerimize gore, ev sahibi avantaji bu sezon Super Lig'de %58 oraninda sonuc uretirken, deplasman galibiyet orani %24'te kaliyor.</div>
-      <h3>Gol Ortalamalari</h3>
-      <ul>
-        <li>Lig genel gol ortalamasi: Mac basina 2.7</li>
-        <li>Ev sahibi gol ortalamasi: 1.6</li>
-        <li>Deplasman gol ortalamasi: 1.1</li>
-        <li>Ust 2.5 gol orani: %56</li>
-      </ul>
-      <h3>Surpriz Takimlar</h3>
-      <p>Beklentilerin uzerinde performans gosteren takimlar, ozellikle guclu defansif yapilariyla one cikiyor. Dusuk gol yeme ortalamasi ve etkili kontra atak stratejileri basari anahtari oluyor.</p>
-    </div>
-  </article>
-
-  <!-- Article 3 -->
-  <article class="article-card">
-    <div class="article-meta">
-      <span class="article-tag tag-rehber">Rehber</span>
-      <span class="article-date">10 Mart 2026</span>
-    </div>
-    <h2>Mac Istatistikleri Nasil Okunur?</h2>
-    <p>Futbol istatistiklerini anlamak ve dogru yorumlamak icin bilmeniz gereken temel kavramlar.</p>
-    <div class="article-body">
-      <h3>Topla Oynama (Possession)</h3>
-      <p>Top oraninin yuksek olmasi her zaman galibiyeti garanti etmez. Onemli olan topun nasil kullanildigidir. Etkili pas orani, son uc pas ve sut donusumu birlikte degerlendirilmelidir.</p>
-      <h3>Temel Istatistikler</h3>
-      <ul>
-        <li><strong>Toplam Sut / Isabetli Sut:</strong> Takim ofansif etkililiginin temel gostergesi</li>
-        <li><strong>Korner Sayisi:</strong> Takim baskisinin ve hucum yogunlugunun gostergesi</li>
-        <li><strong>Faul ve Kartlar:</strong> Mac sertligi ve hakem egilimini anlamak icin onemli</li>
-        <li><strong>Pas Isabeti (%):</strong> Takimin oyun kurma kalitesini gosterir</li>
-        <li><strong>Offsides:</strong> Hucum cizgisi ve pres yogunlugunun ipuclarini verir</li>
-      </ul>
-      <div class="highlight">Istatistikleri tek basina degil, birbirleriyle iliski icinde okumak gerekir. Ornegin, yuksek topla oynama + dusuk sut sayisi = etkisiz hucum anlamina gelebilir.</div>
-      <h3>Form Barlari</h3>
-      <p>aiALYSIS Live'da her takimin son 5 maclik form bari gosterilir. Yesil (Galibiyet), Sari (Beraberlik) ve Kirmizi (Maglubiyet) renkleri ile anlasilan bu barlar, takimin yakin gecmisini bir bakista ozetler.</p>
-    </div>
-  </article>
-
+<div class="container" id="blogContainer">
+  <div class="loading"><div class="spinner"></div>Yazilar yukleniyor...</div>
 </div>
 
 <footer>
@@ -185,6 +130,135 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
   <p><a href="/privacy.html">Gizlilik</a> &middot; <a href="/terms.html">Kullanim Sartlari</a> &middot; <a href="/blog.html" style="color:var(--gold);">Blog</a></p>
   <p style="margin-top:8px;font-size:10px;">&copy; 2026 aiALYSIS Live. Tum haklari saklidir.</p>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SU='https://fohmlwoewjupceznwmdr.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvaG1sd29ld2p1cGNlem53bWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDE4MjYsImV4cCI6MjA4OTUxNzgyNn0.Ye-85hcsrLeORp-ThZCxssrc92WOm4ZI-B3mvTmwju4';
+
+let tumYazilar=[];
+let aktifLigFiltre='hepsi';
+
+function escapeHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+
+function tagClass(etiket){
+  const e=(etiket||'').toLowerCase();
+  if(e.includes('ai')||e.includes('yapay'))return 'tag-ai';
+  if(e.includes('analiz')||e.includes('sezon'))return 'tag-analiz';
+  if(e.includes('rehber')||e.includes('istatistik'))return 'tag-rehber';
+  return 'tag-default';
+}
+
+function renderYaziListesi(yazilar){
+  const c=document.getElementById('blogContainer');
+  // Lig filtre listesi
+  const ligler=[...new Set(yazilar.map(y=>y.lig).filter(Boolean))].sort();
+
+  c.innerHTML=`
+    <h1>Blog</h1>
+    <p class="subtitle">Futbol analizi, yapay zeka tahminleri ve istatistik rehberleri</p>
+    ${ligler.length>0?`<div class="blog-filters">
+      <button class="blog-filter-btn${aktifLigFiltre==='hepsi'?' active':''}" onclick="filtrele('hepsi')">Tumu</button>
+      ${ligler.map(l=>`<button class="blog-filter-btn${aktifLigFiltre===l?' active':''}" onclick="filtrele('${l.replace(/'/g,"\\'")}')">${escapeHtml(l)}</button>`).join('')}
+    </div>`:''}
+    <div class="blog-grid">
+      ${yazilar.map(y=>{
+        const tarih=new Date(y.created_at).toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'});
+        return `<article class="article-card" onclick="yaziGoster('${y.slug}')">
+          <div class="article-meta">
+            ${y.etiket?`<span class="article-tag ${tagClass(y.etiket)}">${escapeHtml(y.etiket)}</span>`:''}
+            <span class="article-date">${tarih}</span>
+            ${y.lig?`<span style="font-size:10px;color:var(--gold);font-weight:600">${escapeHtml(y.lig)}</span>`:''}
+          </div>
+          <h2>${escapeHtml(y.baslik)}</h2>
+          <p>${escapeHtml(y.ozet||'')}</p>
+        </article>`;
+      }).join('')}
+    </div>
+    ${yazilar.length===0?'<div style="text-align:center;padding:40px;color:var(--muted)">Henuz yazi yok.</div>':''}`;
+}
+
+function filtrele(lig){
+  aktifLigFiltre=lig;
+  if(lig==='hepsi'){
+    renderYaziListesi(tumYazilar);
+  } else {
+    renderYaziListesi(tumYazilar.filter(y=>y.lig===lig));
+  }
+}
+
+async function yaziGoster(slug){
+  // URL'yi guncelle
+  history.pushState(null,'',`/blog.html?yazi=${slug}`);
+  const c=document.getElementById('blogContainer');
+  c.innerHTML='<div class="loading"><div class="spinner"></div>Yazi yukleniyor...</div>';
+  try{
+    const r=await fetch(`${SU}/rest/v1/blog_yazilar?slug=eq.${slug}&yayinda=eq.true&select=*`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const data=await r.json();
+    if(!data||!data.length){
+      c.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:32px;margin-bottom:12px">404</div><div>Yazi bulunamadi.</div><br><a href="/blog.html" style="color:var(--blue-lt)">Blog\'a don</a></div>';
+      return;
+    }
+    const y=data[0];
+    const tarih=new Date(y.created_at).toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'});
+    // Document title guncelle
+    document.title=`${y.baslik} — aiALYSIS Live Blog`;
+    c.innerHTML=`<div class="blog-detail">
+      <div class="blog-detail-back" onclick="blogListesineDon()">&#8592; Blog'a Don</div>
+      <h1>${escapeHtml(y.baslik)}</h1>
+      <div class="blog-detail-meta">
+        ${y.etiket?`<span class="article-tag ${tagClass(y.etiket)}">${escapeHtml(y.etiket)}</span>`:''}
+        <span class="article-date">${tarih}</span>
+        ${y.lig?`<span style="font-size:11px;color:var(--gold);font-weight:600">${escapeHtml(y.lig)}</span>`:''}
+      </div>
+      <div class="blog-detail-body">${y.icerik||''}</div>
+    </div>`;
+  }catch(e){
+    c.innerHTML=`<div style="text-align:center;padding:40px;color:var(--red)">Yazi yuklenemedi: ${e.message}</div>`;
+  }
+}
+
+function blogListesineDon(){
+  history.pushState(null,'','/blog.html');
+  document.title='Blog — aiALYSIS Live | Futbol Analiz ve Tahmin Yazilari';
+  renderYaziListesi(tumYazilar);
+}
+
+// Popstate (geri butonu)
+window.addEventListener('popstate',function(){
+  const params=new URLSearchParams(window.location.search);
+  const slug=params.get('yazi');
+  if(slug){yaziGoster(slug);}
+  else{renderYaziListesi(tumYazilar);}
+});
+
+// Baslangic yuklemesi
+(async function(){
+  const c=document.getElementById('blogContainer');
+  try{
+    const r=await fetch(`${SU}/rest/v1/blog_yazilar?yayinda=eq.true&order=created_at.desc&select=baslik,ozet,slug,created_at,lig,etiket`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const data=await r.json();
+    tumYazilar=data||[];
+
+    // Fallback: Supabase'de yazi yoksa statik icerik goster
+    if(!tumYazilar.length){
+      tumYazilar=[
+        {baslik:'AI ile Futbol Tahmin Nasil Yapilir?',ozet:'Yapay zeka destekli futbol tahmin sistemleri nasil calisir?',slug:'ai-futbol-tahmin',created_at:'2026-03-20',etiket:'Yapay Zeka',lig:''},
+        {baslik:'Super Lig 2025-2026 Sezon Analizi',ozet:'Turkiye Super Lig\'de sezon ortasi degerlendirmesi.',slug:'super-lig-sezon-analizi',created_at:'2026-03-15',etiket:'Sezon Analizi',lig:'Super Lig'},
+        {baslik:'Mac Istatistikleri Nasil Okunur?',ozet:'Futbol istatistiklerini anlamak icin temel kavramlar.',slug:'mac-istatistikleri-rehber',created_at:'2026-03-10',etiket:'Rehber',lig:''}
+      ];
+    }
+
+    // URL'de slug varsa detay goster
+    const params=new URLSearchParams(window.location.search);
+    const slug=params.get('yazi');
+    if(slug){yaziGoster(slug);}
+    else{renderYaziListesi(tumYazilar);}
+  }catch(e){
+    c.innerHTML=`<div style="text-align:center;padding:40px;color:var(--red)">Blog yuklenemedi: ${e.message}</div>`;
+  }
+})();
+</script>
 
 </body>
 </html>
