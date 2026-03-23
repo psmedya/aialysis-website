@@ -1345,6 +1345,38 @@ const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 
 let tarih=new Date(), canliMod=false, maclar=[], currentMac=null, detailTimer=null, aiaSort='lig';
 
+// Supabase Realtime client
+const supabaseClient = supabase.createClient(SU, SK);
+
+// maclar tablosu — UPDATE dinle (upsert = UPDATE)
+supabaseClient
+  .channel('maclar-changes')
+  .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'maclar' }, (payload) => {
+    if(!payload.new) return;
+    const updated = sbToApiFormat(payload.new);
+    const idx = maclar.findIndex(x => x.fixture.id === updated.fixture.id);
+    if(idx === -1) return; // listede yoksa atla
+    maclar[idx] = updated;
+    // DOM'da ilgili maç satırını güncelle (tüm listeyi yeniden çizme)
+    const el = document.querySelector(`.mac-satir[data-macid="${updated.fixture.id}"]`);
+    if(el) el.outerHTML = macSatir(updated);
+    // Detay paneli açıksa ve aynı maçsa header'ı güncelle
+    if(currentMac?.fixture.id === updated.fixture.id){
+      currentMac = updated;
+      updateDetailHeader(updated);
+    }
+  })
+  .subscribe();
+
+// tahmin_sonuclari tablosu — tüm event'ler
+supabaseClient
+  .channel('tahmin-changes')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'tahmin_sonuclari' }, () => {
+    const ap = document.querySelector('.page.active');
+    if(ap?.id === 'page-aialysis') loadAialysis();
+  })
+  .subscribe();
+
 function toggleSidebar(){
   const layout=document.querySelector('.layout');
   const btn=document.getElementById('hamburgerBtn');
@@ -3075,12 +3107,12 @@ async function loadLeaderboard(){
   }
 }
 
-// Otomatik yenileme (10sn — canlı skor takibi için)
+// Yedek polling (60sn — Realtime bağlantısı koparsa diye)
 setInterval(()=>{
   const ap=document.querySelector('.page.active');
   if(ap?.id==='page-maclar')loadMaclar(true);
   if(ap?.id==='page-aialysis')loadAialysis();
-},10000);
+},60000);
 
 
 document.addEventListener('visibilitychange',async()=>{
