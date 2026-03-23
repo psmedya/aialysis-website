@@ -1157,9 +1157,24 @@ const sbClient=window.supabase.createClient('https://fohmlwoewjupceznwmdr.supaba
 let authEmail='';
 
 function telegramLogin(){
-  const w=550,h=470,left=(screen.width-w)/2,top=(screen.height-h)/2;
-  window.open(`https://oauth.telegram.org/auth?bot_id=8741800028&origin=${encodeURIComponent(window.location.origin)}&embed=1&request_access=write&return_to=${encodeURIComponent(window.location.origin)}`,
-    'telegram_login',`width=${w},height=${h},left=${left},top=${top}`);
+  // Telegram Login Widget'ı dinamik olarak yükle — PC'de uygulama üzerinden onay ister
+  const container = document.getElementById('telegramLoginBtn');
+  // Butonu gizle, yerine widget koy
+  container.style.display='none';
+  const widgetDiv = document.createElement('div');
+  widgetDiv.id='tg-widget-container';
+  widgetDiv.style.cssText='display:flex;justify-content:center;padding:8px 0';
+  container.parentNode.insertBefore(widgetDiv, container.nextSibling);
+
+  const script = document.createElement('script');
+  script.src = 'https://telegram.org/js/telegram-widget.js?22';
+  script.setAttribute('data-telegram-login', 'AIALYSISLIVE_BOT');
+  script.setAttribute('data-size', 'large');
+  script.setAttribute('data-radius', '10');
+  script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+  script.setAttribute('data-request-access', 'write');
+  script.async = true;
+  widgetDiv.appendChild(script);
 }
 
 // Telegram OAuth popup'tan gelen mesajı dinle
