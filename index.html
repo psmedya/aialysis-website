@@ -5286,17 +5286,17 @@ loadAialysis=async function(silent){
   }
   </script>
   <p style="margin-top:12px;color:var(--muted);font-size:12px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
-  <p style="margin-top:6px;font-size:11px;"><a href="/cookies.html" style="color:#7A7A95;text-decoration:none;">Cerez Politikasi</a> · <a href="javascript:void(0)" onclick="cerezAyarlariAc()" style="color:#7A7A95;text-decoration:none;">Cerez Ayarlari</a></p>
+  <p style="margin-top:6px;font-size:11px;"><a href="/cookies.html" style="color:#7A7A95;text-decoration:none;">Çerez Politikası</a> · <a href="javascript:void(0)" onclick="cerezAyarlariAc()" style="color:#7A7A95;text-decoration:none;">Çerez Ayarları</a></p>
 </footer>
 
 <!-- ÇEREZ ONAY BANNER -->
 <div class="cerez-banner" id="cerezBanner">
   <div class="cerez-banner-inner">
     <div class="cerez-banner-text">
-      🍪 Deneyiminizi iyilestirmek icin cerezler kullaniyoruz. Detayli bilgi icin <a href="/cookies.html">Cerez Politikamizi</a> inceleyebilirsiniz.
+      🍪 Deneyiminizi iyileştirmek için çerezler kullanıyoruz. Detaylı bilgi için <a href="/cookies.html">Çerez Politikamızı</a> inceleyebilirsiniz.
     </div>
     <div class="cerez-banner-btns">
-      <button class="cerez-btn cerez-btn-kabul" onclick="cerezKabulEt('tumunu')">Tumunu Kabul Et</button>
+      <button class="cerez-btn cerez-btn-kabul" onclick="cerezKabulEt('tumunu')">Tümünü Kabul Et</button>
       <button class="cerez-btn cerez-btn-zorunlu" onclick="cerezKabulEt('zorunlu')">Sadece Zorunlu</button>
       <button class="cerez-btn cerez-btn-ayarlar" onclick="cerezAyarlariAc()">Ayarlar</button>
     </div>
@@ -5306,44 +5306,44 @@ loadAialysis=async function(silent){
 <!-- ÇEREZ AYARLAR MODAL -->
 <div class="cerez-modal-overlay" id="cerezModalOverlay" onclick="if(event.target===this)cerezModalKapat()">
   <div class="cerez-modal">
-    <h3>Cerez Tercihleri</h3>
-    <p>Hangi cerez kategorilerini kullanmamiza izin verdiginizi secebilirsiniz. Zorunlu cerezler sitenin calismasi icin gereklidir ve kapatilamaz.</p>
+    <h3>Çerez Tercihleri</h3>
+    <p>Hangi çerez kategorilerini kullanmamıza izin verdiğinizi seçebilirsiniz. Zorunlu çerezler sitenin çalışması için gereklidir ve kapatılamaz.</p>
 
     <div class="cerez-kategori">
       <div class="cerez-kategori-header">
-        <span class="cerez-kategori-name">Zorunlu Cerezler</span>
+        <span class="cerez-kategori-name">Zorunlu Çerezler</span>
         <label class="cerez-toggle"><input type="checkbox" checked disabled><span class="cerez-toggle-slider"></span></label>
       </div>
-      <div class="cerez-kategori-desc">Oturum yonetimi, tema ve dil tercihi. Sitenin duzgun calismasi icin gereklidir.</div>
+      <div class="cerez-kategori-desc">Oturum yönetimi, tema ve dil tercihi. Sitenin düzgün çalışması için gereklidir.</div>
     </div>
 
     <div class="cerez-kategori">
       <div class="cerez-kategori-header">
-        <span class="cerez-kategori-name">Islevsel Cerezler</span>
+        <span class="cerez-kategori-name">İşlevsel Çerezler</span>
         <label class="cerez-toggle"><input type="checkbox" id="cerezIslevsel"><span class="cerez-toggle-slider"></span></label>
       </div>
-      <div class="cerez-kategori-desc">Son goruntulenen maclar, favori ligler, panel durumu gibi kisisellestirilmis deneyim icin kullanilir.</div>
+      <div class="cerez-kategori-desc">Son görüntülenen maçlar, favori ligler, panel durumu gibi kişiselleştirilmiş deneyim için kullanılır.</div>
     </div>
 
     <div class="cerez-kategori">
       <div class="cerez-kategori-header">
-        <span class="cerez-kategori-name">Analitik Cerezler</span>
+        <span class="cerez-kategori-name">Analitik Çerezler</span>
         <label class="cerez-toggle"><input type="checkbox" id="cerezAnalitik"><span class="cerez-toggle-slider"></span></label>
       </div>
-      <div class="cerez-kategori-desc">Google Analytics ile site kullanim istatistiklerini toplamak icin kullanilir. Kisisel veri icermez.</div>
+      <div class="cerez-kategori-desc">Google Analytics ile site kullanım istatistiklerini toplamak için kullanılır. Kişisel veri içermez.</div>
     </div>
 
     <div class="cerez-kategori">
       <div class="cerez-kategori-header">
-        <span class="cerez-kategori-name">Pazarlama Cerezleri</span>
+        <span class="cerez-kategori-name">Pazarlama Çerezleri</span>
         <label class="cerez-toggle"><input type="checkbox" id="cerezPazarlama"><span class="cerez-toggle-slider"></span></label>
       </div>
-      <div class="cerez-kategori-desc">Kampanya takibi, UTM parametreleri ve davet kodu izleme icin kullanilir.</div>
+      <div class="cerez-kategori-desc">Kampanya takibi, UTM parametreleri ve davet kodu izleme için kullanılır.</div>
     </div>
 
     <div class="cerez-modal-btns">
-      <button class="cerez-btn cerez-btn-kabul" onclick="cerezKabulEt('tumunu')">Tumunu Kabul Et</button>
-      <button class="cerez-btn cerez-btn-zorunlu" onclick="cerezSecileniKaydet()">Secilenleri Kaydet</button>
+      <button class="cerez-btn cerez-btn-kabul" onclick="cerezKabulEt('tumunu')">Tümünü Kabul Et</button>
+      <button class="cerez-btn cerez-btn-zorunlu" onclick="cerezSecileniKaydet()">Seçilenleri Kaydet</button>
     </div>
   </div>
 </div>
