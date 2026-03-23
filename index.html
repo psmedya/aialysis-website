@@ -2636,7 +2636,7 @@ async function loadBitmisMacTahminleri(m) {
           return `<div class="tahmin-card">
             <div class="tahmin-header">
               <span class="tahmin-kat">${t.kategori}</span>
-              ${t.gercek_deger !== null ? `<span class="tahmin-cur">Gerçek: ${t.gercek_deger} ${kategoriDetay(t.kategori, t.gercek_deger).replace(/[()]/g,'')}</span>` : ''}
+              ${t.gercek_deger !== null ? `<span class="tahmin-cur">Gerçek: ${kategoriDetay(t.kategori, t.gercek_deger).replace(/[()]/g,'') || t.gercek_deger}</span>` : ''}
             </div>
             <div class="tahmin-line">
               <span class="t-tag ${tagClass}">${t.cizgi} ${t.ust_alt} ${t.sonuc === 'DOGRU' ? '✅' : t.sonuc === 'YANLIS' ? '❌' : '⏳'} ${kategoriDetay(t.kategori, t.gercek_deger)}</span>
@@ -3696,7 +3696,7 @@ async function loadTahminler(filter='hepsi') {
               <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
                 <span class="t-tag ${tagClass}" style="font-size:11px">${t.cizgi} ${t.ust_alt} ${sonucIcon} ${kategoriDetay(t.kategori, t.gercek_deger)} %${t.guc}${oranStr !== '-' ? ' | Oran: ' + oranStr : ''}</span>
                 ${t.gercek_deger !== null
-                  ? `<span style="font-size:12px;font-weight:700;color:${gercekRenk}">→ ${t.gercek_deger} ${kategoriDetay(t.kategori, t.gercek_deger).replace(/[()]/g,'')}</span>`
+                  ? `<span style="font-size:12px;font-weight:700;color:${gercekRenk}">→ ${kategoriDetay(t.kategori, t.gercek_deger).replace(/[()]/g,'') || t.gercek_deger}</span>`
                   : '<span style="font-size:10px;color:var(--muted)">bekliyor</span>'}
                 ${tziStr ? `<span style="font-size:10px;color:var(--muted)">${tziStr}</span>` : ''}
               </div>
