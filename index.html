@@ -8,7 +8,7 @@
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="manifest" href="/manifest.json">
 <meta name="description" content="Yapay zeka destekli maç tahmini ve canlı maç analizi. Süper Lig, Premier League, La Liga, Bundesliga, Serie A maç tahminleri. İddaa tahminleri, canlı skor, maç istatistikleri, korner tahmini, gol tahmini, kart tahmini. Ücretsiz futbol analiz platformu.">
-<meta name="keywords" content="maç tahmini, iddaa tahminleri, canlı maç analizi, futbol tahmin, süper lig tahmin, canlı skor, maç istatistikleri, korner tahmini, gol tahmini, AI futbol analiz, yapay zeka tahmin, iddaa kuponları, banko maç, günün maçları, canlı maç sonuçları, premier league tahmin, şampiyonlar ligi tahmin, futbol istatistik, bahis analizi, maç skoru tahmini">
+<meta name="publisher" content="aiALYSIS Live">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <meta name="author" content="aiALYSIS Live">
 <link rel="canonical" href="https://aialysis.live">
@@ -66,7 +66,7 @@
 .layout.sidebar-kapali{grid-template-columns:0 1fr var(--right);}
 
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;font-size:16px;}
 
 /* LAYOUT */
 .layout{display:grid;grid-template-columns:var(--sidebar) 1fr 0;grid-template-rows:1fr;min-height:100vh;transition:grid-template-columns .25s ease;padding-top:60px;}
@@ -216,7 +216,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .olas-title{font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px;}
 .olas-vals{display:flex;justify-content:space-between;text-align:center;margin-bottom:6px;}
 .olas-val{font-size:16px;font-weight:700;}
-.olas-lbl{font-size:9px;color:var(--muted);margin-top:1px;}
+.olas-lbl{font-size:10px;color:var(--muted);margin-top:1px;}
 .olas-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
 .tahmin-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:6px;}
 .tahmin-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
@@ -334,13 +334,13 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 
 /* FORM BAR */
 .form-bar{display:flex;gap:3px;margin-top:5px;justify-content:center;}
-.form-dot{width:17px;height:17px;border-radius:3px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;}
+.form-dot{width:17px;height:17px;border-radius:3px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;}
 .form-dot.g{background:var(--green);}
 .form-dot.b{background:var(--muted);}
 .form-dot.m{background:var(--red);}
 
 /* HOT BADGE */
-.hot-badge{background:rgba(229,57,53,.2);color:var(--red);border:1px solid rgba(229,57,53,.4);border-radius:4px;padding:1px 5px;font-size:9px;font-weight:800;margin-left:4px;}
+.hot-badge{background:rgba(229,57,53,.2);color:var(--red);border:1px solid rgba(229,57,53,.4);border-radius:4px;padding:1px 5px;font-size:10px;font-weight:800;margin-left:4px;}
 
 /* EVENTS — ÖZET */
 .event-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(46,46,46,.4);}
@@ -360,7 +360,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 .karsi-takim{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .karsi-takim.b{font-weight:700;}
 .karsi-skor{font-size:12px;font-weight:700;min-width:38px;text-align:center;}
-.karsi-res{width:16px;height:16px;border-radius:3px;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;}
+.karsi-res{width:16px;height:16px;border-radius:3px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;}
 .karsi-res.g{background:var(--green);}
 .karsi-res.b{background:var(--muted);}
 .karsi-res.m{background:var(--red);}
@@ -370,7 +370,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 .odds-bm-name{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:5px;}
 .odds-row{display:flex;gap:6px;}
 .odds-val{flex:1;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:8px 4px;text-align:center;}
-.odds-lbl{font-size:9px;color:var(--muted);margin-bottom:3px;}
+.odds-lbl{font-size:10px;color:var(--muted);margin-bottom:3px;}
 .odds-price{font-size:15px;font-weight:700;color:var(--gold-lt);}
 
 /* Responsive */
@@ -490,7 +490,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   .odds-price{font-size:13px !important;}
   .odds-lbl{font-size:8px !important;}
   .aia-tahminler{flex-wrap:wrap !important;}
-  .aia-t{font-size:9px !important;padding:2px 6px !important;}
+  .aia-t{font-size:10px !important;padding:2px 6px !important;}
   .tahmin-card{padding:8px !important;}
   .tahmin-header{flex-wrap:wrap;gap:2px 6px;}
   .tahmin-cur{font-size:10px !important;}
@@ -654,6 +654,8 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 </head>
 <body>
 
+<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">aiALYSIS Live - Yapay Zeka Destekli Maç Tahmini ve Canlı Analiz</h1>
+
 <!-- BAKIM MODU -->
 <div id="bakimModu" style="position:fixed;inset:0;z-index:99999;background:#0A0A12;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:'DM Sans',sans-serif;">
   <div style="text-align:center;max-width:420px;padding:24px;">
@@ -790,7 +792,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       </div>
 
       <!-- APK -->
-      <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk" class="store-btn">
+      <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk" rel="nofollow noopener" title="Android APK İndir" class="store-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="#FFD54F" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <div class="store-text">
           <span class="store-sub">Android APK indir</span>
@@ -802,7 +804,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
     <div class="landing-divider">veya</div>
 
     <noscript>
-      <h1>aiALYSIS Live - Maç Tahmini ve Canlı Maç Analizi</h1>
+      <h2>aiALYSIS Live - Yapay Zeka Destekli Maç Tahmini ve Canlı Analiz</h2>
       <p>Yapay zeka destekli futbol maç tahmini platformu. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Şampiyonlar Ligi maç tahminleri ve canlı analizler.</p>
     </noscript>
 
@@ -831,7 +833,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       Web Versiyonuna Gir
     </button>
-    <p style="margin-top:40px;color:#4a4a5a;font-size:11px;letter-spacing:0.5px;">Powered by aiALYSIS Technologies</p>
+    <p style="margin-top:40px;color:#4a4a5a;font-size:12px;letter-spacing:0.5px;">Powered by aiALYSIS Technologies</p>
   </div>
 </div>
 
@@ -843,7 +845,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       <span></span><span></span><span></span>
     </button>
     <div class="nav-logo" onclick="showMainTab('maclar');loadMaclar();" style="cursor:pointer;">
-      <img src="/favicon.svg" style="width:38px;height:38px;object-fit:contain;">
+      <img src="/favicon.svg" alt="aiALYSIS Live" style="width:38px;height:38px;object-fit:contain;">
     </div>
     <div style="flex:1;min-width:0"></div>
     <div class="nav-search">
@@ -859,7 +861,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Maçlar
       </button>
       <button class="nav-btn" onclick="showMainTab('aialysis')" id="nav-aialysis">
-        <img src="/favicon.svg" style="height:18px;width:18px;vertical-align:middle;margin-right:2px"> aiALYSIS
+        <img src="/favicon.svg" alt="aiALYSIS Live" style="height:18px;width:18px;vertical-align:middle;margin-right:2px"> aiALYSIS
       </button>
       <button class="nav-btn" onclick="showMainTab('favoriler')" id="nav-favoriler">
         <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Favoriler
@@ -870,11 +872,12 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       <button class="nav-btn" onclick="showMainTab('feed')" id="nav-feed">
         <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg> Feed
       </button>
-      <a class="nav-btn" href="/blog.html" id="nav-blog" style="text-decoration:none;">
+      <a class="nav-btn" href="/blog.html" id="nav-blog" title="aiALYSIS Live Blog - Maç Önizlemeleri ve Analizler" style="text-decoration:none;">
         <svg viewBox="0 0 24 24" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Blog
       </a>
     </div>
     <a href="https://github.com/psmedya/aialysis-website/releases/download/v1.1.0/app-release.apk"
+       rel="nofollow noopener" title="Android APK İndir"
        class="nav-indir-btn" style="background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#1a1a2e;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;margin-left:8px;white-space:nowrap;flex-shrink:0;">
       📱 İndir
     </a>
@@ -978,7 +981,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
     <div class="page" id="page-aialysis">
       <div class="matches-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div>
-          <div class="matches-title" style="color:var(--text)"><img src="/favicon.svg" style="height:22px;width:22px;vertical-align:middle;margin-right:4px"> aiALYSIS</div>
+          <div class="matches-title" style="color:var(--text)"><img src="/favicon.svg" alt="aiALYSIS Live" style="height:22px;width:22px;vertical-align:middle;margin-right:4px"> aiALYSIS</div>
           <div class="matches-count">AI analiz edilmiş canlı maçlar</div>
         </div>
         <div id="aiaSortBtns" style="display:flex;gap:4px;">
@@ -1000,23 +1003,23 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         <!-- İstatistik kartları -->
         <div class="genel-istat-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">TOPLAM</div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">TOPLAM</div>
             <div id="stat-toplam" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--text)">--</div>
           </div>
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOĞRU</div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOĞRU</div>
             <div id="stat-dogru" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--green)">--</div>
           </div>
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">YANLIŞ</div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">YANLIŞ</div>
             <div id="stat-yanlis" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--red)">--</div>
           </div>
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOĞRULUK</div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOĞRULUK</div>
             <div id="stat-pct" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--gold-lt)">--%</div>
           </div>
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">ORT. ORAN</div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">ORT. ORAN</div>
             <div id="stat-ort-oran" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--gold)">--</div>
           </div>
         </div>
@@ -1191,7 +1194,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       <!-- Profile Header -->
       <div id="profileHeader" style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
         <div id="profileAvatar" style="width:56px;height:56px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:2px solid var(--blue-lt);">
-          <img id="profileAvatarImg" src="" style="width:100%;height:100%;object-fit:cover;display:none;">
+          <img id="profileAvatarImg" src="" alt="Profil Fotoğrafı" style="width:100%;height:100%;object-fit:cover;display:none;">
           <svg id="profileAvatarIcon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         <div style="flex:1;min-width:0;">
@@ -1893,7 +1896,7 @@ function macSatir(m){
   const bitti=['FT','AET','PEN'].includes(st);
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const dkTxt=formatDk(dk,st,ext);
-  const uzatmaStr=ext&&ext>0?`<span style="font-size:9px;color:var(--orange);margin-left:2px">(+${ext})</span>`:'';
+  const uzatmaStr=ext&&ext>0?`<span style="font-size:10px;color:var(--orange);margin-left:2px">(+${ext})</span>`:'';
   const durumStr=live?`<span class="dk-badge" data-elapsed="${dk}" data-extra="${ext||0}" data-status="${st}">${dkTxt}</span>${uzatmaStr}`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
   const isFav=getFavMaclar().includes(m.fixture.id);
   return`<div class="mac-satir${isFav?' fav-mac':''}" data-macid="${m.fixture.id}" onclick="openMac(${m.fixture.id})">
@@ -1938,10 +1941,10 @@ function updateDetailHeader(m){
       </div>
       <div class="detail-skor-kutu">
         ${dk?`<div class="detail-dk" data-elapsed="${dk}" data-extra="${ext||0}" data-status="${m.fixture.status.short}">${formatDk(dk,m.fixture.status.short,ext)}</div>`:''}
-        ${ext&&ext>0?`<div style="font-size:9px;color:var(--orange);margin-top:1px">+${ext} dk uzatma</div>`:''}
+        ${ext&&ext>0?`<div style="font-size:10px;color:var(--orange);margin-top:1px">+${ext} dk uzatma</div>`:''}
         <div class="detail-skor">${evGol} - ${depGol}</div>
         <div class="detail-iy">IY ${iy?.home??'-'} - ${iy?.away??'-'}</div>
-        ${bitti?`<div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px">MAÇ BİTTİ</div>`:''}
+        ${bitti?`<div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">MAÇ BİTTİ</div>`:''}
       </div>
       <div class="detail-takim">
         <img src="${m.teams.away.logo}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain">
@@ -2435,7 +2438,7 @@ function renderUserTahmin(macId,m){
   const evPct=total>0?Math.round(votes.ev/total*100):0;
   const berPct=total>0?Math.round(votes.ber/total*100):0;
   const depPct=total>0?Math.round(votes.dep/total*100):0;
-  const degistirNot=userVote?'<div style="font-size:9px;color:var(--gold);text-align:center;margin-top:6px;">Tahminini degistirmek icin tekrar tikla</div>':'';
+  const degistirNot=userVote?'<div style="font-size:10px;color:var(--gold);text-align:center;margin-top:6px;">Tahminini degistirmek icin tekrar tikla</div>':'';
   return `<div class="user-tahmin-box">
     <div class="user-tahmin-title">🗳️ ${t('tahminYap').toUpperCase()}</div>
     <div class="user-tahmin-btns">
@@ -2618,8 +2621,8 @@ async function loadDetailKadro(fixId){
         if(o.oyuncu_adi===name||o.asist_adi===name){
           if(o.olay_tipi==='Goal'&&o.oyuncu_adi===name&&!o.olay_detay?.includes('Missed'))html+=`<span style="font-size:10px">⚽</span>`;
           if(o.olay_tipi==='Card'&&o.oyuncu_adi===name){
-            if(o.olay_detay?.includes('Red'))html+=`<span style="font-size:9px">🟥</span>`;
-            else html+=`<span style="font-size:9px">🟨</span>`;
+            if(o.olay_detay?.includes('Red'))html+=`<span style="font-size:10px">🟥</span>`;
+            else html+=`<span style="font-size:10px">🟨</span>`;
           }
           if(o.olay_tipi==='subst'){
             if(o.asist_adi===name)html+=`<span style="color:#FF4757;font-size:10px">▼${o.dakika}'</span>`;
@@ -2647,9 +2650,9 @@ async function loadDetailKadro(fixId){
           <span style="display:flex;gap:2px;align-items:center">${icons}</span></div>`;
       };
       return`<div style="flex:1;min-width:0">${hdr}
-        <div style="font-size:9px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:4px 6px;border-bottom:1px solid var(--border)">İLK 11</div>
+        <div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:4px 6px;border-bottom:1px solid var(--border)">İLK 11</div>
         ${xi.map(p=>satir(p,false)).join('')}
-        <div style="font-size:9px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:4px 6px;margin-top:6px;border-bottom:1px solid var(--border)">YEDEKLER</div>
+        <div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;padding:4px 6px;margin-top:6px;border-bottom:1px solid var(--border)">YEDEKLER</div>
         ${subs.map(p=>satir(p,true)).join('')}</div>`;
     };
     // Saha grafiği
@@ -2868,7 +2871,7 @@ async function loadDetailKarsi(m){
             <div class="karsi-skor">${eg}-${dg}</div>
             <div class="karsi-takim ${!isHome?'b':''}" style="max-width:85px">${f.teams.away.name}</div>
             <img src="${awayLogo}" style="width:16px;height:16px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
-            <div style="font-size:9px;color:var(--muted);flex-shrink:0">${tarih}</div>
+            <div style="font-size:10px;color:var(--muted);flex-shrink:0">${tarih}</div>
           </div>`;
         }).join('')}`;
     };
@@ -2907,7 +2910,7 @@ async function loadDetailKarsi(m){
           <div class="karsi-skor">${eg}-${dg}</div>
           <div class="karsi-takim" style="max-width:85px">${f.teams.away.name}</div>
           <img src="${awayLogo}" style="width:16px;height:16px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
-          <div style="font-size:9px;color:var(--muted);flex-shrink:0">${tarih}</div>
+          <div style="font-size:10px;color:var(--muted);flex-shrink:0">${tarih}</div>
         </div>`;
       }).join(''):'<div style="font-size:11px;color:var(--muted);padding:6px 0">Karşılaşma bulunamadı.</div>'}`;
 
@@ -3392,7 +3395,7 @@ async function loadTahminler(filter='hepsi') {
                 ${t.gercek_deger !== null
                   ? `<span style="font-size:12px;font-weight:700;color:${gercekRenk}">→ ${t.gercek_deger} ${kategoriDetay(t.kategori, t.gercek_deger).replace(/[()]/g,'')}</span>`
                   : '<span style="font-size:10px;color:var(--muted)">bekliyor</span>'}
-                ${tziStr ? `<span style="font-size:9px;color:var(--muted)">${tziStr}</span>` : ''}
+                ${tziStr ? `<span style="font-size:10px;color:var(--muted)">${tziStr}</span>` : ''}
               </div>
               <div class="tahmin-row-kat" style="font-size:11px;color:var(--muted)">${t.kategori}</div>
               <div class="tahmin-row-extra" style="font-size:11px;font-weight:700;color:var(--gold-lt)">${oranStr}</div>
@@ -3937,7 +3940,7 @@ async function loadPerfRapor(){
         <div style="display:flex;align-items:center;gap:12px">
           ${haftalar.map((h,i)=>`<div style="text-align:center;flex:1">
             <div style="font-size:16px;font-weight:900;color:${h.pct>=60?'var(--green)':h.pct>=40?'var(--yellow)':'var(--red)'}">%${h.pct}</div>
-            <div style="font-size:9px;color:var(--muted)">${i+1}. hafta</div>
+            <div style="font-size:10px;color:var(--muted)">${i+1}. hafta</div>
           </div>`).join('<div style="font-size:14px;color:var(--muted)">\u2192</div>')}
           <div style="font-size:28px;font-weight:900;color:${trendRenk}">${trendYon}</div>
         </div>
@@ -4067,7 +4070,7 @@ async function loadLandingBlog(){
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
       ${yazilar.map(y=>{
         const tarih=new Date(y.created_at).toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
-        return `<a href="/blog.html?yazi=${y.slug}" style="text-decoration:none;display:block">
+        return `<a href="/blog.html?yazi=${y.slug}" title="aiALYSIS Live Blog - Maç Önizlemeleri ve Analizler" style="text-decoration:none;display:block">
           <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:all .2s;cursor:pointer;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
             <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">${escapeHtml(y.baslik)}</div>
             <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">${escapeHtml(y.ozet||'')}</div>
@@ -4079,7 +4082,7 @@ async function loadLandingBlog(){
         </a>`;
       }).join('')}
     </div>
-    <a href="/blog.html" style="display:block;text-align:center;margin-top:12px;font-size:12px;color:var(--blue-lt);font-weight:700;text-decoration:none;">Tum yazilar &rarr;</a>`;
+    <a href="/blog.html" title="aiALYSIS Live Blog - Maç Önizlemeleri ve Analizler" style="display:block;text-align:center;margin-top:12px;font-size:12px;color:var(--blue-lt);font-weight:700;text-decoration:none;">Tum yazilar &rarr;</a>`;
   }catch(_){c.style.display='none';}
 }
 
@@ -4365,7 +4368,7 @@ function applyTranslations(){
   if(favCount)favCount.textContent=t('favoriMaclariniz');
 
   const aiaTitle=document.querySelector('#page-aialysis .matches-title');
-  if(aiaTitle)aiaTitle.innerHTML='<img src="/favicon.svg" style="height:22px;width:22px;vertical-align:middle;margin-right:4px"> '+t('aialysis');
+  if(aiaTitle)aiaTitle.innerHTML='<img src="/favicon.svg" alt="aiALYSIS Live" style="height:22px;width:22px;vertical-align:middle;margin-right:4px"> '+t('aialysis');
   const aiaCount=document.querySelector('#page-aialysis .matches-count');
   if(aiaCount)aiaCount.textContent=t('aiAnalizEdilmis');
 
@@ -4476,16 +4479,16 @@ function applyTranslations(){
 </div>
 
 <!-- SEO Footer -->
-<footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:11px;color:var(--muted);line-height:1.8">
-  <h2 style="font-size:13px;color:var(--text);margin-bottom:8px;font-weight:700">aiALYSIS Live — Yapay Zeka Destekli Mac Tahmini</h2>
+<footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:12px;color:var(--muted);line-height:1.8">
+  <h2 style="font-size:14px;color:var(--text);margin-bottom:8px;font-weight:700">aiALYSIS Live — Yapay Zeka Destekli Mac Tahmini</h2>
   <p>Canlı maç analizi, maç tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Şampiyonlar Ligi canlı skor ve istatistikler.</p>
   <p style="margin-top:8px">Futbol istatistikleri, canlı maç sonuçları, maç öncesi analiz, bahis analizi, banko maçlar. AI destekli akıllı tahmin platformu.</p>
-  <p style="margin-top:8px"><a href="/blog.html" style="color:#D4A24C;font-size:12px;font-weight:600;text-decoration:none;">Blog</a> · <a href="/privacy.html" style="color:#7A7A95;text-decoration:none;">Gizlilik</a> · <a href="/terms.html" style="color:#7A7A95;text-decoration:none;">Kullanım Şartları</a></p>
+  <p style="margin-top:8px"><a href="/blog.html" title="aiALYSIS Live Blog - Maç Önizlemeleri ve Analizler" style="color:#D4A24C;font-size:12px;font-weight:600;text-decoration:none;">Blog</a> · <a href="/privacy.html" title="Gizlilik Politikası" style="color:#7A7A95;text-decoration:none;">Gizlilik</a> · <a href="/terms.html" title="Kullanım Şartları" style="color:#7A7A95;text-decoration:none;">Kullanım Şartları</a></p>
   <div style="margin-top:16px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:inline-block;max-width:420px;text-align:left;">
     <p style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px;">Widget Ekle</p>
     <p style="font-size:10px;color:var(--muted);margin-bottom:8px;">Canlı skor widget'ını sitenize ekleyin:</p>
     <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:10px;color:var(--text);word-break:break-all;line-height:1.5;cursor:pointer;" onclick="navigator.clipboard.writeText(this.textContent);this.style.borderColor='var(--green)';setTimeout(()=>this.style.borderColor='var(--border)',1500);">&lt;iframe src="https://aialysis.live/widget.html" width="320" height="400" frameborder="0" style="border-radius:12px;overflow:hidden;"&gt;&lt;/iframe&gt;</code>
-    <p style="font-size:9px;color:var(--muted);margin-top:4px;">Kopyalamak icin koda tiklayin</p>
+    <p style="font-size:10px;color:var(--muted);margin-top:4px;">Kopyalamak icin koda tiklayin</p>
   </div>
   <div id="emailBulten" style="margin-top:20px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:inline-block;max-width:420px;">
     <p style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px;">📩 Haftalık Tahmin Bülteni</p>
@@ -4509,7 +4512,7 @@ function applyTranslations(){
     document.getElementById('bultenEmail').value='';
   }
   </script>
-  <p style="margin-top:12px;color:var(--muted);font-size:10px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
+  <p style="margin-top:12px;color:var(--muted);font-size:12px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
 </footer>
 </body>
 </html>
