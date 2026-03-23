@@ -964,10 +964,8 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
         <!-- Filtreler -->
         <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
           <button onclick="loadTahminler('hepsi')" class="filter-btn active" id="f-hepsi">Tümü</button>
-          <button onclick="loadTahminler('tamamlandi')" class="filter-btn" id="f-tamamlandi">✔ Tamamlanmış</button>
           <button onclick="loadTahminler('DOGRU')" class="filter-btn" id="f-DOGRU">✅ Doğru</button>
           <button onclick="loadTahminler('YANLIS')" class="filter-btn" id="f-YANLIS">❌ Yanlış</button>
-          <button onclick="loadTahminler('BEKLIYOR')" class="filter-btn" id="f-BEKLIYOR">⏳ Bekliyor</button>
         </div>
 
         <!-- Tahmin listesi -->
@@ -2957,8 +2955,9 @@ async function loadTahminler(filter='hepsi') {
 
   try {
     let url = `${SU}/rest/v1/tahmin_sonuclari?order=created_at.desc&limit=200`;
-    if (filter === 'tamamlandi') url += `&sonuc=neq.BEKLIYOR`;
-    else if (filter !== 'hepsi') url += `&sonuc=eq.${filter}`;
+    if (filter === 'tamamlandi') url += `&sonuc=in.(DOGRU,YANLIS)`;
+    else if (filter === 'hepsi') url += `&sonuc=in.(DOGRU,YANLIS,BEKLIYOR)`;
+    else url += `&sonuc=eq.${filter}`;
     if (tahminGun > 0) {
       const sinir = new Date(Date.now() - tahminGun * 86400000).toISOString();
       url += `&created_at=gte.${sinir}`;
@@ -2970,7 +2969,7 @@ async function loadTahminler(filter='hepsi') {
     const data = await r.json();
 
     // Istatistikler — zaman filtresine gore
-    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?select=sonuc,kategori,created_at`;
+    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&select=sonuc,kategori,created_at`;
     if (tahminGun > 0) {
       const sinir = new Date(Date.now() - tahminGun * 86400000).toISOString();
       statsUrl += `&created_at=gte.${sinir}`;
@@ -2994,10 +2993,9 @@ async function loadTahminler(filter='hepsi') {
     statsData.forEach(x => {
       if (!x.kategori) return;
       const k = x.kategori.toUpperCase();
-      if (!katMap[k]) katMap[k] = {dogru:0, yanlis:0, bekliyor:0};
+      if (!katMap[k]) katMap[k] = {dogru:0, yanlis:0};
       if (x.sonuc === 'DOGRU') katMap[k].dogru++;
       else if (x.sonuc === 'YANLIS') katMap[k].yanlis++;
-      else katMap[k].bekliyor++;
     });
     const katContainer = document.getElementById('kategoriStats');
     const katKeys = Object.keys(katMap).sort();
@@ -3028,7 +3026,7 @@ async function loadTahminler(filter='hepsi') {
 
     // Basari trendi
     const trendContainer = document.getElementById('trendContainer');
-    const tamamlananAll = statsData.filter(x => x.sonuc !== 'BEKLIYOR');
+    const tamamlananAll = statsData.filter(x => x.sonuc === 'DOGRU' || x.sonuc === 'YANLIS');
     if (tamamlananAll.length >= 5) {
       const sorted = [...tamamlananAll].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
       const half = Math.floor(sorted.length / 2);
