@@ -470,8 +470,9 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   .layout.panel-acik .right-panel{top:50px;}
   .aialysis-grid{grid-template-columns:1fr !important;padding:12px !important;}
   .ai-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .tahmin-row{grid-template-columns:1fr !important;gap:6px !important;padding:10px 0 !important;font-size:11px !important;}
+  .tahmin-row{grid-template-columns:1fr !important;gap:4px !important;padding:10px 0 !important;font-size:11px !important;}
   .tahmin-row>div{overflow:hidden;text-overflow:ellipsis;}
+  .tahmin-row .tahmin-row-meta{display:flex !important;align-items:center;gap:8px;flex-wrap:wrap;}
   .tahmin-header-grid{display:none !important;}
   .genel-istat-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px !important;}
   .genel-istat-kart{padding:12px !important;}
@@ -491,9 +492,9 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   .aia-t{font-size:9px !important;padding:2px 6px !important;}
   .tahmin-card{padding:8px !important;}
   .tahmin-header{flex-wrap:wrap;gap:2px 6px;}
-  .tahmin-cur{font-size:9px !important;}
+  .tahmin-cur{font-size:10px !important;}
   .tahmin-line{flex-wrap:wrap !important;gap:4px !important;}
-  .tahmin-desc{font-size:9px !important;min-width:0;word-break:break-word;}
+  .tahmin-desc{font-size:10px !important;min-width:0;word-break:break-word;}
   .tahmin-guc{font-size:11px !important;}
   .t-tag{font-size:10px !important;padding:2px 6px !important;}
   /* Favoriler mobile */
@@ -2170,6 +2171,18 @@ async function loadDetailAnaliz(m, silent=false){
   }catch(_){}
 }
 
+function kategoriDetay(kategori, gercekDeger) {
+  if (gercekDeger === null || gercekDeger === undefined) return '';
+  const kat = (kategori || '').toLowerCase();
+  if (kat.includes('gol') || kat.includes('goal')) return `(${gercekDeger} gol)`;
+  if (kat.includes('korner') || kat.includes('corner')) return `(${gercekDeger} korner)`;
+  if (kat.includes('kart') || kat.includes('sari') || kat.includes('yellow')) return `(${gercekDeger} kart)`;
+  if (kat.includes('faul') || kat.includes('foul')) return `(${gercekDeger} faul)`;
+  if (kat.includes('sut') || kat.includes('şut') || kat.includes('shot')) return `(${gercekDeger} şut)`;
+  if (kat.includes('ofsayt') || kat.includes('offside')) return `(${gercekDeger} ofsayt)`;
+  return `(${gercekDeger})`;
+}
+
 async function loadBitmisMacTahminleri(m) {
   const c = document.getElementById('dc-analiz');
   c.innerHTML = '<div class="loading"><div class="spinner"></div>Tahmin geçmişi yükleniyor...</div>';
@@ -2241,6 +2254,7 @@ async function loadBitmisMacTahminleri(m) {
         <!-- Özet -->
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;text-align:center">
           <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">MAÇ SONU AI TAHMİN SONUÇLARI</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">${m.teams.home.name} ${m.goals.home ?? '?'} - ${m.goals.away ?? '?'} ${m.teams.away.name}</div>
           <div style="font-size:42px;font-weight:900;color:${pctRenk};margin-bottom:4px">%${pct}</div>
           <div style="font-size:12px;color:var(--muted)">✅ ${dogru} doğru &nbsp;|&nbsp; ❌ ${yanlis} yanlış &nbsp;|&nbsp; Toplam ${toplam} tahmin</div>
         </div>
@@ -2255,10 +2269,10 @@ async function loadBitmisMacTahminleri(m) {
           return `<div class="tahmin-card">
             <div class="tahmin-header">
               <span class="tahmin-kat">${t.kategori}</span>
-              ${t.gercek_deger !== null ? `<span class="tahmin-cur">Gerçek: ${t.gercek_deger}</span>` : ''}
+              ${t.gercek_deger !== null ? `<span class="tahmin-cur">Gerçek: ${t.gercek_deger} ${kategoriDetay(t.kategori, t.gercek_deger).replace(/[()]/g,'')}</span>` : ''}
             </div>
             <div class="tahmin-line">
-              <span class="t-tag ${tagClass}">${t.cizgi} ${t.ust_alt}</span>
+              <span class="t-tag ${tagClass}">${t.cizgi} ${t.ust_alt} ${t.sonuc === 'DOGRU' ? '✅' : t.sonuc === 'YANLIS' ? '❌' : '⏳'} ${kategoriDetay(t.kategori, t.gercek_deger)}</span>
               <span class="tahmin-desc">${t.sonuc === 'DOGRU' ? '✅ Doğru tahmin' : t.sonuc === 'YANLIS' ? '❌ Yanlış tahmin' : '⏳ Değerlendiriliyor'}</span>
               ${bitOdd ? `<span style="font-size:10px;color:var(--gold-lt);font-weight:600;white-space:nowrap">Ort Oran: ${bitOdd.toFixed(2)}</span>` : ''}
               <span class="tahmin-guc" style="color:${sonucRenk};font-size:18px">${sonucIcon}</span>
@@ -3065,7 +3079,7 @@ async function loadTahminler(filter='hepsi') {
     const data = await r.json();
 
     // Istatistikler — zaman filtresine gore
-    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&select=sonuc,kategori,created_at,mac_id,cizgi,ust_alt,oran`;
+    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&select=sonuc,kategori,created_at,mac_id,cizgi,ust_alt,oran,gercek_deger`;
     if (tahminGun > 0) {
       const sinir = new Date(Date.now() - tahminGun * 86400000).toISOString();
       statsUrl += `&created_at=gte.${sinir}`;
@@ -3286,9 +3300,9 @@ async function loadTahminler(filter='hepsi') {
                 <div style="font-size:10px;color:var(--muted)">${tarihStr} · ${t.lig}</div>
               </div>
               <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-                <span class="t-tag ${tagClass}" style="font-size:11px">${t.cizgi} ${t.ust_alt} %${t.guc}${oranStr !== '-' ? ' | Oran: ' + oranStr : ''}</span>
+                <span class="t-tag ${tagClass}" style="font-size:11px">${t.cizgi} ${t.ust_alt} ${sonucIcon} ${kategoriDetay(t.kategori, t.gercek_deger)} %${t.guc}${oranStr !== '-' ? ' | Oran: ' + oranStr : ''}</span>
                 ${t.gercek_deger !== null
-                  ? `<span style="font-size:12px;font-weight:700;color:${gercekRenk}">→ ${t.gercek_deger}</span>`
+                  ? `<span style="font-size:12px;font-weight:700;color:${gercekRenk}">→ ${t.gercek_deger} ${kategoriDetay(t.kategori, t.gercek_deger).replace(/[()]/g,'')}</span>`
                   : '<span style="font-size:10px;color:var(--muted)">bekliyor</span>'}
                 ${tziStr ? `<span style="font-size:9px;color:var(--muted)">${tziStr}</span>` : ''}
               </div>
