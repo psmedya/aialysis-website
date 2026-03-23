@@ -325,7 +325,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 
 .filter-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s;}
 .filter-btn:hover,.filter-btn.active{background:var(--blue);border-color:var(--blue);color:white;}
-.tahmin-row{display:grid;grid-template-columns:140px 1fr 120px 80px 60px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(46,46,46,.5);gap:12px;}
+.tahmin-row{display:grid;grid-template-columns:140px 1fr 120px 70px 60px 50px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(46,46,46,.5);gap:10px;}
 .tahmin-row:hover{background:rgba(255,255,255,.01);}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -929,7 +929,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
       </div>
       <div style="padding:0 16px">
         <!-- İstatistik kartları -->
-        <div class="genel-istat-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+        <div class="genel-istat-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
             <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">TOPLAM</div>
             <div id="stat-toplam" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--text)">--</div>
@@ -945,6 +945,10 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
           <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
             <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">DOĞRULUK</div>
             <div id="stat-pct" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--gold-lt)">--%</div>
+          </div>
+          <div class="genel-istat-kart" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">ORT. ORAN</div>
+            <div id="stat-ort-oran" class="genel-basari" style="font-size:32px;font-weight:900;color:var(--gold)">--</div>
           </div>
         </div>
 
@@ -2892,11 +2896,15 @@ async function loadAialysis(silent=false){
                 }
               });
             });
+            // Tahminlere oran bilgisini ekle
+            hazir[macId].forEach(t=>{
+              const odd=findOddForTahmin(oddsM,t.kategori,t.cizgi,t.ust_alt);
+              t._oran=odd||null;
+            });
             // Tahminlerden oran < 1.35 olanları filtrele
             hazir[macId]=hazir[macId].filter(t=>{
-              const odd=findOddForTahmin(oddsM,t.kategori,t.cizgi,t.ust_alt);
-              if(odd===null||odd===undefined)return true; // Oran yoksa göster
-              return odd>=1.35; // Oran 1.35 altıysa gösterme
+              if(t._oran===null||t._oran===undefined)return true; // Oran yoksa göster
+              return t._oran>=1.35; // Oran 1.35 altıysa gösterme
             });
             // Eğer tüm tahminler filtrelendiyse bu maçı kaldır
             if(!hazir[macId].length)delete hazir[macId];
@@ -2966,7 +2974,7 @@ async function loadAialysis(silent=false){
           <div class="aia-skor">${dk!=null?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
           <div class="aia-takim">${aiaLogo(m?.teams?.away?.logo,depAdi)}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
-        <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}</span>`).join('')}</div>`;
+        <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}${p._oran?' | Oran: '+p._oran.toFixed(2):''}</span>`).join('')}</div>`;
       const mid=parseInt(macId);
       if(m){card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==mid),m];openMac(mid);};}
       else if(maclar.find(x=>x.fixture.id===mid)){card.onclick=()=>openMac(mid);}
@@ -3023,7 +3031,7 @@ async function loadTahminler(filter='hepsi') {
     const data = await r.json();
 
     // Istatistikler — zaman filtresine gore
-    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&select=sonuc,kategori,created_at`;
+    let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&select=sonuc,kategori,created_at,mac_id,cizgi,ust_alt,oran`;
     if (tahminGun > 0) {
       const sinir = new Date(Date.now() - tahminGun * 86400000).toISOString();
       statsUrl += `&created_at=gte.${sinir}`;
@@ -3037,10 +3045,125 @@ async function loadTahminler(filter='hepsi') {
     const yanlis = statsData.filter(x => x.sonuc === 'YANLIS').length;
     const pct = toplam > 0 ? Math.round(dogru / (dogru + yanlis) * 100) : 0;
 
+    // Ortalama oran hesaplama — önce tahmin_sonuclari.oran alanından, yoksa mac_oranlar'dan
+    let ortOran = null;
+    const perfOranMap = {}; // macId -> oddsMap
+    try {
+      // Önce direkt oran alanını dene
+      let oranToplam = 0, oranSayi = 0;
+      const oranYok = []; // oran alanı null olan tahminler
+      statsData.forEach(x => {
+        if (x.oran && parseFloat(x.oran) > 0) {
+          oranToplam += parseFloat(x.oran);
+          oranSayi++;
+        } else {
+          oranYok.push(x);
+        }
+      });
+
+      // Oran alanı olmayan eski tahminler için mac_oranlar'dan çek
+      if (oranYok.length) {
+        const statFixIds = [...new Set(oranYok.map(x => x.mac_id).filter(Boolean))];
+        if (statFixIds.length) {
+          const oranBatch = await sbQuery('mac_oranlar', `fixture_id=in.(${statFixIds.join(',')})`);
+          if (oranBatch && oranBatch.length) {
+            oranBatch.forEach(r => {
+              const oddsM = {};
+              const bets = r.api_odds || [];
+              bets.forEach(b => {
+                const name = (b.name || '').toLowerCase();
+                (b.values || []).forEach(v => {
+                  const val = (v.value || '').toString().toLowerCase();
+                  const odd = parseFloat(v.odd) || 0;
+                  if (!odd) return;
+                  if (name.includes('over/under') || name === 'match goals' || name.includes('goals over/under')) {
+                    if (val.includes('over')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`gol_${n}_ÜST`] = odd; }
+                    if (val.includes('under')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`gol_${n}_ALT`] = odd; }
+                  }
+                  if (name.includes('corner')) {
+                    if (val.includes('over')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`korner_${n}_ÜST`] = odd; }
+                    if (val.includes('under')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`korner_${n}_ALT`] = odd; }
+                  }
+                  if (name.includes('card')) {
+                    if (val.includes('over')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`kart_${n}_ÜST`] = odd; }
+                    if (val.includes('under')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`kart_${n}_ALT`] = odd; }
+                  }
+                });
+              });
+              perfOranMap[r.fixture_id] = oddsM;
+            });
+            oranYok.forEach(x => {
+              const om = perfOranMap[x.mac_id];
+              if (!om) return;
+              const odd = findOddForTahmin(om, x.kategori, x.cizgi, x.ust_alt);
+              if (odd && odd > 0) { oranToplam += odd; oranSayi++; }
+            });
+          }
+        }
+      }
+      if (oranSayi > 0) ortOran = (oranToplam / oranSayi).toFixed(2);
+    } catch (_) {}
+
     document.getElementById('stat-toplam').textContent = toplam;
     document.getElementById('stat-dogru').textContent = dogru;
     document.getElementById('stat-yanlis').textContent = yanlis;
     document.getElementById('stat-pct').textContent = toplam > 0 ? `${pct}%` : '--%';
+    document.getElementById('stat-ort-oran').textContent = ortOran || '--';
+
+    // data tahminlerine oran ekle (tahmin kartlarında göstermek için)
+    try {
+      // Önce direkt oran alanını kullan
+      const oranEksik = [];
+      data.forEach(t => {
+        if (t.oran && parseFloat(t.oran) > 0) {
+          t._oran = parseFloat(t.oran);
+        } else {
+          oranEksik.push(t);
+        }
+      });
+      // Oran alanı olmayanlar için mac_oranlar'dan çek
+      if (oranEksik.length) {
+        const dataFixIds = [...new Set(oranEksik.map(x => x.mac_id).filter(Boolean))];
+        const missingIds = dataFixIds.filter(id => !perfOranMap[id]);
+        if (missingIds.length) {
+          const extraOran = await sbQuery('mac_oranlar', `fixture_id=in.(${missingIds.join(',')})`);
+          if (extraOran && extraOran.length) {
+            extraOran.forEach(r => {
+              const oddsM = {};
+              const bets = r.api_odds || [];
+              bets.forEach(b => {
+                const name = (b.name || '').toLowerCase();
+                (b.values || []).forEach(v => {
+                  const val = (v.value || '').toString().toLowerCase();
+                  const odd = parseFloat(v.odd) || 0;
+                  if (!odd) return;
+                  if (name.includes('over/under') || name === 'match goals' || name.includes('goals over/under')) {
+                    if (val.includes('over')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`gol_${n}_ÜST`] = odd; }
+                    if (val.includes('under')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`gol_${n}_ALT`] = odd; }
+                  }
+                  if (name.includes('corner')) {
+                    if (val.includes('over')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`korner_${n}_ÜST`] = odd; }
+                    if (val.includes('under')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`korner_${n}_ALT`] = odd; }
+                  }
+                  if (name.includes('card')) {
+                    if (val.includes('over')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`kart_${n}_ÜST`] = odd; }
+                    if (val.includes('under')) { const n = parseFloat(val.replace(/[^0-9.]/g, '')); if (n) oddsM[`kart_${n}_ALT`] = odd; }
+                  }
+                });
+              });
+              perfOranMap[r.fixture_id] = oddsM;
+            });
+          }
+        }
+        oranEksik.forEach(t => {
+          const om = perfOranMap[t.mac_id];
+          if (om) {
+            const odd = findOddForTahmin(om, t.kategori, t.cizgi, t.ust_alt);
+            t._oran = odd || null;
+          }
+        });
+      }
+    } catch (_) {}
 
     // Kategori bazli basari oranlari
     const katMap = {};
@@ -3111,8 +3234,8 @@ async function loadTahminler(filter='hepsi') {
 
     c.innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
-        <div class="tahmin-header-grid" style="display:grid;grid-template-columns:140px 1fr 120px 80px 60px;padding:10px 16px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);gap:12px">
-          <span>MAÇ</span><span>TAHMİN</span><span>KATEGORİ</span><span>GÜVEN</span><span>SONUÇ</span>
+        <div class="tahmin-header-grid" style="display:grid;grid-template-columns:140px 1fr 120px 70px 60px 50px;padding:10px 16px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);gap:10px">
+          <span>MAÇ</span><span>TAHMİN</span><span>KATEGORİ</span><span>ORAN</span><span>GÜVEN</span><span>SONUÇ</span>
         </div>
         <div style="padding:0 16px">
           ${data.map(t => {
@@ -3121,18 +3244,22 @@ async function loadTahminler(filter='hepsi') {
             const sonucRenk = t.sonuc === 'DOGRU' ? 'var(--green)' : t.sonuc === 'YANLIS' ? 'var(--red)' : 'var(--muted)';
             const tagClass = t.ust_alt === 'ÜST' ? 'u' : 'a';
             const gercekRenk = t.sonuc === 'DOGRU' ? 'var(--green)' : t.sonuc === 'YANLIS' ? 'var(--red)' : 'var(--muted)';
+            const oranStr = t._oran ? t._oran.toFixed(2) : '-';
+            const tziStr = t.mevcut_deger != null ? `TZİ: ${t.mevcut_deger}` : '';
             return `<div class="tahmin-row">
               <div>
                 <div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.ev_sahibi} - ${t.deplasman}</div>
                 <div style="font-size:10px;color:var(--muted)">${tarihStr} · ${t.lig}</div>
               </div>
               <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-                <span class="t-tag ${tagClass}" style="font-size:11px">${t.cizgi} ${t.ust_alt}</span>
+                <span class="t-tag ${tagClass}" style="font-size:11px">${t.cizgi} ${t.ust_alt} %${t.guc}${oranStr !== '-' ? ' | Oran: ' + oranStr : ''}</span>
                 ${t.gercek_deger !== null
                   ? `<span style="font-size:12px;font-weight:700;color:${gercekRenk}">→ ${t.gercek_deger}</span>`
                   : '<span style="font-size:10px;color:var(--muted)">bekliyor</span>'}
+                ${tziStr ? `<span style="font-size:9px;color:var(--muted)">${tziStr}</span>` : ''}
               </div>
               <div style="font-size:11px;color:var(--muted)">${t.kategori}</div>
+              <div style="font-size:11px;font-weight:700;color:var(--gold-lt)">${oranStr}</div>
               <div style="font-size:12px;font-weight:700;color:${t.guc>=70?'var(--green)':t.guc>=55?'var(--yellow)':'var(--red)'}">%${t.guc}</div>
               <div style="font-size:18px;color:${sonucRenk};text-align:center">${sonucIcon}</div>
             </div>`;
