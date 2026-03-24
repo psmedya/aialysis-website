@@ -2385,10 +2385,10 @@ function updateDetailHeader(m){
 async function openMac(id){
   let m=maclar.find(x=>x.fixture.id===id);
   if(!m){
-    // Performans tablosundan gelen eski maçlar için DB'den çek
-    const rows=await sbQuery('mac_istatistikleri',`fixture_id=eq.${id}&limit=1`);
-    if(rows&&rows.length){m=istatToApiFormat(rows[0]);maclar.push(m);}
-    else{const rows2=await sbQuery('maclar',`fixture_id=eq.${id}&limit=1`);if(rows2&&rows2.length){m=sbToApiFormat(rows2[0]);maclar.push(m);}}
+    // Önce canlı maclar tablosuna bak (güncel elapsed), sonra mac_istatistikleri (biten maçlar)
+    const rows2=await sbQuery('maclar',`fixture_id=eq.${id}&limit=1`);
+    if(rows2&&rows2.length){m=sbToApiFormat(rows2[0]);maclar.push(m);}
+    else{const rows=await sbQuery('mac_istatistikleri',`fixture_id=eq.${id}&limit=1`);if(rows&&rows.length){m=istatToApiFormat(rows[0]);maclar.push(m);}}
     if(!m)return;
   }
   const layout=document.querySelector('.layout');
