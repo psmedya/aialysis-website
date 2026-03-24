@@ -2021,8 +2021,20 @@ const LIG_PUAN={
   233:11500, // Mısır
   // Avustralya
   188:9500,
-  // Uluslararası
-  10:17000,15:17200,1:17500,9:14500,29:12500,
+  // Uluslararası turnuvalar
+  1:17500,4:17400,5:17300,
+  // WC Elemeleri
+  32:17000,29:16900,30:16800,31:16700,11:16600,34:16500,37:16400,
+  // Kıta turnuvaları
+  6:16300,9:16200,35:16100,
+  // UEFA U21
+  850:16000,
+  // Dostluk maçları — düşük öncelik
+  10:5000,
+  // FIFA Club World Cup
+  15:4000,
+  // Friendlies Clubs
+  667:3000,
 };
 function ligOncelik(s){
   // Maç objesinden lig ID'si varsa kullan
@@ -2049,12 +2061,14 @@ function ligOncelik(s){
   if(s.includes('conference league')) return 15000;
 
   // MİLLİ TAKIM TURNUVALARI
-  if(s.includes('copa america')) return 17500;
-  if(s.includes('euro 20')||s.includes('european champ')) return 17200;
-  if(s.includes('world cup')) return 17000;
-  if(s.includes('nations league')) return 14500;
-  if(s.includes('africa cup of nations')||s.includes('afcon')) return 14000;
-  if(s.includes('asian cup')) return 12500;
+  if(s.includes('world cup')&&!s.includes('qualif')) return 17500;
+  if(s.includes('euro 20')||s.includes('european champ')) return 17400;
+  if(s.includes('nations league')) return 17300;
+  if(s.includes('world cup')&&s.includes('qualif')) return 17000;
+  if(s.includes('qualif')&&!s.includes('champions')) return 16500;
+  if(s.includes('africa cup of nations')||s.includes('afcon')) return 16300;
+  if(s.includes('copa america')) return 16200;
+  if(s.includes('asian cup')) return 16100;
   if(s.includes('olympics football')||s.includes('olympic football')) return 12000;
   if(s.includes('gold cup')||s.includes('concacaf')) return 11500;
 
@@ -2229,6 +2243,9 @@ function tarihDegistir(f){
 function toggleCanli(){
   canliMod=!canliMod;
   document.getElementById('liveBtnEl').classList.toggle('active',canliMod);
+  // Canli modda maclar sayfasını göster
+  showMainTab('maclar');
+  history.replaceState(null,null,canliMod?'#canli':'#maclar');
   loadMaclar();
 }
 
@@ -3398,6 +3415,11 @@ function showMainTab(name){
   if(name==='dashboard'){loadTahminler(aktifFilter);loadYildizlar();loadLeaderboard();loadPerfRapor();}
   if(name==='favoriler')renderFavoriler();
   if(name==='feed')loadFeed();
+  // URL hash güncelle — sayfa yenilenince aynı tab açılsın
+  const hashMap={maclar:'maclar',favoriler:'favoriler',aialysis:'aialysis',dashboard:'performans',feed:'feed'};
+  if(hashMap[name])history.replaceState(null,null,'#'+hashMap[name]);
+  // Canli modu kapat (başka taba geçince)
+  if(name!=='maclar'&&canliMod){canliMod=false;const lb=document.getElementById('liveBtnEl');if(lb)lb.classList.remove('active');}
 }
 
 function aiaLogo(url,name){
@@ -4534,6 +4556,24 @@ async function loadLandingBlog(){
   }catch(_){c.style.display='none';}
 }
 
+// URL hash'ten doğru tabi aç (sayfa yenilendiğinde)
+(function(){
+  const h=window.location.hash.replace('#','');
+  const tabMap={maclar:'maclar',canli:'canli',favoriler:'favoriler',aialysis:'aialysis',performans:'dashboard',feed:'feed'};
+  if(h&&tabMap[h]){
+    if(h==='canli'){
+      canliMod=true;
+      const lb=document.getElementById('liveBtnEl');if(lb)lb.classList.add('active');
+      showMainTab('maclar');
+    } else {
+      showMainTab(tabMap[h]);
+    }
+    // Mobil nav butonunu da güncelle
+    document.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));
+    const mobBtn=document.getElementById(h==='performans'?'mob-more':`mob-${h}`);
+    if(mobBtn)mobBtn.classList.add('active');
+  }
+})();
 loadMaclar();
 loadLandingBlog();
 
