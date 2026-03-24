@@ -2879,7 +2879,7 @@ function renderUserTahmin(macId,m){
   const evPct=total>0?Math.round(votes.ev/total*100):0;
   const berPct=total>0?Math.round(votes.ber/total*100):0;
   const depPct=total>0?Math.round(votes.dep/total*100):0;
-  const degistirNot=userVote?'<div style="font-size:10px;color:var(--gold);text-align:center;margin-top:6px;">Tahminini degistirmek icin tekrar tikla</div>':'';
+  const degistirNot=userVote?'<div style="font-size:10px;color:var(--gold);text-align:center;margin-top:6px;">Tahminini değiştirmek için tekrar tıkla</div>':'';
   return `<div class="user-tahmin-box">
     <div class="user-tahmin-title">🗳️ ${t('tahminYap').toUpperCase()}</div>
     <div class="user-tahmin-btns">
@@ -2903,13 +2903,13 @@ function renderUserTahmin(macId,m){
       <span>${m.teams.home.name.substring(0,10)}</span>
       <span>${t('beraberlik')}</span>
       <span>${m.teams.away.name.substring(0,10)}</span>
-    </div>`:'<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px">Ilk tahmini sen yap!</div>'}
+    </div>`:'<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px">İlk tahmini sen yap!</div>'}
     ${degistirNot}
   </div>`;
 }
 
 async function kullaniciTahminYap(macId,secim,evAdi,depAdi){
-  showToast(secim==='ev'?`${evAdi} kazanir secildi!`:secim==='dep'?`${depAdi} kazanir secildi!`:'Beraberlik secildi!');
+  showToast(secim==='ev'?`${evAdi} kazanır seçildi!`:secim==='dep'?`${depAdi} kazanır seçildi!`:'Beraberlik seçildi!');
   await saveUserPredictionSupabase(macId,secim);
   await loadCommunityPredictions(macId);
   if(currentMac&&currentMac.fixture.id==macId){
@@ -3794,13 +3794,13 @@ async function loadTahminler(filter='hepsi') {
       const fark = sonOran - ilkOran;
       const trendIcon = fark > 0 ? '\u2191' : fark < 0 ? '\u2193' : '\u2192';
       const trendColor = fark > 0 ? 'var(--green)' : fark < 0 ? 'var(--red)' : 'var(--muted)';
-      const trendText = fark > 0 ? 'Basari artiyor' : fark < 0 ? 'Basari azaliyor' : 'Sabit';
+      const trendText = fark > 0 ? 'Başarı artıyor' : fark < 0 ? 'Başarı azalıyor' : 'Sabit';
       trendContainer.innerHTML = `
         <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:16px">
           <div style="font-size:36px;color:${trendColor};font-weight:900;line-height:1">${trendIcon}</div>
           <div>
             <div style="font-size:13px;font-weight:700;color:${trendColor}">${trendText}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px">Ilk yari: %${ilkOran} &rarr; Son yari: %${sonOran} (${fark>0?'+':''}${fark}%)</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">İlk yarı: %${ilkOran} &rarr; Son yarı: %${sonOran} (${fark>0?'+':''}${fark}%)</div>
           </div>
         </div>`;
     } else {
@@ -3818,7 +3818,7 @@ async function loadTahminler(filter='hepsi') {
     c.innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
         <div class="tahmin-header-grid" style="display:grid;grid-template-columns:140px 45px 1fr 110px 80px 50px 90px 60px 55px 45px;padding:10px 16px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);gap:8px">
-          <span>MAÇ</span><span>SÜRE</span><span>TAHMİN</span><span>KATEGORİ</span><span>İSTATİSTİK</span><span>TZİ</span><span>BAHİS SONUCU</span><span>ORAN</span><span>GÜVEN</span><span>SONUÇ</span>
+          <span>MAÇ</span><span>DK</span><span>TAHMİN</span><span>KATEGORİ</span><span>İSTATİSTİK</span><span>TZİ</span><span>BAHİS SONUCU</span><span>ORAN</span><span>GÜVEN</span><span>SONUÇ</span>
         </div>
         <div style="padding:0 16px">
           ${dataFiltered.map(t => {
@@ -4153,7 +4153,7 @@ async function loadChatMesajlar(){
   if(user){
     ia.innerHTML=`<div class="chat-input-wrap"><textarea class="chat-input" id="chatInput" placeholder="Mesajinizi yazin..." rows="1" maxlength="500" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea><button class="chat-gonder" onclick="sendChatMsg()">&#10148;</button></div>`;
   }else{
-    ia.innerHTML=`<div class="chat-giris-uyari">Sohbete katilmak icin <button onclick="toggleChatPanel();authModal();">Giris Yapin</button></div>`;
+    ia.innerHTML=`<div class="chat-giris-uyari">Sohbete katılmak için <button onclick="toggleChatPanel();authModal();">Giriş Yapın</button></div>`;
   }
   try{
     const r=await fetch(`${SU}/rest/v1/forum_mesajlar?mac_id=eq.0&order=created_at.desc&limit=50`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
@@ -4195,7 +4195,7 @@ async function loadDetailForum(macId){
   if(user){
     inputHtml=`<div class="forum-input-wrap"><textarea class="forum-input" id="forumInput" placeholder="Macla ilgili yorumunuzu yazin..." rows="1" maxlength="500" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendForumMsg(${macId});}"></textarea><button class="forum-gonder" onclick="sendForumMsg(${macId})">&#10148;</button></div>`;
   }else{
-    inputHtml=`<div class="chat-giris-uyari" style="border-top:none;border-radius:8px;margin-top:8px;">Yorum yapmak icin <button onclick="authModal();">Giris Yapin</button></div>`;
+    inputHtml=`<div class="chat-giris-uyari" style="border-top:none;border-radius:8px;margin-top:8px;">Yorum yapmak için <button onclick="authModal();">Giriş Yapın</button></div>`;
   }
   c.innerHTML=`<div class="forum-container"><div class="forum-mesajlar" id="forumMesajlar"><div style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">Yukleniyor...</div></div>${inputHtml}</div>`;
   try{
@@ -4270,7 +4270,7 @@ function ktSecUstAlt(macId,secim){
 }
 async function ktGonderTahmin(macId){
   const user=await getForumUser();
-  if(!user){showToast('Tahmin yapmak icin giris yapin.');authModal();return;}
+  if(!user){showToast('Tahmin yapmak için giriş yapın.');authModal();return;}
   const kategori=document.getElementById('ktKategori-'+macId)?.value;
   const cizgi=parseFloat(document.getElementById('ktCizgi-'+macId)?.value);
   const ustAlt=ktSeciliUstAlt;
@@ -4283,7 +4283,7 @@ async function ktGonderTahmin(macId){
     const dupR=await fetch(`${SU}/rest/v1/kullanici_tahminleri?user_id=eq.${user.id}&mac_id=eq.${macId}&kategori=eq.${kategori}&cizgi=eq.${cizgi}&select=id`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
     const dupData=await dupR.json();
     if(dupData&&dupData.length>0){
-      msgEl.textContent='Bu kategori ve cizgi icin zaten tahmin yaptin.';msgEl.style.color='var(--red)';msgEl.style.display='block';
+      msgEl.textContent='Bu kategori ve çizgi için zaten tahmin yaptın.';msgEl.style.color='var(--red)';msgEl.style.display='block';
       btn.disabled=false;btn.textContent='Tahmin Gonder';return;
     }
     // Insert
@@ -4394,7 +4394,7 @@ async function loadPerfRapor(){
         </div>
       </div>`:''}
       ${bestKat||bestLig?`<div class="perf-best-card">
-        <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;margin-bottom:8px">EN BASARILI</div>
+        <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;margin-bottom:8px">EN BAŞARILI</div>
         ${bestKat?`<div style="font-size:13px;color:var(--text);font-weight:700;margin-bottom:4px">Kategori: <span style="color:var(--green)">${bestKat}</span> (%${bestKatPct})</div>`:''}
         ${bestLig?`<div style="font-size:13px;color:var(--text);font-weight:700">Lig: <span style="color:var(--green)">${bestLig}</span> (%${bestLigPct})</div>`:''}
       </div>`:''}
