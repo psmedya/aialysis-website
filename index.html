@@ -2328,9 +2328,9 @@ function renderMaclar(liste){
 
 function formatDk(dk,st,ext){
   if(dk==null)return'';
-  if(ext)return`${dk}+${ext}'`;
+  if(ext&&ext>0)return`${dk}+${ext}'`;
   if(st==='1H'&&dk>45)return`45+${dk-45}'`;
-  if(st==='2H'&&dk>90)return`90+${dk-90}'`;
+  if((st==='2H'||st==='ET')&&dk>90)return`90+${dk-90}'`;
   return`${dk}'`;
 }
 
