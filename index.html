@@ -2343,7 +2343,7 @@ function macSatir(m){
   const bitti=['FT','AET','PEN','AWD','ABD','WO','CANC'].includes(st);
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const dkTxt=formatDk(dk,st,ext);
-  const uzatmaStr=(ext&&ext>0&&st!=='HT'&&st!=='FT')?`<span style="font-size:10px;color:var(--orange);margin-left:2px">(+${ext})</span>`:'';
+  const uzatmaStr=(ext&&ext>0&&(st==='1H'||st==='2H'||st==='ET'))?`<span style="font-size:10px;color:var(--orange);margin-left:2px">(+${ext})</span>`:'';
   const durumStr=live?`<span class="dk-badge" data-elapsed="${dk}" data-extra="${ext||0}" data-status="${st}">${dkTxt}</span>${uzatmaStr}`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
   const isFav=getFavMaclar().includes(m.fixture.id);
   return`<div class="mac-satir${isFav?' fav-mac':''}" data-macid="${m.fixture.id}" onclick="openMac(${m.fixture.id})">
@@ -2388,7 +2388,7 @@ function updateDetailHeader(m){
       </div>
       <div class="detail-skor-kutu">
         ${bitti?`<div class="detail-dk" style="background:rgba(255,255,255,.15)">MS</div>`:m.fixture.status.short==='HT'?`<div class="detail-dk" style="background:rgba(255,255,255,.15)">İY</div>`:dk?`<div class="detail-dk" data-elapsed="${dk}" data-extra="${ext||0}" data-status="${m.fixture.status.short}">${formatDk(dk,m.fixture.status.short,ext)}</div>`:''}
-        ${ext&&ext>0?`<div style="font-size:10px;color:var(--orange);margin-top:1px">+${ext} dk uzatma</div>`:''}
+        ${ext&&ext>0&&m.fixture.status.short!=='HT'&&!bitti?`<div style="font-size:10px;color:var(--orange);margin-top:1px">+${ext} dk uzatma</div>`:''}
         <div class="detail-skor">${evGol} - ${depGol}</div>
         <div class="detail-iy">IY ${iy?.home??'-'} - ${iy?.away??'-'}</div>
         ${bitti?`<div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">MAÇ BİTTİ</div>`:''}
@@ -3567,7 +3567,7 @@ async function loadAialysis(silent=false){
         <div class="aia-lig"><span style="font-size:11px;color:var(--muted)">${lig}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span><button class="aia-share-btn" onclick="event.stopPropagation();shareTahminById('${macId}')" title="Paylaş">🔗</button></div>
         <div class="aia-maclar">
           <div class="aia-takim">${aiaLogo(m?.teams?.home?.logo,evAdi)}<div class="aia-takim-adi">${evAdi}</div></div>
-          <div class="aia-skor">${dk!=null?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
+          <div class="aia-skor">${dk!=null?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0&&st!=='HT'&&st!=='FT'&&st!=='AET'&&st!=='PEN'?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
           <div class="aia-takim">${aiaLogo(m?.teams?.away?.logo,depAdi)}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
         <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}${p._oran?' | Oran: '+p._oran.toFixed(2):''}<button style="background:none;border:none;cursor:pointer;font-size:10px;margin-left:4px;padding:0;line-height:1;" onclick="event.stopPropagation();shareAiaTahmin('${evAdi.replace(/'/g,"\\'")}','${depAdi.replace(/'/g,"\\'")}','${p.kategori}',${p.cizgi},'${p.ust_alt}')">🔗</button></span>`).join('')}</div>`;
