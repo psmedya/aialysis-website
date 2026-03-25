@@ -2556,6 +2556,30 @@ async function loadDetailAnaliz(m, silent=false){
       if(rows && rows.length > 0) {
         const analiz = rows[0].analiz;
         analiz.on_analiz = true;
+        // Poisson (mac-oncu-v2) formatını renderDetailAnaliz formatına çevir
+        if(analiz.projeksiyon && !analiz.tahmin_guveni){
+          const proj=analiz.projeksiyon;
+          const so=analiz.sonuc_olasiliklari||{};
+          const skorParts=(analiz.skor_tahmini||'1-1').split('-').map(Number);
+          // En yüksek öneri gücünü güven olarak kullan
+          const maxGuc=analiz.oneriler?.length?Math.max(...analiz.oneriler.map(o=>o.guc)):70;
+          analiz.tahmin_guveni=Math.min(maxGuc,95);
+          analiz.skor_tahmini={ev:skorParts[0]||1,dep:skorParts[1]||1};
+          analiz.olasiliklar={ev_kazanir:so.ev||33,beraberlik:so.ber||34,dep_kazanir:so.dep||33};
+          analiz.gol_beklentisi=proj.gol||2.5;
+          analiz.mac_temposu=proj.gol>=3.5?'Çok Yüksek':proj.gol>=2.5?'Yüksek':proj.gol>=1.5?'Orta':'Düşük';
+          analiz.genel_yorum=analiz.yorum||'';
+          // Önerileri tahminler formatına çevir
+          analiz.tahminler=(analiz.oneriler||[]).filter(o=>o.cizgi>0).map(o=>({
+            kategori:o.kategori,cizgi:o.cizgi,ust_alt:o.ust_alt==='UST'?'ÜST':o.ust_alt==='ALT'?'ALT':o.ust_alt,
+            guc:o.guc,tahmin:`${o.kategori} ${o.cizgi} ${o.ust_alt}`,aciklama:''
+          }));
+          // 1X2 öneriyi genel yoruma ekle
+          const sonucOneri=analiz.oneriler?.find(o=>o.kategori==='Maç Sonucu');
+          if(sonucOneri&&analiz.genel_yorum){
+            analiz.genel_yorum=`🏆 Maç Sonucu: ${sonucOneri.ust_alt} (%${sonucOneri.olasilik})\n\n${analiz.genel_yorum}`;
+          }
+        }
         // Enrich pre-match analiz with odds
         try{
           const preOdds=await fetchOddsMap(m.fixture.id);
