@@ -128,7 +128,7 @@ body.light-theme .dropdown-lang-select{background:#f5f5f5;border-color:#ddd;colo
 body.light-theme .nav-dropdown{background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.15);}
 body.light-theme .nav-dropdown-item:hover{background:rgba(0,0,0,.04);}
 @media(max-width:768px){
-  .nav-dropdown{position:fixed !important;top:auto !important;bottom:70px;left:10px;right:10px;min-width:0;width:auto;max-width:none;border-radius:12px;box-shadow:0 -8px 40px rgba(0,0,0,.5);}
+  .nav-dropdown{position:fixed !important;top:auto !important;bottom:calc(70px + env(safe-area-inset-bottom,0));left:10px;right:10px;min-width:0;width:auto;max-width:none;border-radius:12px;box-shadow:0 -8px 40px rgba(0,0,0,.5);}
   .nav-more-wrap{position:static;}
 }
 /* Navbar Profile Icon */
@@ -185,7 +185,7 @@ body.light-theme .nav-dropdown-item:hover{background:rgba(0,0,0,.04);}
 .lig-header.kapali + .lig-maclar{display:none;}
 
 /* MAÇ SATIRI — tablo stili */
-.mac-tablo-header{display:grid;grid-template-columns:80px 1fr 80px 80px 40px;padding:6px 24px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);}
+.mac-tablo-header{display:grid;grid-template-columns:80px 1fr 80px 80px 36px;padding:6px 24px;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;border-bottom:1px solid var(--border);}
 .mac-satir{display:grid;grid-template-columns:80px 1fr 80px 80px 36px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(46,46,46,.5);cursor:pointer;transition:background .15s,border-color .2s;}
 .mac-satir:hover{background:rgba(255,255,255,.02);}
 .mac-zaman{text-align:center;}
@@ -245,7 +245,7 @@ body.light-theme .nav-dropdown-item:hover{background:rgba(0,0,0,.04);}
 .ai-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
 .ai-stat{text-align:center;}
 .ai-val{font-size:18px;font-weight:700;}
-.ai-lbl{font-size:8px;color:rgba(255,255,255,.6);margin-top:1px;letter-spacing:.5px;}
+.ai-lbl{font-size:10px;color:rgba(255,255,255,.6);margin-top:1px;letter-spacing:.5px;}
 .olas-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;}
 .olas-title{font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px;}
 .olas-vals{display:flex;justify-content:space-between;text-align:center;margin-bottom:6px;}
@@ -511,7 +511,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
   /* Odds mobile */
   .odds-val{padding:6px 2px !important;}
   .odds-price{font-size:13px !important;}
-  .odds-lbl{font-size:8px !important;}
+  .odds-lbl{font-size:10px !important;}
   .aia-tahminler{flex-wrap:wrap !important;}
   .aia-t{font-size:10px !important;padding:2px 6px !important;}
   .tahmin-card{padding:8px !important;}
@@ -712,7 +712,7 @@ body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 .rozet-item.kazanildi{border-color:rgba(212,162,76,.4);background:rgba(212,162,76,.08);}
 .rozet-item.kilitli{opacity:.4;filter:grayscale(1);}
 .rozet-ikon{font-size:28px;margin-bottom:4px;}
-.rozet-adi{font-size:9px;font-weight:700;color:var(--text);line-height:1.3;}
+.rozet-adi{font-size:10px;font-weight:700;color:var(--text);line-height:1.3;}
 .rozet-kilit{font-size:10px;color:var(--muted);margin-top:2px;}
 
 /* CANLI ORAN GRAFİĞİ */
@@ -964,7 +964,7 @@ body.light-theme .cerez-kategori{background:#fafafa;}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
         Twitter ile Giriş Yap
       </button>
-      <button onclick="telegramLogin()" style="width:100%;padding:12px;background:#0088cc;border:none;border-radius:12px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;">
+      <button onclick="document.getElementById('landingPage').style.display='none';localStorage.setItem('landing_goruldu','1');authModal();setTimeout(telegramLogin,300);" style="width:100%;padding:12px;background:#0088cc;border:none;border-radius:12px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
         Telegram ile Giriş Yap
       </button>
@@ -2332,7 +2332,7 @@ function formatDk(dk,st,ext){
   if(st==='FT'||st==='AET'||st==='PEN')return'MS';
   if(ext&&ext>0)return`${dk}+${ext}'`;
   if(st==='1H'&&dk>45)return`45+${dk-45}'`;
-  if((st==='2H'||st==='ET')&&dk>90)return`90+${dk-90}'`;
+  if(st==='2H'&&dk>90)return`90+${dk-90}'`;
   return`${dk}'`;
 }
 
@@ -3118,7 +3118,7 @@ async function loadDetailKadro(fixId){
     // Saha grafiği
     const sahaOyuncu=(num,name,x,y)=>`<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);text-align:center">
       <div style="width:26px;height:26px;border-radius:50%;border:2px solid #1565C0;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#1565C0;margin:0 auto">${num}</div>
-      <div style="font-size:8px;color:white;text-shadow:0 1px 3px rgba(0,0,0,.8);margin-top:1px;white-space:nowrap;max-width:60px;overflow:hidden;text-overflow:ellipsis">${(name||'').split(' ').pop()}</div></div>`;
+      <div style="font-size:10px;color:white;text-shadow:0 1px 3px rgba(0,0,0,.8);margin-top:1px;white-space:nowrap;max-width:60px;overflow:hidden;text-overflow:ellipsis">${(name||'').split(' ').pop()}</div></div>`;
     const parseFormation=(f)=>(f||'4-4-2').split('-').map(Number);
     const buildSaha=(xi,formation,isHome)=>{
       const lines=parseFormation(formation);
@@ -3567,7 +3567,7 @@ async function loadAialysis(silent=false){
         <div class="aia-lig"><span style="font-size:11px;color:var(--muted)">${lig}</span><span class="aia-etiket" style="color:${etiketRenk};border-color:${etiketRenk}40;background:${etiketRenk}15">${etiket}</span><button class="aia-share-btn" onclick="event.stopPropagation();shareTahminById('${macId}')" title="Paylaş">🔗</button></div>
         <div class="aia-maclar">
           <div class="aia-takim">${aiaLogo(m?.teams?.home?.logo,evAdi)}<div class="aia-takim-adi">${evAdi}</div></div>
-          <div class="aia-skor">${dk!=null?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0&&st!=='HT'&&st!=='FT'&&st!=='AET'&&st!=='PEN'?`<div style="font-size:8px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
+          <div class="aia-skor">${dk!=null?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0&&st!=='HT'&&st!=='FT'&&st!=='AET'&&st!=='PEN'?`<div style="font-size:10px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
           <div class="aia-takim">${aiaLogo(m?.teams?.away?.logo,depAdi)}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
         <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}${p._oran?' | Oran: '+p._oran.toFixed(2):''}<button style="background:none;border:none;cursor:pointer;font-size:10px;margin-left:4px;padding:0;line-height:1;" onclick="event.stopPropagation();shareAiaTahmin('${evAdi.replace(/'/g,"\\'")}','${depAdi.replace(/'/g,"\\'")}','${p.kategori}',${p.cizgi},'${p.ust_alt}')">🔗</button></span>`).join('')}</div>`;
