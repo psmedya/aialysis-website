@@ -2328,6 +2328,8 @@ function renderMaclar(liste){
 
 function formatDk(dk,st,ext){
   if(dk==null)return'';
+  if(st==='HT')return'İY';
+  if(st==='FT'||st==='AET'||st==='PEN')return'MS';
   if(ext&&ext>0)return`${dk}+${ext}'`;
   if(st==='1H'&&dk>45)return`45+${dk-45}'`;
   if((st==='2H'||st==='ET')&&dk>90)return`90+${dk-90}'`;
@@ -2341,7 +2343,7 @@ function macSatir(m){
   const bitti=['FT','AET','PEN','AWD','ABD','WO','CANC'].includes(st);
   const localSaat=new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'});
   const dkTxt=formatDk(dk,st,ext);
-  const uzatmaStr=ext&&ext>0?`<span style="font-size:10px;color:var(--orange);margin-left:2px">(+${ext})</span>`:'';
+  const uzatmaStr=(ext&&ext>0&&st!=='HT'&&st!=='FT')?`<span style="font-size:10px;color:var(--orange);margin-left:2px">(+${ext})</span>`:'';
   const durumStr=live?`<span class="dk-badge" data-elapsed="${dk}" data-extra="${ext||0}" data-status="${st}">${dkTxt}</span>${uzatmaStr}`:bitti?'<span style="color:var(--muted)">MS</span>':`<span style="color:var(--blue-lt);font-size:10px">Başlamadı</span>`;
   const isFav=getFavMaclar().includes(m.fixture.id);
   return`<div class="mac-satir${isFav?' fav-mac':''}" data-macid="${m.fixture.id}" onclick="openMac(${m.fixture.id})">
