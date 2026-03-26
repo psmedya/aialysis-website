@@ -2709,16 +2709,8 @@ async function loadDetailAnaliz(m, silent=false){
     }
   }catch(_){}
 
-  if(!istatRows.length){
-    clearTimeout(_spinnerTm);
-    document.getElementById('dc-analiz').innerHTML = `
-      <div style="text-align:center;padding:40px">
-        <div style="font-size:48px;margin-bottom:16px;opacity:.5">📊</div>
-        <div style="color:var(--text);font-weight:700;font-size:15px;margin-bottom:8px">Yeterli Veri Yok</div>
-        <div style="color:var(--muted);font-size:12px;line-height:1.6">Bu lig veya takımlar için yeterli istatistik verisi bulunmadığından<br><span style="color:var(--gold-lt);font-weight:700">aiAlysis</span> hizmet veremiyor.</div>
-      </div>`;
-    return;
-  }
+  // İstatistik yoksa bile BEKLIYOR tahminler varsa göstermeye devam et
+  // (canli-tahmin zaten analiz yapmış olabilir)
 
   // 1) Önce Supabase'deki mevcut tahminleri göster (anında)
   try{
