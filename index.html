@@ -2226,12 +2226,27 @@ function ligOncelik(s){
   return 3000;
 }
 
+// --- Performance: Cache sistemi ---
+const _fetchCache={};
+function cacheGet(key){const e=_fetchCache[key];if(!e)return null;if(Date.now()-e.ts>60000){delete _fetchCache[key];return null;}return e.data;}
+function cacheSet(key,data){_fetchCache[key]={data,ts:Date.now()};}
+
 async function sbQuery(table,filters=''){
-  const r=await fetch(`${SU}/rest/v1/${table}?${filters}`,{
-    headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}
-  });
-  if(!r.ok){console.error('sbQuery hata:',table,r.status);return [];}
-  return r.json();
+  const cacheKey=`sb:${table}:${filters}`;
+  const cached=cacheGet(cacheKey);
+  if(cached)return cached;
+  const ctrl=new AbortController();
+  const tm=setTimeout(()=>ctrl.abort(),6000);
+  try{
+    const r=await fetch(`${SU}/rest/v1/${table}?${filters}`,{
+      headers:{'apikey':SK,'Authorization':`Bearer ${SK}`},signal:ctrl.signal
+    });
+    clearTimeout(tm);
+    if(!r.ok){console.error('sbQuery hata:',table,r.status);return [];}
+    const data=await r.json();
+    cacheSet(cacheKey,data);
+    return data;
+  }catch(e){clearTimeout(tm);if(e.name==='AbortError')console.warn('sbQuery timeout:',table);return [];}
 }
 function sbToApiFormat(row){
   const apiLogo=(url,teamId)=>url||( teamId ? `https://media.api-sports.io/football/teams/${teamId}.png` : null);
@@ -2583,8 +2598,10 @@ async function loadDetailAnaliz(m, silent=false){
     const c = document.getElementById('dc-analiz');
     if(!silent)c.innerHTML = '<div class="loading"><div class="spinner"></div>Ön analiz yükleniyor...</div>';
     try {
+      const _ctrl1=new AbortController();const _tm1=setTimeout(()=>_ctrl1.abort(),5000);
       const r = await fetch(`${SU}/rest/v1/mac_oncu_analizler?fixture_id=eq.${m.fixture.id}&select=analiz,created_at`,
-        {headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}});
+        {headers:{'apikey':SK,'Authorization':`Bearer ${SK}`},signal:_ctrl1.signal});
+      clearTimeout(_tm1);
       const rows = await r.json();
       if(rows && rows.length > 0) {
         const analiz = rows[0].analiz;
@@ -2661,17 +2678,39 @@ async function loadDetailAnaliz(m, silent=false){
         </div>
       </div>`;
     } catch(e) {
-      c.innerHTML = `<div class="error">Ön analiz yüklenemedi: ${e.message}</div>`;
+      c.innerHTML = e.name==='AbortError'
+        ?`<div style="padding:24px;text-align:center"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.</div></div>`
+        :`<div class="error">Ön analiz yüklenemedi: ${e.message}</div>`;
     }
     return;
   }
 
   const c=document.getElementById('dc-analiz');
   if(!silent)c.innerHTML='<div class="loading"><div class="spinner"></div>Analiz yapılıyor...</div>';
+  // Spinner timeout: 8sn sonra hala yükleniyorsa mesaj göster
+  const _spinnerTm=setTimeout(()=>{if(c.querySelector('.spinner'))c.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Veri yüklenemedi. Lütfen sayfayı yenileyin.</div></div>';},8000);
 
-  // İstatistik verisi var mı kontrol et
-  const istatCheck = await sbQuery('mac_canli_istatistikler', `fixture_id=eq.${m.fixture.id}&select=fixture_id`);
-  if (!istatCheck || !istatCheck.length) {
+  // Paralel: istat + odds + tahminler hepsini aynı anda çek
+  let mevcutIstat={gol:(m.goals.home??0)+(m.goals.away??0),korner:0,faul:0,sari:0};
+  let oddsMap={};
+  let istatRows=[];
+  try{
+    const [_istat,_odds]=await Promise.all([
+      sbQuery('mac_canli_istatistikler',`fixture_id=eq.${m.fixture.id}`),
+      fetchOddsMap(m.fixture.id).catch(()=>({}))
+    ]);
+    istatRows=_istat||[];
+    oddsMap=_odds||{};
+    if(istatRows.length){
+      const r=istatRows[0];
+      mevcutIstat.korner=(r.ev_korner||0)+(r.dep_korner||0);
+      mevcutIstat.faul=(r.ev_faul||0)+(r.dep_faul||0);
+      mevcutIstat.sari=(r.ev_sari_kart||0)+(r.dep_sari_kart||0);
+    }
+  }catch(_){}
+
+  if(!istatRows.length){
+    clearTimeout(_spinnerTm);
     document.getElementById('dc-analiz').innerHTML = `
       <div style="text-align:center;padding:40px">
         <div style="font-size:48px;margin-bottom:16px;opacity:.5">📊</div>
@@ -2681,25 +2720,11 @@ async function loadDetailAnaliz(m, silent=false){
     return;
   }
 
-  // Canlı istatistikleri Supabase'den çek
-  let mevcutIstat={gol:(m.goals.home??0)+(m.goals.away??0),korner:0,faul:0,sari:0};
-  try{
-    const istatRows=await sbQuery('mac_canli_istatistikler',`fixture_id=eq.${m.fixture.id}`);
-    if(istatRows&&istatRows.length){
-      const r=istatRows[0];
-      mevcutIstat.korner=(r.ev_korner||0)+(r.dep_korner||0);
-      mevcutIstat.faul=(r.ev_faul||0)+(r.dep_faul||0);
-      mevcutIstat.sari=(r.ev_sari_kart||0)+(r.dep_sari_kart||0);
-    }
-  }catch(_){}
-
-  // Odds çek (arka planda, bloklamaz)
-  let oddsMap={};
-  try{oddsMap=await fetchOddsMap(m.fixture.id);}catch(_){}
-
   // 1) Önce Supabase'deki mevcut tahminleri göster (anında)
   try{
-    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,guc,mevcut_deger,mevcut_dk&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const _ctrl2=new AbortController();const _tm2=setTimeout(()=>_ctrl2.abort(),5000);
+    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,guc,mevcut_deger,mevcut_dk&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`},signal:_ctrl2.signal});
+    clearTimeout(_tm2);
     const tahminler=await tr.json();
     if(Array.isArray(tahminler)&&tahminler.length>0){
       // Mevcut tahminlerden sahte analiz objesi oluştur
@@ -2753,21 +2778,24 @@ async function loadDetailAnaliz(m, silent=false){
         gol_beklentisi:eg+dg+(90-dk)/90*1.5,
         tahmin_guveni:Math.round(tahminler.reduce((s,t)=>s+(t.guc||0),0)/tahminler.length)
       };
+      clearTimeout(_spinnerTm);
       renderDetailAnaliz(fakeAnaliz,m);
     }
   }catch(_){}
 
-  // 2) Arka planda taze analiz yap (varsa üzerine yazar)
+  // 2) Arka planda taze analiz yap (varsa üzerine yazar) — istatRows'u yukarıdan tekrar kullan
   try{
-    const istatR2=await sbQuery('mac_canli_istatistikler',`fixture_id=eq.${m.fixture.id}`);
-    if(!istatR2||!istatR2.length) return;
-    const ri=istatR2[0];
+    if(!istatRows||!istatRows.length){clearTimeout(_spinnerTm);return;}
+    const ri=istatRows[0];
     const evIst={topSahip:ri.ev_top_sahip||0,toplamSut:ri.ev_toplam_sut||0,isabetliSut:ri.ev_isabetli_sut||0,korner:ri.ev_korner||0,faul:ri.ev_faul||0,sariKart:ri.ev_sari_kart||0,kirmziKart:ri.ev_kirmizi_kart||0};
     const depIst={topSahip:ri.dep_top_sahip||0,toplamSut:ri.dep_toplam_sut||0,isabetliSut:ri.dep_isabetli_sut||0,korner:ri.dep_korner||0,faul:ri.dep_faul||0,sariKart:ri.dep_sari_kart||0,kirmziKart:ri.dep_kirmizi_kart||0};
-    if(evIst.faul+depIst.faul+evIst.korner+depIst.korner+evIst.toplamSut+depIst.toplamSut+evIst.topSahip+depIst.topSahip===0) return;
-    const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},
+    if(evIst.faul+depIst.faul+evIst.korner+depIst.korner+evIst.toplamSut+depIst.toplamSut+evIst.topSahip+depIst.topSahip===0){clearTimeout(_spinnerTm);return;}
+    const _ctrl3=new AbortController();const _tm3=setTimeout(()=>_ctrl3.abort(),8000);
+    const r=await fetch(`${SU}/functions/v1/analiz`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SK}`,'apikey':SK},signal:_ctrl3.signal,
       body:JSON.stringify({macBilgi:{evSahibi:m.teams.home.name,deplasman:m.teams.away.name,evGol:m.goals.home??0,depGol:m.goals.away??0,evGolIY:m.score?.halftime?.home??0,depGolIY:m.score?.halftime?.away??0,durum:st,elapsed:m.fixture.status.elapsed??0,evTakimId:m.teams.home.id,depTakimId:m.teams.away.id},istatistikler:{ev:evIst,dep:depIst},h2h:[]})});
+    clearTimeout(_tm3);
     const d=await r.json();
+    clearTimeout(_spinnerTm);
     if(d.basarili&&(d.analiz?.tahmin_guveni||0)>0){
       // Enrich tahminler with odds
       if(d.analiz.tahminler&&Object.keys(oddsMap).length){
@@ -2778,7 +2806,7 @@ async function loadDetailAnaliz(m, silent=false){
       }
       renderDetailAnaliz(d.analiz,m);
     }
-  }catch(_){}
+  }catch(_){clearTimeout(_spinnerTm);}
 }
 
 function kategoriDetay(kategori, gercekDeger) {
@@ -2796,15 +2824,19 @@ function kategoriDetay(kategori, gercekDeger) {
 async function loadBitmisMacTahminleri(m) {
   const c = document.getElementById('dc-analiz');
   c.innerHTML = '<div class="loading"><div class="spinner"></div>Tahmin geçmişi yükleniyor...</div>';
-  
+  const _bitSpinTm=setTimeout(()=>{if(c.querySelector('.spinner'))c.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Veri yüklenemedi. Lütfen sayfayı yenileyin.</div></div>';},8000);
+
   try {
     // Supabase'den bu maçın tahminlerini çek
+    const _ctrlB=new AbortController();const _tmB=setTimeout(()=>_ctrlB.abort(),5000);
     const r = await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&order=created_at.desc`, {
-      headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`}
+      headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`},signal:_ctrlB.signal
     });
+    clearTimeout(_tmB);
     const tahminler = await r.json();
 
     if (!tahminler.length) {
+      clearTimeout(_bitSpinTm);
       c.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted)">
         <div style="font-size:32px;margin-bottom:12px">📊</div>
         <div style="font-size:14px;font-weight:700;margin-bottom:6px">Tahmin kaydı bulunamadı</div>
@@ -2859,6 +2891,7 @@ async function loadBitmisMacTahminleri(m) {
     const pct = toplam > 0 ? Math.round(dogru / toplam * 100) : 0;
     const pctRenk = pct >= 70 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : 'var(--red)';
 
+    clearTimeout(_bitSpinTm);
     c.innerHTML = `
       <div style="padding:16px">
         <!-- Özet -->
@@ -2892,7 +2925,10 @@ async function loadBitmisMacTahminleri(m) {
         <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:12px">* AI tahminleri yalnızca bilgi amaçlıdır.</div>
       </div>`;
   } catch(e) {
-    c.innerHTML = `<div class="error">Tahminler yüklenemedi: ${e.message}</div>`;
+    clearTimeout(_bitSpinTm);
+    c.innerHTML = e.name==='AbortError'
+      ?`<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.</div></div>`
+      :`<div class="error">Tahminler yüklenemedi: ${e.message}</div>`;
   }
 }
 
@@ -3538,15 +3574,20 @@ async function loadAialysis(silent=false){
   }
   const c=document.getElementById('aialysisContainer');
   if(!silent)c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>'+t('yukleniyor')+'</div>';
+  // Spinner timeout: 8sn sonra mesaj göster
+  const _aiaSpinTm=setTimeout(()=>{if(c.querySelector('.spinner'))c.innerHTML='<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Veri yüklenemedi. Lütfen sayfayı yenileyin.</div></div>';},8000);
   try{
     // 1) Supabase'den BEKLIYOR tahminleri çek (cron'un ürettiği — sabit kalır)
-    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman,lig&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`}});
+    const _ctrlA=new AbortController();const _tmA=setTimeout(()=>_ctrlA.abort(),5000);
+    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman,lig&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`},signal:_ctrlA.signal});
+    clearTimeout(_tmA);
     const td=await tr.json();
     const hazir={};
     if(Array.isArray(td))td.forEach(t=>{if(t.mac_id&&t.kategori)(hazir[t.mac_id]||(hazir[t.mac_id]=[])).push(t);});
 
     const macIds=Object.keys(hazir);
     if(!macIds.length){
+      clearTimeout(_aiaSpinTm);
       c.innerHTML='<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.5">🔍</div><div style="color:var(--text);font-weight:700;margin-bottom:8px">'+t('aktifTahminYok')+'</div><div style="color:var(--muted);font-size:12px">'+t('canliBasla')+'</div></div>';
       return;
     }
@@ -3629,11 +3670,13 @@ async function loadAialysis(silent=false){
     // macIds'i güncelle (filtre sonrası boş kalanları çıkar)
     const filteredMacIds=Object.keys(hazir);
     if(!filteredMacIds.length){
+      clearTimeout(_aiaSpinTm);
       c.innerHTML='<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.5">🔍</div><div style="color:var(--text);font-weight:700;margin-bottom:8px">'+t('aktifTahminYok')+'</div><div style="color:var(--muted);font-size:12px">'+t('canliBasla')+'</div></div>';
       return;
     }
 
     // 3) Her tahmin grubunu kart olarak göster — bitmiş maçları atla
+    clearTimeout(_aiaSpinTm);
     c.innerHTML='';
     let aiaCardCount=0;
     const prem=true;
@@ -3695,7 +3738,7 @@ async function loadAialysis(silent=false){
         <button onclick="premiumInfoModal()" style="padding:10px 24px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:10px;color:#1A1A2E;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;">Premium'a Gec</button>`;
       c.appendChild(overlay);
     }
-  }catch(e){c.innerHTML=`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;}
+  }catch(e){clearTimeout(_aiaSpinTm);c.innerHTML=e.name==='AbortError'?`<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.</div></div>`:`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;}
 }
 
 // Mac Onu Tahminleri
@@ -3727,16 +3770,20 @@ async function loadMacOnuTahminleri(){
 
   const container=document.getElementById('aialysisContainer');
   container.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Maç önü tahminleri yükleniyor...</div>';
+  const _onuSpinTm=setTimeout(()=>{if(container.querySelector('.spinner'))container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Veri yüklenemedi. Lütfen tekrar deneyin.</div></div>';},8000);
 
   try{
     const now=new Date();
     const limit=new Date(now.getTime()+onuSaat*60*60*1000);
 
+    const _ctrlO=new AbortController();const _tmO=setTimeout(()=>_ctrlO.abort(),5000);
     const r=await fetch(`${SU}/rest/v1/mac_oncu_analizler?mac_tarihi=gte.${now.toISOString()}&mac_tarihi=lte.${limit.toISOString()}&select=*&order=mac_tarihi.asc&limit=100`,
-      {headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}});
+      {headers:{'apikey':SK,'Authorization':`Bearer ${SK}`},signal:_ctrlO.signal});
+    clearTimeout(_tmO);
     const rows=await r.json();
 
     if(!rows||!rows.length){
+      clearTimeout(_onuSpinTm);
       container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">&#128203;</div><div style="color:var(--muted);font-size:13px">Bu zaman aralığında maç önü tahmini bulunamadı.</div></div>';
       return;
     }
@@ -3756,10 +3803,12 @@ async function loadMacOnuTahminleri(){
     }
 
     if(!filtered.length){
+      clearTimeout(_onuSpinTm);
       container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">&#128203;</div><div style="color:var(--muted);font-size:13px">Bu zaman aralığında oranlı maç önü tahmini bulunamadı.</div></div>';
       return;
     }
 
+    clearTimeout(_onuSpinTm);
     let html='';
     for(const row of filtered){
       const a=row.analiz;
@@ -3800,7 +3849,8 @@ async function loadMacOnuTahminleri(){
 
     container.innerHTML=html;
   }catch(e){
-    container.innerHTML=`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;
+    clearTimeout(_onuSpinTm);
+    container.innerHTML=e.name==='AbortError'?`<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.</div></div>`:`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;
   }
 }
 
@@ -3821,6 +3871,7 @@ async function loadTahminler(filter='hepsi') {
 
   const c = document.getElementById('tahminlerContainer');
   c.innerHTML = '<div class="loading"><div class="spinner"></div>Yükleniyor...</div>';
+  const _tahSpinTm=setTimeout(()=>{if(c.querySelector('.spinner'))c.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Veri yüklenemedi. Lütfen sayfayı yenileyin.</div></div>';},8000);
 
   try {
     let url = `${SU}/rest/v1/tahmin_sonuclari?select=*,mevcut_dk&order=created_at.desc&limit=200`;
@@ -3832,20 +3883,19 @@ async function loadTahminler(filter='hepsi') {
       url += `&created_at=gte.${sinir}`;
     }
 
-    const r = await fetch(url, {
-      headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`, 'Content-Type': 'application/json'}
-    });
-    const data = await r.json();
-
-    // Istatistikler — zaman filtresine gore
+    // Paralel: data + stats aynı anda çek
     let statsUrl = `${SU}/rest/v1/tahmin_sonuclari?sonuc=in.(DOGRU,YANLIS)&select=sonuc,kategori,created_at,mac_id,cizgi,ust_alt,oran,gercek_deger`;
     if (tahminGun > 0) {
-      const sinir = new Date(Date.now() - tahminGun * 86400000).toISOString();
-      statsUrl += `&created_at=gte.${sinir}`;
+      const sinir2 = new Date(Date.now() - tahminGun * 86400000).toISOString();
+      statsUrl += `&created_at=gte.${sinir2}`;
     }
-    const statsR = await fetch(statsUrl, {
-      headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`}
-    });
+    const _ctrlT=new AbortController();const _tmT=setTimeout(()=>_ctrlT.abort(),5000);
+    const [r,statsR] = await Promise.all([
+      fetch(url, {headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`, 'Content-Type': 'application/json'},signal:_ctrlT.signal}),
+      fetch(statsUrl, {headers: {'apikey': SK, 'Authorization': `Bearer ${SK}`},signal:_ctrlT.signal})
+    ]);
+    clearTimeout(_tmT);
+    const data = await r.json();
     const statsData = await statsR.json();
     const toplam = statsData.length;
     const dogru = statsData.filter(x => x.sonuc === 'DOGRU').length;
@@ -4045,6 +4095,7 @@ async function loadTahminler(filter='hepsi') {
     // Orani olmayan tahminleri gizle
     const dataFiltered = data.filter(t => t._oran && t._oran >= 1.35);
 
+    clearTimeout(_tahSpinTm);
     if (!dataFiltered.length) {
       c.innerHTML = '<div class="empty">Henüz tahmin kaydı yok.</div>';
       return;
@@ -4089,7 +4140,10 @@ async function loadTahminler(filter='hepsi') {
         </div>
       </div>`;
   } catch(e) {
-    c.innerHTML = `<div class="error">Yüklenemedi: ${e.message}</div>`;
+    clearTimeout(_tahSpinTm);
+    c.innerHTML = e.name==='AbortError'
+      ?`<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.</div></div>`
+      :`<div class="error">Yüklenemedi: ${e.message}</div>`;
   }
 }
 
