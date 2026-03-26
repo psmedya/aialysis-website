@@ -324,6 +324,13 @@ body.light-theme .takim-adi.kazanan{color:var(--text);}
 body.light-theme .leaderboard-card:hover{background:rgba(0,0,0,.03);}
 .leaderboard-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--blue-lt));color:white;}
 
+/* AIalysis sub tabs */
+.aia-sub-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.aia-sub-btn.active{background:var(--blue);color:white;border-color:var(--blue);}
+.aia-sort-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:12px;font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.aia-sort-btn.active{background:var(--gold);color:var(--bg);border-color:var(--gold);font-weight:700;}
+.aia-saat-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 8px;border-radius:10px;font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.aia-saat-btn.active{background:var(--blue-lt);color:white;border-color:var(--blue-lt);}
 /* AIalysis tab */
 .aialysis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:20px 24px;}
 .aia-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;}
@@ -1167,16 +1174,30 @@ body.light-theme .cerez-kategori{background:#fafafa;}
       <div class="matches-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div>
           <div class="matches-title" style="color:var(--text)"><img src="/favicon.svg" alt="aiALYSIS Live" style="height:22px;width:22px;vertical-align:middle;margin-right:4px"> aiALYSIS</div>
-          <div class="matches-count">AI analiz edilmiş canlı maçlar</div>
+          <div class="matches-count">AI analiz edilmiş maçlar</div>
         </div>
-        <div id="aiaSortBtns" style="display:flex;gap:4px;">
-          <button class="filter-btn active" onclick="aiaSort='lig';loadAialysis();this.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Lig</button>
-          <button class="filter-btn" onclick="aiaSort='ihtimal';loadAialysis();this.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">İhtimal</button>
-        </div>
+      </div>
+      <div id="aiaSubTabs" style="display:flex;gap:8px;margin-bottom:12px;padding:0 12px">
+        <button onclick="loadAialysis()" class="aia-sub-btn active" id="aiaSubCanli">Canli Tahminler</button>
+        <button onclick="loadMacOnuTahminleri()" class="aia-sub-btn" id="aiaSubOncu">Mac Onu</button>
+      </div>
+      <div id="aiaSortBtns" style="display:flex;gap:6px;margin-bottom:8px;padding:0 12px;flex-wrap:wrap">
+        <button onclick="setAiaSort('lig')" class="aia-sort-btn active">Lig Siralamasi</button>
+        <button onclick="setAiaSort('oran')" class="aia-sort-btn">Oran Siralamasi</button>
+        <button onclick="setAiaSort('zaman')" class="aia-sort-btn">Zaman Siralamasi</button>
+      </div>
+      <div id="aiaOnuSaatFiltre" style="display:none;gap:6px;margin-bottom:8px;padding:0 12px;flex-wrap:wrap">
+        <button onclick="setOnuSaat(2)" class="aia-saat-btn">2s</button>
+        <button onclick="setOnuSaat(6)" class="aia-saat-btn">6s</button>
+        <button onclick="setOnuSaat(12)" class="aia-saat-btn">12s</button>
+        <button onclick="setOnuSaat(24)" class="aia-saat-btn active">24s</button>
+        <button onclick="setOnuSaat(48)" class="aia-saat-btn">48s</button>
+        <button onclick="setOnuSaat(72)" class="aia-saat-btn">72s</button>
+        <button onclick="setOnuSaat(96)" class="aia-saat-btn">96s</button>
       </div>
       <div id="seninIcinContainer"></div>
       <div class="aialysis-grid" id="aialysisContainer">
-        <div class="loading"><div class="spinner"></div>Yükleniyor...</div>
+        <div class="loading"><div class="spinner"></div>Yukleniyor...</div>
       </div>
     </div>
 
@@ -2241,8 +2262,13 @@ function tarihDegistir(f){
 }
 
 function toggleCanli(){
-  canliMod=!canliMod;
+  // Eğer maclar dışında bir sayfadayken tıklanırsa, her zaman canli aç
+  const activePage=document.querySelector('.page.active');
+  const onMaclar=activePage&&activePage.id==='page-maclar';
+  if(!onMaclar){canliMod=true;}else{canliMod=!canliMod;}
   document.getElementById('liveBtnEl').classList.toggle('active',canliMod);
+  // Panel açıksa kapat
+  panelKapat();
   // Canli modda maclar sayfasını göster
   showMainTab('maclar');
   history.replaceState(null,null,canliMod?'#canli':'#maclar');
@@ -3491,6 +3517,17 @@ function aiaLogo(url,name){
   return '<img src="'+url+'" style="width:36px;height:36px;object-fit:contain" onerror="this.onerror=null;var p=document.createElement(\'div\');p.style.cssText=\'width:36px;height:36px;background:#1A1A2E;border-radius:8px;border:1px solid #2A2A3E;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#7A7A95;margin:0 auto\';p.textContent=\''+ch+'\';this.parentNode.replaceChild(p,this);">';
 }
 async function loadAialysis(silent=false){
+  // Mac Onu tab aktifken silent refresh gelirse, Mac Onu'nu yenile
+  if(silent&&document.getElementById('aiaSubOncu')&&document.getElementById('aiaSubOncu').classList.contains('active')){
+    loadMacOnuTahminleri();return;
+  }
+  // Sub tab aktifligini Canli Tahminler'e cevir
+  if(!silent){
+    document.querySelectorAll('.aia-sub-btn').forEach(b=>b.classList.remove('active'));
+    const subCanli=document.getElementById('aiaSubCanli');if(subCanli)subCanli.classList.add('active');
+    // Saat filtresini gizle
+    const saatF=document.getElementById('aiaOnuSaatFiltre');if(saatF)saatF.style.display='none';
+  }
   const c=document.getElementById('aialysisContainer');
   if(!silent)c.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>'+t('yukleniyor')+'</div>';
   try{
@@ -3651,6 +3688,112 @@ async function loadAialysis(silent=false){
       c.appendChild(overlay);
     }
   }catch(e){c.innerHTML=`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;}
+}
+
+// Mac Onu Tahminleri
+let onuSaat=24;
+let aiaSortMode='lig';
+
+function setOnuSaat(s){
+  onuSaat=s;
+  document.querySelectorAll('.aia-saat-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  loadMacOnuTahminleri();
+}
+
+function setAiaSort(mode){
+  aiaSortMode=mode;
+  document.querySelectorAll('.aia-sort-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(document.getElementById('aiaSubOncu').classList.contains('active')){
+    loadMacOnuTahminleri();
+  }else{
+    loadAialysis();
+  }
+}
+
+async function loadMacOnuTahminleri(){
+  document.querySelectorAll('.aia-sub-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('aiaSubOncu').classList.add('active');
+  document.getElementById('aiaOnuSaatFiltre').style.display='flex';
+
+  const container=document.getElementById('aialysisContainer');
+  container.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Mac onu tahminleri yukleniyor...</div>';
+
+  try{
+    const now=new Date();
+    const limit=new Date(now.getTime()+onuSaat*60*60*1000);
+
+    const r=await fetch(`${SU}/rest/v1/mac_oncu_analizler?mac_tarihi=gte.${now.toISOString()}&mac_tarihi=lte.${limit.toISOString()}&select=*&order=mac_tarihi.asc&limit=100`,
+      {headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}});
+    const rows=await r.json();
+
+    if(!rows||!rows.length){
+      container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">&#128203;</div><div style="color:var(--muted);font-size:13px">Bu zaman araliginda mac onu tahmini bulunamadi.</div></div>';
+      return;
+    }
+
+    let filtered=rows.filter(r=>!r.analiz?.veri_yok&&r.analiz?.oneriler?.length>0);
+
+    if(aiaSortMode==='oran'){
+      filtered.sort((a,b)=>{
+        const maxA=Math.max(...(a.analiz.oneriler||[]).map(o=>o.oran||0));
+        const maxB=Math.max(...(b.analiz.oneriler||[]).map(o=>o.oran||0));
+        return maxB-maxA;
+      });
+    }else if(aiaSortMode==='zaman'){
+      filtered.sort((a,b)=>new Date(a.mac_tarihi)-new Date(b.mac_tarihi));
+    }else{
+      filtered.sort((a,b)=>(LIG_PUAN[b.lig_id]||1000)-(LIG_PUAN[a.lig_id]||1000));
+    }
+
+    if(!filtered.length){
+      container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">&#128203;</div><div style="color:var(--muted);font-size:13px">Bu zaman araliginda oranli mac onu tahmini bulunamadi.</div></div>';
+      return;
+    }
+
+    let html='';
+    for(const row of filtered){
+      const a=row.analiz;
+      const so=a.sonuc_olasiliklari||{};
+      const proj=a.projeksiyon||{};
+      const skor=a.skor_tahmini||'';
+      const skorStr=typeof skor==='string'?skor:`${skor.ev||'?'}-${skor.dep||'?'}`;
+      const kickoff=new Date(row.mac_tarihi);
+      const saatStr=kickoff.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+      const gunStr=kickoff.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'});
+
+      html+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer" onclick="openMac(${row.fixture_id})">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:10px;color:var(--muted)">${row.lig_adi||''}</span>
+          <span style="font-size:10px;color:var(--blue-lt)">${gunStr} ${saatStr}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:13px;color:var(--text);font-weight:600;flex:1">${row.ev_takim_adi}</span>
+          <span style="font-size:15px;font-weight:900;color:var(--gold-lt);padding:0 12px">${skorStr}</span>
+          <span style="font-size:13px;color:var(--text);font-weight:600;flex:1;text-align:right">${row.dep_takim_adi}</span>
+        </div>
+        <div style="display:flex;gap:4px;margin-bottom:8px">
+          <div style="flex:${so.ev||33};height:3px;background:var(--blue-lt);border-radius:2px"></div>
+          <div style="flex:${so.ber||34};height:3px;background:#555;border-radius:2px"></div>
+          <div style="flex:${so.dep||33};height:3px;background:var(--red);border-radius:2px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:8px">
+          <span>${so.ev||0}% Ev</span><span>${so.ber||0}% Ber</span><span>${so.dep||0}% Dep</span>
+        </div>
+        ${(a.oneriler||[]).map(o=>{
+          const ua=o.ust_alt==='UST'?'UST':o.ust_alt==='ALT'?'ALT':(o.ust_alt||'');
+          const renk=(o.guc||0)>=70?'var(--green)':(o.guc||0)>=55?'var(--yellow)':'var(--red)';
+          if(o.kategori==='Mac Sonucu')return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;margin-bottom:4px"><span style="font-size:11px;color:var(--text)">&#127942; '+o.ust_alt+'</span>'+(o.oran?'<span style="font-size:11px;color:var(--gold-lt);font-weight:600">'+parseFloat(o.oran).toFixed(2)+'</span>':'')+'<span style="font-size:11px;font-weight:700;color:'+renk+'">%'+(o.guc||o.olasilik)+'</span></div>';
+          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;margin-bottom:4px"><span style="font-size:11px;color:var(--text)">'+o.kategori+' <span style="color:'+(ua==='UST'?'var(--green)':'var(--red)')+';font-weight:700">'+o.cizgi+' '+ua+'</span></span>'+(o.oran?'<span style="font-size:11px;color:var(--gold-lt);font-weight:600">'+parseFloat(o.oran).toFixed(2)+'</span>':'')+'<span style="font-size:11px;font-weight:700;color:'+renk+'">%'+(o.guc||o.olasilik)+'</span></div>';
+        }).join('')}
+      </div>`;
+    }
+
+    container.innerHTML=html;
+  }catch(e){
+    container.innerHTML=`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;
+  }
 }
 
 // Tahmin geçmişi
