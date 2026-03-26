@@ -1645,7 +1645,7 @@ async function authVerifyOtp(){
     document.getElementById('authStep2').style.display='none';
     const _abl=document.getElementById('authBtnLabel');if(_abl)_abl.textContent=authEmail.split('@')[0];
     document.getElementById('authBtn').style.background='none';
-    sbClient.auth.getUser().then(({data})=>{if(data?.user)updateNavProfileBtn(data.user);});
+    sbClient.auth.getUser().then(({data})=>{if(data?.user){_isLoggedIn=true;updateNavProfileBtn(data.user);}});
     // Analitik: kayıt event
     trackEvent('kayit',{method:'email_otp'});
     // Pazarlama: UTM verisini profille ilişkilendir
@@ -1664,6 +1664,7 @@ async function authVerifyOtp(){
 
 async function authLogout(){
   await sbClient.auth.signOut();
+  _isLoggedIn=false;
   document.getElementById('authOverlay').style.display='none';
   const _abl2=document.getElementById('authBtnLabel');if(_abl2)_abl2.textContent='Giriş Yap';
   document.getElementById('authBtn').style.background='none';
@@ -1754,8 +1755,10 @@ function navProfileClick(){
 }
 
 // Sayfa yüklendiğinde oturum kontrol
+let _isLoggedIn=false;
 sbClient.auth.getUser().then(({data})=>{
   if(data?.user){
+    _isLoggedIn=true;
     const u=data.user;
     const name=u.user_metadata?.full_name||u.user_metadata?.name||(u.email?u.email.split('@')[0]:'Kullanıcı');
     const _abl4=document.getElementById('authBtnLabel');if(_abl4)_abl4.textContent=name;
@@ -2961,7 +2964,7 @@ async function saveUserPredictionSupabase(macId,secim){
   trackEvent('tahmin_yapma',{kategori:secim});
   const user=await getForumUser();
   if(!user){
-    saveUserPredictionLocal(macId,secim);
+    showToast('Tahmin yapmak için giriş yapın.');authModal();
     return;
   }
   try{
@@ -2984,6 +2987,16 @@ function renderUserTahmin(macId,m){
   const evPct=total>0?Math.round(votes.ev/total*100):0;
   const berPct=total>0?Math.round(votes.ber/total*100):0;
   const depPct=total>0?Math.round(votes.dep/total*100):0;
+  // Giriş yapmamış kullanıcılar tahmin yapamaz
+  if(!_isLoggedIn){
+    return `<div class="user-tahmin-box">
+      <div class="user-tahmin-title">🗳️ ${t('tahminYap').toUpperCase()}</div>
+      <div style="text-align:center;padding:16px 8px;">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Tahmin yapmak için giriş yapın</div>
+        <button onclick="authModal()" style="padding:10px 24px;background:var(--blue);border:none;border-radius:8px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Giriş Yap</button>
+      </div>
+    </div>`;
+  }
   const degistirNot=userVote?'<div style="font-size:10px;color:var(--gold);text-align:center;margin-top:6px;">Tahminini değiştirmek için tekrar tıkla</div>':'';
   return `<div class="user-tahmin-box">
     <div class="user-tahmin-title">🗳️ ${t('tahminYap').toUpperCase()}</div>
@@ -3014,6 +3027,7 @@ function renderUserTahmin(macId,m){
 }
 
 async function kullaniciTahminYap(macId,secim,evAdi,depAdi){
+  if(!_isLoggedIn){showToast('Tahmin yapmak için giriş yapın.');authModal();return;}
   showToast(secim==='ev'?`${evAdi} kazanır seçildi!`:secim==='dep'?`${depAdi} kazanır seçildi!`:'Beraberlik seçildi!');
   await saveUserPredictionSupabase(macId,secim);
   await loadCommunityPredictions(macId);
