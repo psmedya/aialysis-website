@@ -1178,13 +1178,13 @@ body.light-theme .cerez-kategori{background:#fafafa;}
         </div>
       </div>
       <div id="aiaSubTabs" style="display:flex;gap:8px;margin-bottom:12px;padding:0 12px">
-        <button onclick="loadAialysis()" class="aia-sub-btn active" id="aiaSubCanli">Canli Tahminler</button>
-        <button onclick="loadMacOnuTahminleri()" class="aia-sub-btn" id="aiaSubOncu">Mac Onu</button>
+        <button onclick="loadAialysis()" class="aia-sub-btn active" id="aiaSubCanli">Canlı Tahminler</button>
+        <button onclick="loadMacOnuTahminleri()" class="aia-sub-btn" id="aiaSubOncu">Maç Önü</button>
       </div>
       <div id="aiaSortBtns" style="display:flex;gap:6px;margin-bottom:8px;padding:0 12px;flex-wrap:wrap">
-        <button onclick="setAiaSort('lig')" class="aia-sort-btn active">Lig Siralamasi</button>
-        <button onclick="setAiaSort('oran')" class="aia-sort-btn">Oran Siralamasi</button>
-        <button onclick="setAiaSort('zaman')" class="aia-sort-btn">Zaman Siralamasi</button>
+        <button onclick="setAiaSort('lig')" class="aia-sort-btn active">Lig Sıralaması</button>
+        <button onclick="setAiaSort('oran')" class="aia-sort-btn">Oran Sıralaması</button>
+        <button onclick="setAiaSort('zaman')" class="aia-sort-btn">Zaman Sıralaması</button>
       </div>
       <div id="aiaOnuSaatFiltre" style="display:none;gap:6px;margin-bottom:8px;padding:0 12px;flex-wrap:wrap">
         <button onclick="setOnuSaat(2)" class="aia-saat-btn">2s</button>
@@ -3718,7 +3718,7 @@ async function loadMacOnuTahminleri(){
   document.getElementById('aiaOnuSaatFiltre').style.display='flex';
 
   const container=document.getElementById('aialysisContainer');
-  container.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Mac onu tahminleri yukleniyor...</div>';
+  container.innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Maç önü tahminleri yükleniyor...</div>';
 
   try{
     const now=new Date();
@@ -3729,7 +3729,7 @@ async function loadMacOnuTahminleri(){
     const rows=await r.json();
 
     if(!rows||!rows.length){
-      container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">&#128203;</div><div style="color:var(--muted);font-size:13px">Bu zaman araliginda mac onu tahmini bulunamadi.</div></div>';
+      container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">&#128203;</div><div style="color:var(--muted);font-size:13px">Bu zaman aralığında maç önü tahmini bulunamadı.</div></div>';
       return;
     }
 
@@ -3748,7 +3748,7 @@ async function loadMacOnuTahminleri(){
     }
 
     if(!filtered.length){
-      container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">&#128203;</div><div style="color:var(--muted);font-size:13px">Bu zaman araliginda oranli mac onu tahmini bulunamadi.</div></div>';
+      container.innerHTML='<div style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:32px;margin-bottom:12px">&#128203;</div><div style="color:var(--muted);font-size:13px">Bu zaman aralığında oranlı maç önü tahmini bulunamadı.</div></div>';
       return;
     }
 
