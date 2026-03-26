@@ -2588,7 +2588,42 @@ async function loadDetailAnaliz(m, silent=false){
             analiz.tahminler.forEach(p=>{const odd=findOddForTahmin(preOdds,p.kategori,p.cizgi,p.ust_alt);if(odd)p.piyasa=odd;});
           }
         }catch(_){}
-        renderDetailAnaliz(analiz, m);
+        // Maç öncesi analiz render — t() bağımsız
+        const so=analiz.sonuc_olasiliklari||analiz.olasiliklar||{};
+        const evP=so.ev||so.ev_kazanir||33,berP=so.ber||so.beraberlik||34,depP=so.dep||so.dep_kazanir||33;
+        const proj=analiz.projeksiyon||{};
+        const skor=analiz.skor_tahmini||{};
+        const skorEv=typeof skor==='object'?skor.ev:((skor+'').split('-')[0]||'?');
+        const skorDep=typeof skor==='object'?skor.dep:((skor+'').split('-')[1]||'?');
+        const guven=analiz.tahmin_guveni||Math.max(...(analiz.oneriler||[]).map(o=>o.guc||0),65);
+        const tempo=analiz.mac_temposu||(proj.gol>=3.5?'Çok Yüksek':proj.gol>=2.5?'Yüksek':proj.gol>=1.5?'Orta':'Düşük');
+        const tah=analiz.tahminler||(analiz.oneriler||[]).filter(o=>o.cizgi>0);
+        const yorum=analiz.genel_yorum||analiz.yorum||'';
+        const sonucOneri=(analiz.oneriler||[]).find(o=>o.kategori==='Maç Sonucu');
+        document.getElementById('dc-analiz').innerHTML=`<div style="padding:16px">
+          <div class="ai-card">
+            <div class="ai-title">🔮 MAÇ ÖNCESİ ANALİZ — %${guven} Güven</div>
+            <div class="ai-grid">
+              <div class="ai-stat"><div class="ai-val" style="color:var(--blue-lt)">${skorEv}</div><div class="ai-lbl">Ev Skoru</div></div>
+              <div class="ai-stat"><div class="ai-val" style="color:var(--red)">${skorDep}</div><div class="ai-lbl">Dep Skoru</div></div>
+              <div class="ai-stat"><div class="ai-val" style="color:var(--yellow)">${proj.gol?proj.gol.toFixed(1):'-'}</div><div class="ai-lbl">Gol Bek.</div></div>
+              <div class="ai-stat"><div class="ai-val" style="color:var(--green);font-size:11px">${tempo}</div><div class="ai-lbl">Tempo</div></div>
+            </div>
+            <div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)"><span style="font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px">TAHMİNİ SKOR </span><span style="font-size:20px;font-weight:900;color:white;letter-spacing:4px">${skorEv} - ${skorDep}</span></div>
+          </div>
+          <div class="olas-card">
+            <div class="olas-title">Sonuç Olasılıkları</div>
+            <div class="olas-vals">
+              <div><div class="olas-val" style="color:var(--blue-lt)">${evP}%</div><div class="olas-lbl">${m.teams.home.name.substring(0,12)}</div></div>
+              <div><div class="olas-val" style="color:var(--muted)">${berP}%</div><div class="olas-lbl">Beraberlik</div></div>
+              <div><div class="olas-val" style="color:var(--red)">${depP}%</div><div class="olas-lbl">${m.teams.away.name.substring(0,12)}</div></div>
+            </div>
+            <div class="olas-bar"><div style="height:100%;background:linear-gradient(90deg,var(--blue-lt) ${evP}%,#444 ${evP}% ${100-depP}%,var(--red) ${100-depP}%)"></div></div>
+          </div>
+          ${tah.length?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:10px 0 6px">TAHMİNLER</div>${tah.map(p=>{const ua=p.ust_alt==='UST'?'ÜST':p.ust_alt==='ALT'?'ALT':(p.ust_alt||'');return`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span></div><div class="tahmin-line"><span class="t-tag ${ua==='ÜST'?'u':'a'}">${p.cizgi} ${ua}</span><span class="tahmin-desc"></span>${p.piyasa||p.oran?`<span style="font-size:11px;color:var(--gold-lt);font-weight:600;white-space:nowrap">Oran: ${parseFloat(p.piyasa||p.oran).toFixed(2)}</span>`:''}<span class="tahmin-guc" style="color:${(p.guc||0)>=70?'var(--green)':(p.guc||0)>=55?'var(--yellow)':'var(--red)'}">%${p.guc||p.olasilik||''}</span></div></div>`}).join('')}`:''}
+          ${yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">GENEL DEĞERLENDİRME</div><div style="font-size:11px;color:var(--muted);line-height:1.6">${sonucOneri?'🏆 Maç Sonucu: '+sonucOneri.ust_alt+' (%'+sonucOneri.olasilik+')'+(sonucOneri.oran?' · Oran: '+parseFloat(sonucOneri.oran).toFixed(2):'')+' — ':'' }${yorum}</div></div>`:''}
+          <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:10px">* AI tahminleri yalnızca bilgi amaçlıdır.</div>
+        </div>`;
         return;
       }
       // Ön analiz henüz yoksa bilgi ver
