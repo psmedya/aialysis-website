@@ -2604,19 +2604,9 @@ async function loadDetailAnaliz(m, silent=false){
             guc:o.guc,tahmin:`${o.kategori} ${o.cizgi} ${o.ust_alt}`,aciklama:'',
             piyasa:o.oran||null
           }));
-          // 1X2 öneriyi genel yoruma ekle
-          const sonucOneri=analiz.oneriler?.find(o=>o.kategori==='Maç Sonucu');
-          if(sonucOneri&&analiz.genel_yorum){
-            analiz.genel_yorum=`🏆 Maç Sonucu: ${sonucOneri.ust_alt} (%${sonucOneri.olasilik})\n\n${analiz.genel_yorum}`;
-          }
+          // 1X2 render tarafında gösterilecek
         }
-        // Enrich pre-match analiz with odds
-        try{
-          const preOdds=await fetchOddsMap(m.fixture.id);
-          if(analiz.tahminler&&Object.keys(preOdds).length){
-            analiz.tahminler.forEach(p=>{const odd=findOddForTahmin(preOdds,p.kategori,p.cizgi,p.ust_alt);if(odd)p.piyasa=odd;});
-          }
-        }catch(_){}
+        // Oranlar zaten analiz.oneriler[].oran'da mevcut (mac-oncu-v2 API'den çekiyor)
         // Maç öncesi analiz render — t() bağımsız
         const so=analiz.sonuc_olasiliklari||analiz.olasiliklar||{};
         const evP=so.ev||so.ev_kazanir||33,berP=so.ber||so.beraberlik||34,depP=so.dep||so.dep_kazanir||33;
