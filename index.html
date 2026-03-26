@@ -2587,7 +2587,19 @@ async function loadDetailAnaliz(m, silent=false){
             analiz.tahminler.forEach(p=>{const odd=findOddForTahmin(preOdds,p.kategori,p.cizgi,p.ust_alt);if(odd)p.piyasa=odd;});
           }
         }catch(_){}
-        renderDetailAnaliz(analiz, m);
+        try{renderDetailAnaliz(analiz, m);}catch(e){
+          // I18N henüz hazır değilse 500ms bekle tekrar dene
+          await new Promise(r=>setTimeout(r,500));
+          try{renderDetailAnaliz(analiz, m);}catch(e2){
+            document.getElementById('dc-analiz').innerHTML=`<div style="padding:16px">
+              <div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:10px">🔮 MAÇ ÖNCESİ ANALİZ</div>
+              <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px">
+                <div style="font-size:12px;color:var(--text);line-height:1.7">${analiz.genel_yorum||analiz.yorum||''}</div>
+                ${(analiz.tahminler||analiz.oneriler||[]).map(o=>'<div style="margin-top:8px;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--text)">'+(o.kategori||'')+' '+(o.cizgi||'')+' '+(o.ust_alt||'')+'</span><span style="font-size:12px;font-weight:700;color:var(--green)">%'+(o.guc||o.olasilik||'')+(o.oran?' · oran:'+o.oran:'')+'</span></div>').join('')}
+              </div>
+            </div>`;
+          }
+        }
         return;
       }
       // Ön analiz henüz yoksa bilgi ver
