@@ -4831,7 +4831,7 @@ var I18N={
   }
 };
 
-let currentLang=localStorage.getItem('aialysis_lang')||(navigator.language?navigator.language.substring(0,2):null)||'tr';
+var currentLang=localStorage.getItem('aialysis_lang')||(navigator.language?navigator.language.substring(0,2):null)||'tr';
 if(!I18N[currentLang])currentLang='en';
 if(!I18N[currentLang])currentLang='tr';
 
