@@ -2071,9 +2071,12 @@ function ligOncelik(s){
   // Keyword bazlı fallback
   s=s.toLowerCase();
   // DÜŞÜK ÖNCELİK — önce filtrele
-  if(s.includes('women')||s.includes('ladies')||s.includes('female')||s.includes('frauen')||s.includes('femenina')) return 500;
-  if(s.match(/\bu1[89]\b/)||s.match(/\bu2[01]\b/)||s.includes('youth')||s.includes('junior')||s.includes('academy')||s.includes('development')||s.includes('premier league 2')) return 400;
+  if(s.includes('women')||s.includes('ladies')||s.includes('female')||s.includes('frauen')||s.includes('femenina')||s.includes('kadın')) return 500;
+  if(s.match(/\bu1[5-9]\b/)||s.match(/\bu2[0-3]\b/)||s.includes('youth')||s.includes('junior')||s.includes('academy')||s.includes('development')||s.includes('premier league 2')||s.includes('premier league cup')||s.includes('juvenil')) return 400;
   if(s.includes('reserve')||s.includes('amateur')||s.includes('non league')) return 300;
+  if(s.includes('rfef')||s.includes('tercera')||s.includes('segunda b')||s.includes('regionalliga')||s.includes('national 2')||s.includes('national 3')) return 2000;
+  if(s.includes('3. lig')||s.includes('3.lig')) return 1500;
+  if(s.includes('4. lig')||s.includes('4.lig')) return 1000;
   if(s.includes('friendl')) return 600;
 
   // TÜRKİYE — HER ZAMAN EN ÜSTTE
@@ -3791,7 +3794,11 @@ async function loadMacOnuTahminleri(){
     }else if(aiaSortMode==='zaman'){
       filtered.sort((a,b)=>new Date(a.mac_tarihi)-new Date(b.mac_tarihi));
     }else{
-      filtered.sort((a,b)=>(LIG_PUAN[b.lig_id]||1000)-(LIG_PUAN[a.lig_id]||1000));
+      filtered.sort((a,b)=>{
+        const pa=LIG_PUAN[a.lig_id]||ligOncelik((a.lig_adi||'')+' |id:'+(a.lig_id||0));
+        const pb=LIG_PUAN[b.lig_id]||ligOncelik((b.lig_adi||'')+' |id:'+(b.lig_id||0));
+        return pb-pa;
+      });
     }
 
     if(!filtered.length){
