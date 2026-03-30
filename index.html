@@ -214,8 +214,9 @@ body.light-theme .nav-dropdown-item:hover{background:rgba(0,0,0,.04);}
   position:sticky;top:60px;
   min-width:0;
 }
-.panel-kapat{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);border:none;color:white;width:auto;min-height:44px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;padding:0 14px;z-index:210;-webkit-tap-highlight-color:transparent;}
-.panel-kapat:hover{background:rgba(229,57,53,.6);color:white;}
+.panel-kapat{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.2);color:white;min-height:44px;min-width:44px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;padding:0 16px;z-index:210;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(8px);gap:4px;}
+.panel-kapat:hover,.panel-kapat:active{background:rgba(229,57,53,.7);color:white;transform:scale(1.05);}
+@media(max-width:768px){.panel-kapat{top:6px;left:6px;font-size:15px;min-height:48px;padding:0 18px;border-radius:14px;}}
 .detail-header{position:relative;}
 .panel-section{padding:16px;border-bottom:1px solid var(--border);}
 .panel-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;margin-bottom:12px;}
@@ -1323,7 +1324,7 @@ body.light-theme .cerez-kategori{background:#fafafa;}
     </div>
     <div id="matchDetail" class="match-detail">
       <div class="detail-header" id="detailHeader">
-        <button class="panel-kapat" onclick="panelKapat()" style="position:absolute;top:8px;left:8px;right:auto;width:40px;height:40px;font-size:20px;z-index:210;">← Geri</button>
+        <button class="panel-kapat" onclick="panelKapat()">← Geri</button>
       </div>
       <div class="detail-tabs" id="detailTabsEl">
         <div class="detail-tab active" onclick="switchDetailTab('analiz')">✦ AIalysis</div>
