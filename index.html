@@ -2693,17 +2693,14 @@ async function loadDetailAnaliz(m, silent=false){
   // Spinner timeout: 8sn sonra hala yükleniyorsa mesaj göster
   const _spinnerTm=setTimeout(()=>{if(c.querySelector('.spinner'))c.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Veri yüklenemedi. Lütfen sayfayı yenileyin.</div></div>';},8000);
 
-  // Paralel: istat + odds + tahminler hepsini aynı anda çek
+  // Paralel: istat + tahminler hepsini aynı anda çek (canlı maçta mac_oranlar kullanılmaz)
   let mevcutIstat={gol:(m.goals.home??0)+(m.goals.away??0),korner:0,faul:0,sari:0};
-  let oddsMap={};
   let istatRows=[];
   try{
-    const [_istat,_odds]=await Promise.all([
-      sbQuery('mac_canli_istatistikler',`fixture_id=eq.${m.fixture.id}`),
-      fetchOddsMap(m.fixture.id).catch(()=>({}))
+    const [_istat]=await Promise.all([
+      sbQuery('mac_canli_istatistikler',`fixture_id=eq.${m.fixture.id}`)
     ]);
     istatRows=_istat||[];
-    oddsMap=_odds||{};
     if(istatRows.length){
       const r=istatRows[0];
       mevcutIstat.korner=(r.ev_korner||0)+(r.dep_korner||0);
@@ -2718,7 +2715,7 @@ async function loadDetailAnaliz(m, silent=false){
   // 1) Önce Supabase'deki mevcut tahminleri göster (anında)
   try{
     const _ctrl2=new AbortController();const _tm2=setTimeout(()=>_ctrl2.abort(),5000);
-    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,guc,mevcut_deger,mevcut_dk&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`},signal:_ctrl2.signal});
+    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${m.fixture.id}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,guc,mevcut_deger,mevcut_dk,oran&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`},signal:_ctrl2.signal});
     clearTimeout(_tm2);
     const tahminler=await tr.json();
     if(Array.isArray(tahminler)&&tahminler.length>0){
@@ -2764,8 +2761,9 @@ async function loadDetailAnaliz(m, silent=false){
             }
             const tzi=t.mevcut_deger!=null?t.mevcut_deger:'-';
             const tziDk=t.mevcut_dk||'?';
-            const piyasaOdd=findOddForTahmin(oddsMap,t.kategori,t.cizgi,t.ust_alt);
-            const piyasaStr=piyasaOdd?` | Ort Oran: ${piyasaOdd.toFixed(2)}`:'';
+            // Canlı maçta oran: tahmin_sonuclari.oran (canli-tahmin'in kaydettiği canlı oran)
+            const piyasaOdd=t.oran?parseFloat(t.oran):null;
+            const piyasaStr=piyasaOdd?` | Canlı Oran: ${piyasaOdd.toFixed(2)}`:'';
             return{kategori:t.kategori,cizgi:t.cizgi,ust_alt:t.ust_alt,guc:t.guc,mevcut:cur,piyasa:piyasaOdd||null,tahmin:`TZİ(${tziDk}'): ${tzi} → Güncel: ${cur}${piyasaStr}`,aciklama:`Tahmin: ${t.cizgi} ${t.ust_alt} | TZİ(${tziDk}dk): ${tzi} | Güncel: ${cur}${piyasaStr}`};
           }).filter(Boolean);
         })(),
@@ -2792,13 +2790,8 @@ async function loadDetailAnaliz(m, silent=false){
     const d=await r.json();
     clearTimeout(_spinnerTm);
     if(d.basarili&&(d.analiz?.tahmin_guveni||0)>0){
-      // Enrich tahminler with odds
-      if(d.analiz.tahminler&&Object.keys(oddsMap).length){
-        d.analiz.tahminler.forEach(p=>{
-          const odd=findOddForTahmin(oddsMap,p.kategori,p.cizgi,p.ust_alt);
-          if(odd)p.piyasa=odd;
-        });
-      }
+      // Canlı maçta oran enrichment: analiz fonksiyonu zaten kendi içinde oran çözüyor
+      // mac_oranlar (maç öncesi) kullanılmaz
       renderDetailAnaliz(d.analiz,m);
     }
   }catch(_){clearTimeout(_spinnerTm);}
@@ -3099,8 +3092,8 @@ function renderDetailAnaliz(a,m){
       </div>
       <div class="olas-bar"><div style="height:100%;background:linear-gradient(90deg,var(--blue-lt) ${o.ev_kazanir||0}%,#444 ${o.ev_kazanir||0}% ${100-(o.dep_kazanir||0)}%,var(--red) ${100-(o.dep_kazanir||0)}%)"></div></div>
     </div>
-    ${tah.length?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:10px 0 6px">${t('tahminler')}</div>${tah.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">${t('suAn')}: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin||''}</span>${p.piyasa?`<span style="font-size:10px;color:var(--gold-lt);font-weight:600;white-space:nowrap">Ort Oran: ${parseFloat(p.piyasa).toFixed(2)}</span>`:''}<span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}`:'<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 12px;text-align:center"><div style="font-size:20px;margin-bottom:8px">🔍</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">Yeterli güvenilirlikte tahmin üretilemedi</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Bu maç için yüksek olasılıklı öneri bulunamadı.<br><span style="color:var(--blue-lt)">aiALYSIS Live</span> sadece yüksek olasılıklı öneriler sunar.</div></div>'}
-    ${a.genel_yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">${t('genelDeg')}</div><div style="font-size:11px;color:var(--muted);line-height:1.6">${a.genel_yorum}</div>${tah.filter(p=>p.aciklama&&p.aciklama!='0').length?`<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px"><div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:1px;margin-bottom:8px">TAHMİN GEREKÇELERİ</div>${tah.filter(p=>p.aciklama&&p.aciklama!='0').map(p=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:${p.ust_alt==='ÜST'?'rgba(67,160,71,.2)':'rgba(229,57,53,.2)'};border:1px solid ${p.ust_alt==='ÜST'?'rgba(67,160,71,.5)':'rgba(229,57,53,.5)'};color:${p.ust_alt==='ÜST'?'var(--green)':'var(--red)'};font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px">${p.cizgi} ${p.ust_alt}</span><span style="font-size:11px;color:rgba(255,255,255,.5);flex:1">${p.kategori}</span><span style="font-size:11px;font-weight:700;color:${p.guc>=70?'var(--green)':p.guc>=50?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div>${p.piyasa?`<div style="font-size:10px;color:var(--gold-lt);margin-bottom:4px">Ort Oran: ${parseFloat(p.piyasa).toFixed(2)}</div>`:''}<div style="font-size:11px;color:var(--muted);line-height:1.5">${p.aciklama}</div></div>`).join('')}</div>`:''}
+    ${tah.length?`<div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin:10px 0 6px">${t('tahminler')}</div>${tah.map(p=>`<div class="tahmin-card"><div class="tahmin-header"><span class="tahmin-kat">${p.kategori}</span>${p.mevcut>0?`<span class="tahmin-cur">${t('suAn')}: ${p.mevcut}</span>`:''}</div><div class="tahmin-line"><span class="t-tag ${p.ust_alt==='ÜST'?'u':'a'}">${p.cizgi} ${p.ust_alt}</span><span class="tahmin-desc">${p.aciklama||p.tahmin||''}</span>${p.piyasa?`<span style="font-size:10px;color:var(--gold-lt);font-weight:600;white-space:nowrap">${live?'Canlı':'Ort'} Oran: ${parseFloat(p.piyasa).toFixed(2)}</span>`:''}<span class="tahmin-guc" style="color:${p.guc>=70?'var(--green)':p.guc>=55?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div></div>`).join('')}`:'<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 12px;text-align:center"><div style="font-size:20px;margin-bottom:8px">🔍</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">Yeterli güvenilirlikte tahmin üretilemedi</div><div style="font-size:11px;color:var(--muted);line-height:1.6">Bu maç için yüksek olasılıklı öneri bulunamadı.<br><span style="color:var(--blue-lt)">aiALYSIS Live</span> sadece yüksek olasılıklı öneriler sunar.</div></div>'}
+    ${a.genel_yorum?`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:8px">${t('genelDeg')}</div><div style="font-size:11px;color:var(--muted);line-height:1.6">${a.genel_yorum}</div>${tah.filter(p=>p.aciklama&&p.aciklama!='0').length?`<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px"><div style="font-size:10px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:1px;margin-bottom:8px">TAHMİN GEREKÇELERİ</div>${tah.filter(p=>p.aciklama&&p.aciklama!='0').map(p=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="background:${p.ust_alt==='ÜST'?'rgba(67,160,71,.2)':'rgba(229,57,53,.2)'};border:1px solid ${p.ust_alt==='ÜST'?'rgba(67,160,71,.5)':'rgba(229,57,53,.5)'};color:${p.ust_alt==='ÜST'?'var(--green)':'var(--red)'};font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px">${p.cizgi} ${p.ust_alt}</span><span style="font-size:11px;color:rgba(255,255,255,.5);flex:1">${p.kategori}</span><span style="font-size:11px;font-weight:700;color:${p.guc>=70?'var(--green)':p.guc>=50?'var(--yellow)':'var(--red)'}">%${p.guc}</span></div>${p.piyasa?`<div style="font-size:10px;color:var(--gold-lt);margin-bottom:4px">${live?'Canlı':'Ort'} Oran: ${parseFloat(p.piyasa).toFixed(2)}</div>`:''}<div style="font-size:11px;color:var(--muted);line-height:1.5">${p.aciklama}</div></div>`).join('')}</div>`:''}
     </div>`:''}
     ${(()=>{const ke=a.kadro_etkisi;if(!ke)return '';const renderTakim=(takim,data)=>{const eksikNotlar=data.notlar.filter(n=>n.includes('kadroda yok'));const ilkOnbirNotlar=data.notlar.filter(n=>n.includes('ilk 11'));const kartNotlar=data.notlar.filter(n=>n.includes('kart riski'));const skorRenk=data.etki_skoru>=0.8?'var(--green)':data.etki_skoru>=0.6?'var(--yellow)':'var(--red)';const skorYuzde=Math.round(data.etki_skoru*100);return `<div style="margin-bottom:10px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700;color:var(--text)">${takim}</span><span style="font-size:11px;font-weight:800;color:${skorRenk}">Kadro Gücü: %${skorYuzde}</span></div>${data.eksik_gol_payi>0?`<div style="font-size:10px;color:var(--red);margin-bottom:4px">Eksik oyuncuların gol katkısı: %${Math.round(data.eksik_gol_payi*100)}</div>`:''}<div style="background:var(--bg);border-radius:6px;height:4px;overflow:hidden;margin-bottom:6px"><div style="height:100%;width:${skorYuzde}%;background:${skorRenk};border-radius:6px;transition:width .3s"></div></div>${eksikNotlar.length>0?eksikNotlar.map(n=>`<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:3px"><span style="color:var(--red);font-size:10px;flex-shrink:0">✕</span><span style="font-size:10px;color:var(--muted);line-height:1.4">${n}</span></div>`).join(''):`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="color:var(--green);font-size:10px">✓</span><span style="font-size:10px;color:var(--green)">Tam kadro</span></div>`}${ilkOnbirNotlar.map(n=>`<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:3px"><span style="color:var(--green);font-size:10px;flex-shrink:0">★</span><span style="font-size:10px;color:var(--muted);line-height:1.4">${n}</span></div>`).join('')}${kartNotlar.map(n=>`<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:3px"><span style="color:var(--yellow);font-size:10px;flex-shrink:0">⚠</span><span style="font-size:10px;color:var(--yellow);line-height:1.4">${n}</span></div>`).join('')}</div>`};return `<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:var(--gold-lt);font-weight:700;letter-spacing:1px;margin-bottom:10px">⚽ KADRO ANALİZİ</div>${renderTakim(m.teams.home.name,ke.ev)}${ke.dep?`<div style="border-top:1px solid var(--border);margin:8px 0;padding-top:8px"></div>${renderTakim(m.teams.away.name,ke.dep)}`:''}</div>`})()}
     ${tah.length?`<div style="text-align:center;margin-top:12px"><button class="detail-share-btn" onclick="shareDetailCurrentTahmin()">🔗 ${t('paylas')}</button></div>`:''}
@@ -3574,7 +3567,7 @@ async function loadAialysis(silent=false){
   try{
     // 1) Supabase'den BEKLIYOR tahminleri çek (cron'un ürettiği — sabit kalır)
     const _ctrlA=new AbortController();const _tmA=setTimeout(()=>_ctrlA.abort(),5000);
-    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman,lig&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`},signal:_ctrlA.signal});
+    const tr=await fetch(`${SU}/rest/v1/tahmin_sonuclari?sonuc=eq.BEKLIYOR&select=mac_id,kategori,cizgi,ust_alt,guc,ev_sahibi,deplasman,lig,oran&order=created_at.desc&limit=200`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`},signal:_ctrlA.signal});
     clearTimeout(_tmA);
     const td=await tr.json();
     const hazir={};
@@ -3597,56 +3590,20 @@ async function loadAialysis(silent=false){
       }
     }catch(_){}
 
-    // 2.5) Oran filtresi: mac_oranlar tablosundan oranları çek, 1.35 altını filtrele
+    // 2.5) Oran filtresi: tahmin_sonuclari.oran (canlı oran) kullan, 1.35 altını filtrele
+    // mac_oranlar (maç öncesi) kullanılmaz — canli-tahmin zaten canlı oranla kaydediyor
     try{
-      const oranFixIds=macIds.map(id=>parseInt(id)).filter(Boolean);
-      if(oranFixIds.length){
-        const oranRows=await sbQuery('mac_oranlar',`fixture_id=in.(${oranFixIds.join(',')})`);
-        if(oranRows&&oranRows.length){
-          const oranMapByFix={};
-          oranRows.forEach(r=>{oranMapByFix[r.fixture_id]=r;});
-          for(const macId of macIds){
-            const oranRow=oranMapByFix[parseInt(macId)];
-            if(!oranRow)continue;
-            // Her tahmin için ilgili oranı bul, 1.35 altıysa çıkar
-            const oddsM={};
-            const bets=oranRow.api_odds||[];
-            bets.forEach(b=>{
-              const name=(b.name||'').toLowerCase();
-              (b.values||[]).forEach(v=>{
-                const val=(v.value||'').toString().toLowerCase();
-                const odd=parseFloat(v.odd)||0;
-                if(!odd)return;
-                if(name.includes('over/under')||name==='match goals'||name.includes('goals over/under')){
-                  const nm=val.match(/(over|under)\s+([\d.]+)/i);
-                  if(nm){const dir=nm[1].toLowerCase()==='over'?'ÜST':'ALT';const line=parseFloat(nm[2]);oddsM[`gol_${line}_${dir}`]=odd;}
-                  if(val.includes('over')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)oddsM[`gol_${n}_ÜST`]=odd;}
-                  if(val.includes('under')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)oddsM[`gol_${n}_ALT`]=odd;}
-                }
-                if(name.includes('corner')){
-                  if(val.includes('over')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)oddsM[`korner_${n}_ÜST`]=odd;}
-                  if(val.includes('under')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)oddsM[`korner_${n}_ALT`]=odd;}
-                }
-                if(name.includes('card')){
-                  if(val.includes('over')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)oddsM[`kart_${n}_ÜST`]=odd;}
-                  if(val.includes('under')){const n=parseFloat(val.replace(/[^0-9.]/g,''));if(n)oddsM[`kart_${n}_ALT`]=odd;}
-                }
-              });
-            });
-            // Tahminlere oran bilgisini ekle
-            hazir[macId].forEach(t=>{
-              const odd=findOddForTahmin(oddsM,t.kategori,t.cizgi,t.ust_alt);
-              t._oran=odd||null;
-            });
-            // Tahminlerden oran < 1.35 olanları filtrele
-            hazir[macId]=hazir[macId].filter(t=>{
-              if(t._oran===null||t._oran===undefined||t._oran===0)return false; // Oran yoksa gösterme
-              return t._oran>=1.35; // Oran 1.35 altıysa gösterme
-            });
-            // Eğer tüm tahminler filtrelendiyse bu maçı kaldır
-            if(!hazir[macId].length)delete hazir[macId];
-          }
-        }
+      for(const macId of macIds){
+        hazir[macId].forEach(t=>{
+          t._oran=t.oran?parseFloat(t.oran):null;
+        });
+        // Tahminlerden oran < 1.35 olanları filtrele
+        hazir[macId]=hazir[macId].filter(t=>{
+          if(t._oran===null||t._oran===undefined||t._oran===0)return false; // Oran yoksa gösterme
+          return t._oran>=1.35; // Oran 1.35 altıysa gösterme
+        });
+        // Eğer tüm tahminler filtrelendiyse bu maçı kaldır
+        if(!hazir[macId].length)delete hazir[macId];
       }
     }catch(_){}
 
@@ -3713,7 +3670,7 @@ async function loadAialysis(silent=false){
           <div class="aia-skor">${dk!=null?`<div class="aia-dk">${formatDk(dk,st,aiaExt)}</div>${aiaExt&&aiaExt>0&&st!=='HT'&&st!=='FT'&&st!=='AET'&&st!=='PEN'?`<div style="font-size:10px;color:var(--orange)">(+${aiaExt})</div>`:''}`:st==='NS'&&m?`<div style="font-size:11px;color:var(--muted)">${new Date(m.fixture.date).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'})}</div>`:!m?'':''}<div class="aia-score${!m||st==='NS'?' aia-score-vs':''}">${!m?'vs':st==='NS'?'vs':`${evGol} - ${depGol}`}</div></div>
           <div class="aia-takim">${aiaLogo(m?.teams?.away?.logo,depAdi)}<div class="aia-takim-adi">${depAdi}</div></div>
         </div>
-        <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}${p._oran?' | Oran: '+p._oran.toFixed(2):''}<button style="background:none;border:none;cursor:pointer;font-size:10px;margin-left:4px;padding:0;line-height:1;" onclick="event.stopPropagation();shareAiaTahmin('${evAdi.replace(/'/g,"\\'")}','${depAdi.replace(/'/g,"\\'")}','${p.kategori}',${p.cizgi},'${p.ust_alt}')">🔗</button></span>`).join('')}</div>`;
+        <div class="aia-tahminler">${tahminler.slice(0,3).map(p=>`<span class="aia-t">${p.cizgi} ${p.ust_alt} %${p.guc}${p._oran?' | Canlı Oran: '+p._oran.toFixed(2):''}<button style="background:none;border:none;cursor:pointer;font-size:10px;margin-left:4px;padding:0;line-height:1;" onclick="event.stopPropagation();shareAiaTahmin('${evAdi.replace(/'/g,"\\'")}','${depAdi.replace(/'/g,"\\'")}','${p.kategori}',${p.cizgi},'${p.ust_alt}')">🔗</button></span>`).join('')}</div>`;
       const mid=parseInt(macId);
       if(m){card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==mid),m];openMac(mid);};}
       else if(maclar.find(x=>x.fixture.id===mid)){card.onclick=()=>openMac(mid);}
@@ -5489,28 +5446,63 @@ async function loadDetailOranlar(fixtureId){
   if(!c)return;
   c.innerHTML='<div class="loading"><div class="spinner"></div>Oranlar yükleniyor...</div>';
   try{
-    // Mevcut oranları göster
-    const oranRows=await sbQuery('mac_oranlar',`fixture_id=eq.${fixtureId}`);
+    // Maç durumunu kontrol et
+    const st=currentMac?.fixture?.status?.short||'';
+    const canliDurumlar=['1H','2H','HT','ET','BT','P','SUSP','INT','LIVE'];
+    const canliMi=canliDurumlar.includes(st);
     let oranHtml='';
-    if(oranRows&&oranRows.length){
-      const bets=oranRows[0].api_odds||[];
-      const matchWinner=bets.find(b=>(b.name||'').toLowerCase().includes('match winner'));
-      if(matchWinner){
-        oranHtml+=`<div class="odds-bm">
-          <div class="odds-bm-name">1X2</div>
-          <div class="odds-row">
-            ${(matchWinner.values||[]).map(v=>`<div class="odds-val"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}
-          </div>
-        </div>`;
-      }
-      const ou=bets.find(b=>(b.name||'').toLowerCase().includes('goals over/under'));
-      if(ou){
-        oranHtml+=`<div class="odds-bm">
-          <div class="odds-bm-name">Gol Üst/Alt</div>
-          <div class="odds-row">
-            ${(ou.values||[]).slice(0,6).map(v=>`<div class="odds-val"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}
-          </div>
-        </div>`;
+
+    if(canliMi){
+      // CANLI MAÇ: tahmin_sonuclari.oran kullan (canli-tahmin'in kaydettiği canlı oran)
+      try{
+        const _ctrlO=new AbortController();const _tmO=setTimeout(()=>_ctrlO.abort(),5000);
+        const oranR=await fetch(`${SU}/rest/v1/tahmin_sonuclari?mac_id=eq.${fixtureId}&sonuc=eq.BEKLIYOR&select=kategori,cizgi,ust_alt,oran&order=created_at.desc`,{headers:{apikey:SK,Authorization:`Bearer ${SK}`},signal:_ctrlO.signal});
+        clearTimeout(_tmO);
+        const oranTahminler=await oranR.json();
+        if(Array.isArray(oranTahminler)&&oranTahminler.length){
+          oranHtml+=`<div class="odds-bm"><div class="odds-bm-name" style="display:flex;align-items:center;gap:6px">Canlı Oranlar <span style="display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite"></span></div><div class="odds-row" style="flex-wrap:wrap;gap:8px">`;
+          oranTahminler.forEach(t=>{
+            const oran=t.oran?parseFloat(t.oran):0;
+            if(!oran)return;
+            oranHtml+=`<div class="odds-val"><div class="odds-lbl" style="font-size:10px">${t.kategori} ${t.cizgi} ${t.ust_alt}</div><div class="odds-price">${oran.toFixed(2)}</div></div>`;
+          });
+          oranHtml+=`</div></div>`;
+        }
+      }catch(_){}
+      // Ayrıca maç öncesi oranları da referans olarak göster
+      try{
+        const oranRows=await sbQuery('mac_oranlar',`fixture_id=eq.${fixtureId}`);
+        if(oranRows&&oranRows.length){
+          const bets=oranRows[0].api_odds||[];
+          const matchWinner=bets.find(b=>(b.name||'').toLowerCase().includes('match winner'));
+          if(matchWinner){
+            oranHtml+=`<div class="odds-bm"><div class="odds-bm-name" style="opacity:.5">Maç Öncesi 1X2 (Referans)</div><div class="odds-row">${(matchWinner.values||[]).map(v=>`<div class="odds-val" style="opacity:.5"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}</div></div>`;
+          }
+        }
+      }catch(_){}
+    } else {
+      // BAŞLAMAMIŞ veya BİTMİŞ MAÇ: mac_oranlar kullan
+      const oranRows=await sbQuery('mac_oranlar',`fixture_id=eq.${fixtureId}`);
+      if(oranRows&&oranRows.length){
+        const bets=oranRows[0].api_odds||[];
+        const matchWinner=bets.find(b=>(b.name||'').toLowerCase().includes('match winner'));
+        if(matchWinner){
+          oranHtml+=`<div class="odds-bm">
+            <div class="odds-bm-name">1X2</div>
+            <div class="odds-row">
+              ${(matchWinner.values||[]).map(v=>`<div class="odds-val"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}
+            </div>
+          </div>`;
+        }
+        const ou=bets.find(b=>(b.name||'').toLowerCase().includes('goals over/under'));
+        if(ou){
+          oranHtml+=`<div class="odds-bm">
+            <div class="odds-bm-name">Gol Üst/Alt</div>
+            <div class="odds-row">
+              ${(ou.values||[]).slice(0,6).map(v=>`<div class="odds-val"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}
+            </div>
+          </div>`;
+        }
       }
     }
 
