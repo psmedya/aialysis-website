@@ -3598,25 +3598,17 @@ async function loadAialysis(silent=false){
         hazir[macId].forEach(t=>{
           t._oran=t.oran?parseFloat(t.oran):null;
         });
-        // Tahminlerden oran < 1.35 olanları filtrele
+        // Oran < 1.35 olanları filtrele (oran null ise göster — eski tahmin olabilir)
         hazir[macId]=hazir[macId].filter(t=>{
-          if(t._oran===null||t._oran===undefined||t._oran===0)return false; // Oran yoksa gösterme
-          return t._oran>=1.35; // Oran 1.35 altıysa gösterme
+          if(t._oran && t._oran < 1.35) return false;
+          return true;
         });
-        // Eğer tüm tahminler filtrelendiyse bu maçı kaldır
         if(!hazir[macId].length)delete hazir[macId];
       }
     }catch(_){}
 
-    // İstatistik verisi olmayan maçları filtrele
+    // İstatistik kontrolü kaldırıldı — istatistik olmasa bile tahmin göster
     try{
-      const istatFixIds=macIds.map(id=>parseInt(id)).filter(Boolean);
-      if(istatFixIds.length){
-        const istatRows=await sbQuery('mac_canli_istatistikler',`fixture_id=in.(${istatFixIds.join(',')})&select=fixture_id`);
-        const istatSet=new Set((istatRows||[]).map(r=>String(r.fixture_id)));
-        for(const macId of macIds){
-          if(!istatSet.has(macId)) delete hazir[macId];
-        }
       }
     }catch(_){}
 
