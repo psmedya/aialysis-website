@@ -3871,7 +3871,7 @@ async function loadMacOncuPerformans() {
     // Fixture ID'lerini topla, mac_istatistikleri'nden gerçek sonuçları çek
     const fixtureIds = [...new Set(analizler.map(a => a.fixture_id))];
     // Batch halinde çek (PostgREST in operatörü)
-    const istatUrl = `${SU}/rest/v1/mac_istatistikleri?fixture_id=in.(${fixtureIds.join(',')})&durum=in.(FT,AET,PEN)&select=fixture_id,ev_gol,dep_gol,ev_korner,dep_korner,ev_kart,dep_kart,ev_faul,dep_faul,ev_ofsayt,dep_ofsayt,ev_atis,dep_atis,ev_isabetli_atis,dep_isabetli_atis`;
+    const istatUrl = `${SU}/rest/v1/mac_istatistikleri?fixture_id=in.(${fixtureIds.join(',')})&istat_var=eq.true&select=fixture_id,ev_gol,dep_gol,ev_korner,dep_korner,ev_sari_kart,dep_sari_kart,ev_faul,dep_faul,ev_toplam_sut,dep_toplam_sut`;
     const _ctrl2 = new AbortController(); const _tm2 = setTimeout(() => _ctrl2.abort(), 8000);
     const r2 = await fetch(istatUrl, { headers: { 'apikey': SK, 'Authorization': `Bearer ${SK}` }, signal: _ctrl2.signal });
     clearTimeout(_tm2);
@@ -3904,14 +3904,12 @@ async function loadMacOncuPerformans() {
           gercek = (ist.ev_gol || 0) + (ist.dep_gol || 0);
         } else if (kat.includes('KORNER')) {
           gercek = (ist.ev_korner || 0) + (ist.dep_korner || 0);
-        } else if (kat.includes('KART')) {
-          gercek = (ist.ev_kart || 0) + (ist.dep_kart || 0);
+        } else if (kat.includes('KART') || kat.includes('SARI')) {
+          gercek = (ist.ev_sari_kart || 0) + (ist.dep_sari_kart || 0);
         } else if (kat.includes('FAUL')) {
           gercek = (ist.ev_faul || 0) + (ist.dep_faul || 0);
-        } else if (kat.includes('OFSAYT')) {
-          gercek = (ist.ev_ofsayt || 0) + (ist.dep_ofsayt || 0);
-        } else if (kat.includes('ATIŞ') || kat.includes('ATIS')) {
-          gercek = (ist.ev_atis || 0) + (ist.dep_atis || 0);
+        } else if (kat.includes('ŞUT') || kat.includes('SUT')) {
+          gercek = (ist.ev_toplam_sut || 0) + (ist.dep_toplam_sut || 0);
         }
 
         if (gercek === null) return;
