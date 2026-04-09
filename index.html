@@ -4050,8 +4050,8 @@ async function loadMacOncuPerformans() {
             const tagClass = s.ust_alt === 'ÜST' ? 'u' : 'a';
             const gercekRenk = s.sonuc === 'DOGRU' ? 'var(--green)' : 'var(--red)';
             const oranStr = s.oran ? s.oran.toFixed(2) : '-';
-            const bahisSonuc = s.sonuc === 'DOGRU' ? 'Kazandı ✅' : 'Kaybetti ❌';
-            const bahisRenk = s.sonuc === 'DOGRU' ? 'var(--green)' : 'var(--red)';
+            const tahminSonuc = s.sonuc === 'DOGRU' ? 'Doğru ✅' : 'Yanlış ❌';
+            const tahminRenk = s.sonuc === 'DOGRU' ? 'var(--green)' : 'var(--red)';
             return `<div class="tahmin-row">
               <div style="cursor:pointer" onclick="openMac(${s.fixture_id})">
                 <div style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--blue-lt)">${s.ev} – ${s.dep}</div>
@@ -4063,7 +4063,7 @@ async function loadMacOncuPerformans() {
               <div class="tahmin-row-kat" style="font-size:11px;color:var(--muted)">${s.kategori}</div>
               <div class="tahmin-row-extra" style="font-size:12px;font-weight:700;color:${gercekRenk}"><span class="mob-label">Gerçek: </span>${s.gercek}</div>
               <div class="tahmin-row-extra" style="font-size:11px;font-weight:600;color:var(--text)"><span class="mob-label">Çizgi: </span>${s.cizgi}</div>
-              <div class="tahmin-row-extra" style="font-size:11px;font-weight:700;color:${bahisRenk}">${bahisSonuc}</div>
+              <div class="tahmin-row-extra" style="font-size:11px;font-weight:700;color:${tahminRenk}">${tahminSonuc}</div>
               <div class="tahmin-row-extra" style="font-size:11px;font-weight:700;color:var(--gold-lt)"><span class="mob-label">Oran: </span>${oranStr}</div>
               <div class="tahmin-row-extra" style="font-size:12px;font-weight:700;color:${s.guc >= 70 ? 'var(--green)' : s.guc >= 55 ? 'var(--yellow)' : 'var(--red)'}"><span class="mob-label">Güç: </span>%${s.guc}</div>
               <div class="tahmin-row-extra" style="font-size:16px;color:${sonucRenk};text-align:center">${sonucIcon}</div>
@@ -4351,8 +4351,8 @@ async function loadTahminler(filter='hepsi') {
             const oranStr = t._oran ? t._oran.toFixed(2) : '-';
             const tziStr = t.mevcut_deger != null ? `TZİ: ${t.mevcut_deger}` : '';
             const istatStr = t.gercek_deger !== null ? (kategoriDetay(t.kategori, t.gercek_deger).replace(/[()]/g,'') || t.gercek_deger) : '-';
-            const bahisSonuc = t.sonuc === 'DOGRU' ? 'Kazandı ✅' : t.sonuc === 'YANLIS' ? 'Kaybetti ❌' : 'Bekliyor ⏳';
-            const bahisRenk = t.sonuc === 'DOGRU' ? 'var(--green)' : t.sonuc === 'YANLIS' ? 'var(--red)' : 'var(--muted)';
+            const tahminSonuc = t.sonuc === 'DOGRU' ? 'Doğru ✅' : t.sonuc === 'YANLIS' ? 'Yanlış ❌' : 'Bekliyor ⏳';
+            const tahminRenk = t.sonuc === 'DOGRU' ? 'var(--green)' : t.sonuc === 'YANLIS' ? 'var(--red)' : 'var(--muted)';
             const sureStr = t.mevcut_dk ? `${t.mevcut_dk}'` : '-';
             return `<div class="tahmin-row">
               <div style="cursor:pointer" onclick="openMac(${t.mac_id})">
@@ -4366,7 +4366,7 @@ async function loadTahminler(filter='hepsi') {
               <div class="tahmin-row-kat" style="font-size:11px;color:var(--muted)">${t.kategori}</div>
               <div class="tahmin-row-extra" style="font-size:12px;font-weight:700;color:${gercekRenk}"><span class="mob-label">İst: </span>${istatStr}</div>
               <div class="tahmin-row-extra" style="font-size:11px;font-weight:600;color:var(--text)"><span class="mob-label">TZİ: </span>${t.mevcut_deger != null ? t.mevcut_deger : '-'}</div>
-              <div class="tahmin-row-extra" style="font-size:11px;font-weight:700;color:${bahisRenk}">${bahisSonuc}</div>
+              <div class="tahmin-row-extra" style="font-size:11px;font-weight:700;color:${tahminRenk}">${tahminSonuc}</div>
               <div class="tahmin-row-extra" style="font-size:11px;font-weight:700;color:var(--gold-lt)"><span class="mob-label">Oran: </span>${oranStr}</div>
               <div class="tahmin-row-extra" style="font-size:12px;font-weight:700;color:${t.guc>=70?'var(--green)':t.guc>=55?'var(--yellow)':'var(--red)'}"><span class="mob-label">Güç: </span>%${t.guc}</div>
               <div class="tahmin-row-extra" style="font-size:16px;color:${sonucRenk};text-align:center">${sonucIcon}</div>
@@ -5125,7 +5125,7 @@ var I18N={
     sohbet:'Canlı Sohbet',gonder:'Gönder',mesajYaz:'Mesaj yazın...',
     ozet:'Özet',istatistik:'İstatistik',kadro:'Kadro',karsilastirma:'Karşılaştırma',oranlar:'Oranlar',forum:'Forum',
     seoBaslik:'aiALYSIS Live — Yapay Zeka Destekli Maç Tahmini',
-    seoAciklama:'Canlı maç analizi, maç tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini.',
+    seoAciklama:'Canlı maç analizi, maç tahmini, maç tahminleri, gol tahmini, korner tahmini, kart tahmini.',
     haklar:'© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.',
     golBek:'GOL BEK.', evSkoru:'EV SKORU', depSkoru:'DEP SKORU', tempo:'TEMPO', guven:'GÜVEN',
     tahminler:'TAHMİNLER', genelDeg:'GENEL DEĞERLENDİRME', sonucOlas:'SONUÇ OLASILIĞI',
@@ -5970,8 +5970,8 @@ loadAialysis=async function(silent){
 <!-- SEO Footer -->
 <footer style="background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-size:12px;color:var(--muted);line-height:1.8">
   <h2 style="font-size:14px;color:var(--text);margin-bottom:8px;font-weight:700">aiALYSIS Live — Yapay Zeka Destekli Maç Tahmini</h2>
-  <p>Canlı maç analizi, maç tahmini, iddaa tahminleri, gol tahmini, korner tahmini, kart tahmini. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Şampiyonlar Ligi canlı skor ve istatistikler.</p>
-  <p style="margin-top:8px">Futbol istatistikleri, canlı maç sonuçları, maç öncesi analiz, bahis analizi, banko maçlar. AI destekli akıllı tahmin platformu.</p>
+  <p>Canlı maç analizi, maç tahmini, maç tahminleri, gol tahmini, korner tahmini, kart tahmini. Süper Lig, Premier League, La Liga, Bundesliga, Serie A, Ligue 1, Şampiyonlar Ligi canlı skor ve istatistikler.</p>
+  <p style="margin-top:8px">Futbol istatistikleri, canlı maç sonuçları, maç öncesi analiz, maç analizi, önerilen maçlar. AI destekli akıllı tahmin platformu.</p>
   <p style="margin-top:8px"><a href="/blog.html" title="aiALYSIS Live Blog - Maç Önizlemeleri ve Analizler" style="color:#D4A24C;font-size:12px;font-weight:600;text-decoration:none;">Blog</a> · <a href="/privacy.html" title="Gizlilik Politikası" style="color:#7A7A95;text-decoration:none;">Gizlilik</a> · <a href="/terms.html" title="Kullanım Şartları" style="color:#7A7A95;text-decoration:none;">Kullanım Şartları</a> · <a href="/cookies.html" title="Çerez Politikası" style="color:#7A7A95;text-decoration:none;">Çerez Politikası</a> · <a href="javascript:void(0)" onclick="cerezAyarlariAc()" title="Çerez Ayarları" style="color:#7A7A95;text-decoration:none;">Çerez Ayarları</a></p>
   <div style="margin-top:16px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:inline-block;max-width:420px;text-align:left;">
     <p style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px;">Widget Ekle</p>
@@ -6003,6 +6003,7 @@ loadAialysis=async function(silent){
   </script>
   <p style="margin-top:12px;color:var(--muted);font-size:12px">© 2026 aiALYSIS Live. Tüm hakları saklıdır. Bu site yalnızca bilgi amaçlıdır.</p>
   <p style="margin-top:6px;font-size:11px;"><a href="/cookies.html" style="color:#7A7A95;text-decoration:none;">Çerez Politikası</a> · <a href="javascript:void(0)" onclick="cerezAyarlariAc()" style="color:#7A7A95;text-decoration:none;">Çerez Ayarları</a></p>
+  <p style="margin-top:12px;padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:8px;display:inline-block;max-width:600px;font-size:11px;color:var(--muted);line-height:1.6;">aiALYSIS bir bahis veya kumar uygulaması değildir. Hiçbir şekilde gerçek para işlemi yapılmaz. Tüm tahmin puanları sanaldır ve maddi değeri yoktur.</p>
 </footer>
 
 <!-- ÇEREZ ONAY BANNER -->
