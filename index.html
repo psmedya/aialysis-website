@@ -4762,9 +4762,9 @@ function renderKullaniciTahminFormu(macId,m){
     <div class="kt-form-title">TAHMİN YAP</div>
     <div class="kt-form-row">
       <select class="kt-select" id="ktKategori-${macId}">
-        <option value="GOL">Gol Ust/Alt</option>
-        <option value="KORNER">Korner Ust/Alt</option>
-        <option value="KART">Kart Ust/Alt</option>
+        <option value="GOL">Gol Üst/Alt</option>
+        <option value="KORNER">Korner Üst/Alt</option>
+        <option value="KART">Kart Üst/Alt</option>
       </select>
       <select class="kt-select" id="ktCizgi-${macId}">
         <option value="0.5">0.5</option>
@@ -4777,11 +4777,11 @@ function renderKullaniciTahminFormu(macId,m){
     </div>
     <div class="kt-form-row">
       <div class="kt-radio-group">
-        <div class="kt-radio selected" id="ktUst-${macId}" onclick="ktSecUstAlt('${macId}','ÜST')">UST</div>
+        <div class="kt-radio selected" id="ktUst-${macId}" onclick="ktSecUstAlt('${macId}','ÜST')">ÜST</div>
         <div class="kt-radio" id="ktAlt-${macId}" onclick="ktSecUstAlt('${macId}','ALT')">ALT</div>
       </div>
     </div>
-    <button class="kt-submit" id="ktGonder-${macId}" onclick="ktGonderTahmin(${macId})">Tahmin Gonder</button>
+    <button class="kt-submit" id="ktGonder-${macId}" onclick="ktGonderTahmin(${macId})">Tahmin Gönder</button>
     <div id="ktMsg-${macId}" style="font-size:11px;text-align:center;margin-top:6px;display:none;"></div>
   </div>`;
 }
@@ -4800,7 +4800,7 @@ async function ktGonderTahmin(macId){
   const ustAlt=ktSeciliUstAlt;
   const btn=document.getElementById('ktGonder-'+macId);
   const msgEl=document.getElementById('ktMsg-'+macId);
-  btn.disabled=true;btn.textContent='Gonderiliyor...';
+  btn.disabled=true;btn.textContent='Gönderiliyor...';
   msgEl.style.display='none';
   try{
     // Duplicate kontrol
@@ -4808,7 +4808,7 @@ async function ktGonderTahmin(macId){
     const dupData=await dupR.json();
     if(dupData&&dupData.length>0){
       msgEl.textContent='Bu kategori ve çizgi için zaten tahmin yaptın.';msgEl.style.color='var(--red)';msgEl.style.display='block';
-      btn.disabled=false;btn.textContent='Tahmin Gonder';return;
+      btn.disabled=false;btn.textContent='Tahmin Gönder';return;
     }
     // Insert
     const m=currentMac;
@@ -4829,7 +4829,7 @@ async function ktGonderTahmin(macId){
   }catch(e){
     msgEl.textContent='Hata: '+(e.message||'Bilinmeyen hata');msgEl.style.color='var(--red)';msgEl.style.display='block';
   }
-  btn.disabled=false;btn.textContent='Tahmin Gonder';
+  btn.disabled=false;btn.textContent='Tahmin Gönder';
 }
 
 // ===== 2. PERFORMANS RAPORU =====
