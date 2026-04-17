@@ -1881,14 +1881,32 @@ document.addEventListener('click',function(e){
   }
 });
 
-function panelKapat(){
+function panelKapat(fromPopstate){
   document.querySelector('.layout').classList.remove('panel-acik');
   const mn=document.querySelector('.mobil-nav');if(mn&&window.innerWidth<=768)mn.style.display='block';
   document.getElementById('matchDetail').classList.remove('active');
   document.getElementById('defaultPanel').style.display='';
   if(detailTimer){clearInterval(detailTimer);detailTimer=null;}
   currentMac=null;
+  // popstate'ten gelmediyse ve history state mac-detay ise geri git
+  if(!fromPopstate&&history.state&&history.state.panel==='mac-detay'){history.back();}
 }
+
+// History API: geri butonuyla panel/modal kapat
+window.addEventListener('popstate',function(e){
+  // Maç detay paneli açıksa kapat
+  if(currentMac){panelKapat(true);return;}
+  // Sohbet paneli açıksa kapat
+  const cp=document.getElementById('chatPanel');
+  if(cp&&cp.classList.contains('acik')){toggleChatPanel(true);return;}
+  // Hash navigasyonu: doğru tab'a dön
+  const h=(window.location.hash||'').replace('#','');
+  const tabMap={maclar:'maclar',canli:'canli',favoriler:'favoriler',aialysis:'aialysis',performans:'dashboard',feed:'feed'};
+  if(h&&tabMap[h]){
+    if(h==='canli'){canliMod=true;const lb=document.getElementById('liveBtnEl');if(lb)lb.classList.add('active');showMainTab('maclar');}
+    else{showMainTab(tabMap[h]);}
+  }
+});
 
 // FAVORİ SİSTEMİ
 function getFavMaclar(){try{return JSON.parse(localStorage.getItem('fav_maclar')||'[]');}catch(e){return[];}}
@@ -2300,8 +2318,8 @@ function toggleCanli(){
   const onMaclar=activePage&&activePage.id==='page-maclar';
   if(!onMaclar){canliMod=true;}else{canliMod=!canliMod;}
   document.getElementById('liveBtnEl').classList.toggle('active',canliMod);
-  // Panel açıksa kapat
-  panelKapat();
+  // Panel açıksa kapat (canli toggle'da replaceState halleder)
+  panelKapat(true);
   // Canli modda maclar sayfasını göster
   showMainTab('maclar');
   history.replaceState(null,null,canliMod?'#canli':'#maclar');
@@ -2478,6 +2496,8 @@ async function openMac(id){
   sonGorutulenKaydet(id,m.teams.home.name,m.teams.away.name,_skor,m.league.name);
   trackEvent('mac_goruntuleme',{mac_id:id,lig:m.league.name});
   layout.classList.add('panel-acik');
+  // History API: geri butonuyla panel kapansın
+  history.pushState({panel:'mac-detay',macId:id},'',(window.location.hash||'#maclar'));
   // Navbar her zaman görünür kalsın — panel açılınca nav-hidden kaldır
   const nb=document.querySelector('.navbar');if(nb)nb.classList.remove('nav-hidden');
   const mn=document.querySelector('.mobil-nav');if(mn)mn.style.display='none';
@@ -3527,8 +3547,8 @@ function switchDetailTab(name){
 function showMainTab(name){
   // Analitik event: sayfa görüntüleme
   trackEvent('sayfa_goruntulenme',{sayfa:name});
-  // Panel açıksa kapat
-  panelKapat();
+  // Panel açıksa kapat (tab değişiminde history.back gerek yok, replaceState halleder)
+  panelKapat(true);
   ['maclar','favoriler','aialysis','dashboard','feed'].forEach(p=>{
     const el=document.getElementById(`page-${p}`);
     if(el)el.classList.remove('active');
@@ -4607,12 +4627,17 @@ if(window.innerWidth<=1200){document.getElementById('mobilTarihNav').style.displ
 window.addEventListener('resize',()=>{document.getElementById('mobilTarihNav').style.display=window.innerWidth<=1200?'block':'none';});
 
 // ===== CANLI SOHBET (GENEL FORUM) =====
-function toggleChatPanel(){
+function toggleChatPanel(fromPopstate){
   const p=document.getElementById('chatPanel');
   const o=document.getElementById('chatOverlay');
   const acik=p.classList.toggle('acik');
   o.classList.toggle('acik',acik);
-  if(acik) loadChatMesajlar();
+  if(acik){
+    loadChatMesajlar();
+    history.pushState({panel:'sohbet'},'',(window.location.hash||'#maclar'));
+  } else if(!fromPopstate&&history.state&&history.state.panel==='sohbet'){
+    history.back();
+  }
 }
 
 function zamanOnce(dt){
