@@ -2338,7 +2338,7 @@ function toggleCanli(){
   // Eğer maclar dışında bir sayfadayken tıklanırsa, her zaman canli aç
   const activePage=document.querySelector('.page.active');
   const onMaclar=activePage&&activePage.id==='page-maclar';
-  if(!onMaclar){canliMod=true;}else{canliMod=!canliMod;}
+  canliMod=true;
   document.getElementById('liveBtnEl').classList.toggle('active',canliMod);
   // Panel açıksa kapat (canli toggle'da replaceState halleder)
   panelKapat(true);
