@@ -3590,7 +3590,7 @@ function showMainTab(name){
   const hashMap={maclar:'maclar',favoriler:'favoriler',aialysis:'aialysis',dashboard:'performans',feed:'feed'};
   if(hashMap[name])history.replaceState(null,null,'#'+hashMap[name]);
   // Canli modu kapat (başka taba geçince)
-  if(name!=='maclar'&&canliMod){canliMod=false;const lb=document.getElementById('liveBtnEl');if(lb)lb.classList.remove('active');}
+  if(canliMod){canliMod=false;const lb=document.getElementById('liveBtnEl');if(lb)lb.classList.remove('active');loadMaclar();}
 }
 
 function aiaLogo(url,name){
