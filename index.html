@@ -1027,7 +1027,7 @@ body.light-theme .cerez-kategori{background:#fafafa;}
 
     <!-- ORTA: 4 Ana Tab -->
     <div class="nav-links">
-      <button class="nav-btn active" onclick="showMainTab('maclar')" id="nav-maclar">
+      <button class="nav-btn active" onclick="canliMod=false;document.getElementById('liveBtnEl').classList.remove('active');showMainTab('maclar');loadMaclar();" id="nav-maclar">
         <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <span>Maçlar</span>
       </button>
       <button class="nav-btn" onclick="toggleCanli()" id="nav-canli">
@@ -3590,7 +3590,7 @@ function showMainTab(name){
   const hashMap={maclar:'maclar',favoriler:'favoriler',aialysis:'aialysis',dashboard:'performans',feed:'feed'};
   if(hashMap[name])history.replaceState(null,null,'#'+hashMap[name]);
   // Canli modu kapat (başka taba geçince)
-  if(canliMod){canliMod=false;const lb=document.getElementById('liveBtnEl');if(lb)lb.classList.remove('active');loadMaclar();}
+  if(name!=='maclar'&&canliMod){canliMod=false;const lb=document.getElementById('liveBtnEl');if(lb)lb.classList.remove('active');}
 }
 
 function aiaLogo(url,name){
@@ -5988,7 +5988,7 @@ loadAialysis=async function(silent){
 <!-- Mobil Bottom Nav -->
 <div class="mobil-nav">
   <div class="mobil-nav-items">
-    <button class="mobil-nav-btn active" id="mob-maclar" onclick="showMainTab('maclar');document.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
+    <button class="mobil-nav-btn active" id="mob-maclar" onclick="canliMod=false;document.getElementById('liveBtnEl').classList.remove('active');showMainTab('maclar');loadMaclar();document.querySelectorAll('.mobil-nav-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">
       <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span class="mob-label">Maçlar</span>
     </button>
