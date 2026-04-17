@@ -1331,7 +1331,7 @@ body.light-theme .cerez-kategori{background:#fafafa;}
     </div>
     <div id="matchDetail" class="match-detail">
       <div class="detail-header" id="detailHeader">
-        <button class="panel-kapat" onclick="panelKapat()">← Geri</button>
+        <button class="panel-kapat" onclick="panelKapat()">&#10094;</button>
       </div>
       <div class="detail-tabs" id="detailTabsEl">
         <div class="detail-tab active" onclick="switchDetailTab('analiz')">✦ AIalysis</div>
@@ -2456,7 +2456,7 @@ function updateDetailHeader(m){
   const hdr=document.getElementById('detailHeader');
   if(!hdr)return;
   hdr.innerHTML=`
-    <button class="panel-kapat" onclick="panelKapat()">← Geri</button>
+    <button class="panel-kapat" onclick="panelKapat()">&#10094;</button>
     <div class="detail-lig" style="padding-top:36px">${m.league.country} | ${m.league.name} · ${localSaat}</div>
     <div class="detail-takimlar">
       <div class="detail-takim">
