@@ -2293,14 +2293,14 @@ async function sbQuery(table,filters='',paginate=false){
     clearTimeout(tm);
     if(!r.ok){console.error('sbQuery hata:',table,r.status);return [];}
     const data=await r.json();
-    // Eğer 1000 kayıt geldiyse ve paginate aktifse, sonraki sayfayı da çek
     if(paginate&&data.length>=1000){
-      try{
-        const r2=await fetch(`${SU}/rest/v1/${table}?${filters}&offset=1000`,{
-          headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}
-        });
-        if(r2.ok){const d2=await r2.json();data.push(...d2);}
-      }catch(e2){}
+      let off=1000;
+      while(off<5000){
+        try{
+          const rN=await fetch(`${SU}/rest/v1/${table}?${filters}&offset=${off}`,{headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}});
+          if(!rN.ok)break;const dN=await rN.json();if(!dN.length)break;data.push(...dN);if(dN.length<1000)break;off+=1000;
+        }catch(e2){break;}
+      }
     }
     cacheSet(cacheKey,data);
     return data;
