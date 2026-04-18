@@ -2582,13 +2582,13 @@ async function loadFormBars(evId, depId){
   }catch(_){}
 }
 
-// Odds helper — fetch bet365 odds and build a lookup map
+// Odds helper — fetch match odds and build a lookup map
 async function fetchOddsMap(fixtureId){
   try{
     const oranRows=await sbQuery('mac_oranlar',`fixture_id=eq.${fixtureId}`);
-    const bets=(oranRows&&oranRows.length)?oranRows[0].api_odds||[]:[];
+    const odds=(oranRows&&oranRows.length)?oranRows[0].api_odds||[]:[];
     const map={};
-    bets.forEach(b=>{
+    odds.forEach(b=>{
       const name=(b.name||'').toLowerCase();
       (b.values||[]).forEach(v=>{
         const val=(v.value||'').toString().toLowerCase();
@@ -4206,8 +4206,8 @@ async function loadTahminler(filter='hepsi') {
           if (oranBatch && oranBatch.length) {
             oranBatch.forEach(r => {
               const oddsM = {};
-              const bets = r.api_odds || [];
-              bets.forEach(b => {
+              const odds = r.api_odds || [];
+              odds.forEach(b => {
                 const name = (b.name || '').toLowerCase();
                 (b.values || []).forEach(v => {
                   const val = (v.value || '').toString().toLowerCase();
@@ -4274,8 +4274,8 @@ async function loadTahminler(filter='hepsi') {
           if (extraOran && extraOran.length) {
             extraOran.forEach(r => {
               const oddsM = {};
-              const bets = r.api_odds || [];
-              bets.forEach(b => {
+              const odds = r.api_odds || [];
+              odds.forEach(b => {
                 const name = (b.name || '').toLowerCase();
                 (b.values || []).forEach(v => {
                   const val = (v.value || '').toString().toLowerCase();
@@ -5829,8 +5829,8 @@ async function loadDetailOranlar(fixtureId){
       try{
         const oranRows=await sbQuery('mac_oranlar',`fixture_id=eq.${fixtureId}`);
         if(oranRows&&oranRows.length){
-          const bets=oranRows[0].api_odds||[];
-          const matchWinner=bets.find(b=>(b.name||'').toLowerCase().includes('match winner'));
+          const odds=oranRows[0].api_odds||[];
+          const matchWinner=odds.find(b=>(b.name||'').toLowerCase().includes('match winner'));
           if(matchWinner){
             oranHtml+=`<div class="odds-bm"><div class="odds-bm-name" style="opacity:.5">Maç Öncesi 1X2 (Referans)</div><div class="odds-row">${(matchWinner.values||[]).map(v=>`<div class="odds-val" style="opacity:.5"><div class="odds-lbl">${v.value}</div><div class="odds-price">${parseFloat(v.odd).toFixed(2)}</div></div>`).join('')}</div></div>`;
           }
@@ -5840,8 +5840,8 @@ async function loadDetailOranlar(fixtureId){
       // BAŞLAMAMIŞ veya BİTMİŞ MAÇ: mac_oranlar kullan
       const oranRows=await sbQuery('mac_oranlar',`fixture_id=eq.${fixtureId}`);
       if(oranRows&&oranRows.length){
-        const bets=oranRows[0].api_odds||[];
-        const matchWinner=bets.find(b=>(b.name||'').toLowerCase().includes('match winner'));
+        const odds=oranRows[0].api_odds||[];
+        const matchWinner=odds.find(b=>(b.name||'').toLowerCase().includes('match winner'));
         if(matchWinner){
           oranHtml+=`<div class="odds-bm">
             <div class="odds-bm-name">1X2</div>
@@ -5850,7 +5850,7 @@ async function loadDetailOranlar(fixtureId){
             </div>
           </div>`;
         }
-        const ou=bets.find(b=>(b.name||'').toLowerCase().includes('goals over/under'));
+        const ou=odds.find(b=>(b.name||'').toLowerCase().includes('goals over/under'));
         if(ou){
           oranHtml+=`<div class="odds-bm">
             <div class="odds-bm-name">Gol Üst/Alt</div>
