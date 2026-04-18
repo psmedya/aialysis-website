@@ -1833,11 +1833,8 @@ const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 
 let tarih=new Date(), canliMod=false, maclar=[], currentMac=null, detailTimer=null, aiaSort='lig';
 
-// Supabase Realtime client
-const supabaseClient = supabase.createClient(SU, SK);
-
 // maclar tablosu — UPDATE dinle (upsert = UPDATE)
-supabaseClient
+sbClient
   .channel('maclar-changes')
   .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'maclar' }, (payload) => {
     if(!payload.new) return;
@@ -1857,7 +1854,7 @@ supabaseClient
   .subscribe();
 
 // tahmin_sonuclari tablosu — tüm event'ler
-supabaseClient
+sbClient
   .channel('tahmin-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'tahmin_sonuclari' }, () => {
     const ap = document.querySelector('.page.active');
@@ -3681,7 +3678,6 @@ async function loadAialysis(silent=false){
     clearTimeout(_aiaSpinTm);
     c.innerHTML='';
     let aiaCardCount=0;
-    const prem=true;
     for(const macId of filteredMacIds){
       const tahminler=hazir[macId];
       const m=canliMap[parseInt(macId)];
@@ -3725,20 +3721,7 @@ async function loadAialysis(silent=false){
       if(m){card.onclick=()=>{maclar=[...maclar.filter(x=>x.fixture.id!==mid),m];openMac(mid);};}
       else if(maclar.find(x=>x.fixture.id===mid)){card.onclick=()=>openMac(mid);}
       aiaCardCount++;
-      // Premium blur: free users see only 3 predictions
-      if(!prem && aiaCardCount>3){
-        card.style.filter='blur(6px)';card.style.pointerEvents='none';card.style.userSelect='none';
-      }
       c.appendChild(card);
-    }
-    // Add premium CTA overlay if not premium and more than 3 cards
-    if(!prem && aiaCardCount>3){
-      const overlay=document.createElement('div');
-      overlay.style.cssText='grid-column:1/-1;text-align:center;padding:30px 20px;background:linear-gradient(to bottom,transparent,var(--bg));margin-top:-60px;position:relative;z-index:2;';
-      overlay.innerHTML=`<div style="font-size:15px;font-weight:800;color:var(--gold-lt);margin-bottom:8px;">&#11088; Premium ile tum tahminleri gor</div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Ucretsiz planda gunde 3 tahmin goruntuleyebilirsiniz.</div>
-        <button onclick="premiumInfoModal()" style="padding:10px 24px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:10px;color:#1A1A2E;font-size:13px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;">Premium'a Gec</button>`;
-      c.appendChild(overlay);
     }
   }catch(e){clearTimeout(_aiaSpinTm);c.innerHTML=e.name==='AbortError'?`<div class="empty" style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">⏱️</div><div style="color:var(--muted);font-size:13px">Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.</div></div>`:`<div class="error" style="grid-column:1/-1">Hata: ${e.message}</div>`;}
 }
@@ -3750,14 +3733,14 @@ let aiaSortMode='lig';
 function setOnuSaat(s){
   onuSaat=s;
   document.querySelectorAll('.aia-saat-btn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
+  event?.target?.classList?.add('active');
   loadMacOnuTahminleri();
 }
 
 function setAiaSort(mode){
   aiaSortMode=mode;
   document.querySelectorAll('.aia-sort-btn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
+  event?.target?.classList?.add('active');
   if(document.getElementById('aiaSubOncu').classList.contains('active')){
     loadMacOnuTahminleri();
   }else{
@@ -5690,9 +5673,9 @@ let forumRealtimeChannels={};
 function subscribeForumRealtime(macId,containerId){
   // Önceki subscription varsa kaldır
   if(forumRealtimeChannels[macId]){
-    supabaseClient.removeChannel(forumRealtimeChannels[macId]);
+    sbClient.removeChannel(forumRealtimeChannels[macId]);
   }
-  const channel=supabaseClient
+  const channel=sbClient
     .channel(`forum-${macId}`)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'forum_mesajlar',filter:`mac_id=eq.${macId}`},async(payload)=>{
       if(!payload.new)return;
