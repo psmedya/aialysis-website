@@ -2366,11 +2366,11 @@ async function loadMaclar(silent=false){
       const bugun=istFmt(new Date());
       if(tarihStr<bugun){
         // Geçmiş günler: mac_istatistikleri tablosundan oku
-        const rows=await sbQuery('mac_istatistikleri',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lt.${tarihStr}T23:59:59.999&order=mac_tarihi`);
+        const rows=await sbQuery('mac_istatistikleri',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lt.${tarihStr}T23:59:59.999&order=mac_tarihi&limit=2000`);
         liste=(rows||[]).map(istatToApiFormat);
       } else {
         // Bugün ve gelecek: maclar tablosundan oku
-        const rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`);
+        const rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi&limit=2000`);
         liste=(rows||[]).map(sbToApiFormat);
       }
       document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
