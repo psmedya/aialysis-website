@@ -21,6 +21,7 @@
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/terms", "destination": "/terms.html" },
     { "source": "/cookies", "destination": "/cookies.html" },
+    { "source": "/delete-account", "destination": "/delete-account.html" },
     { "source": "/((?!.*\\.).*)", "destination": "/404.html" }
   ]
 }
