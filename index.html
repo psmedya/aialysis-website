@@ -2283,19 +2283,28 @@ const _fetchCache={};
 function cacheGet(key){const e=_fetchCache[key];if(!e)return null;if(Date.now()-e.ts>60000){delete _fetchCache[key];return null;}return e.data;}
 function cacheSet(key,data){_fetchCache[key]={data,ts:Date.now()};}
 
-async function sbQuery(table,filters=''){
+async function sbQuery(table,filters='',paginate=false){
   const cacheKey=`sb:${table}:${filters}`;
   const cached=cacheGet(cacheKey);
   if(cached)return cached;
   const ctrl=new AbortController();
-  const tm=setTimeout(()=>ctrl.abort(),6000);
+  const tm=setTimeout(()=>ctrl.abort(),8000);
   try{
     const r=await fetch(`${SU}/rest/v1/${table}?${filters}`,{
-      headers:{'apikey':SK,'Authorization':`Bearer ${SK}`},signal:ctrl.signal
+      headers:{'apikey':SK,'Authorization':`Bearer ${SK}`,'Prefer':'count=exact'},signal:ctrl.signal
     });
     clearTimeout(tm);
     if(!r.ok){console.error('sbQuery hata:',table,r.status);return [];}
     const data=await r.json();
+    // Eğer 1000 kayıt geldiyse ve paginate aktifse, sonraki sayfayı da çek
+    if(paginate&&data.length>=1000){
+      try{
+        const r2=await fetch(`${SU}/rest/v1/${table}?${filters}&offset=1000`,{
+          headers:{'apikey':SK,'Authorization':`Bearer ${SK}`}
+        });
+        if(r2.ok){const d2=await r2.json();data.push(...d2);}
+      }catch(e2){}
+    }
     cacheSet(cacheKey,data);
     return data;
   }catch(e){clearTimeout(tm);if(e.name==='AbortError')console.warn('sbQuery timeout:',table);return [];}
@@ -2366,11 +2375,11 @@ async function loadMaclar(silent=false){
       const bugun=istFmt(new Date());
       if(tarihStr<bugun){
         // Geçmiş günler: mac_istatistikleri tablosundan oku
-        const rows=await sbQuery('mac_istatistikleri',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lt.${tarihStr}T23:59:59.999&order=mac_tarihi&limit=2000`);
+        const rows=await sbQuery('mac_istatistikleri',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lt.${tarihStr}T23:59:59.999&order=mac_tarihi`,true);
         liste=(rows||[]).map(istatToApiFormat);
       } else {
         // Bugün ve gelecek: maclar tablosundan oku
-        const rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi&limit=2000`);
+        const rows=await sbQuery('maclar',`mac_tarihi=gte.${tarihStr}T00:00:00&mac_tarihi=lte.${tarihStr}T23:59:59&order=mac_tarihi`,true);
         liste=(rows||[]).map(sbToApiFormat);
       }
       document.getElementById('matchesTitle').textContent=`Maçlar — ${fmtTR(tarih)}`;
